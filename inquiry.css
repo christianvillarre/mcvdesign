@@ -1,0 +1,337 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* 🚫 disables native scroll */
+}
+
+[data-scroll-container] {
+  overflow: hidden;
+}
+.inquiry-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden; /* Prevent full-page scroll */
+}
+
+.inquiry-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column; /* 🔹 Stack vertically */
+  align-items: flex-start;
+  justify-content: flex-start;
+  background-color: #000000;
+  color: white;
+  padding-left: 2rem;
+  padding-top: 1rem;
+  
+}
+
+.inquiry-subtext {
+  font-size: clamp(1rem, 2.5vw, 2rem); /* min 1rem, scales up to 2rem */
+  color: #ccc;
+  line-height: 1.5;
+}
+.inquiry-right {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  background-color: #000000;
+  color: white;
+  overflow-y: auto;  /* Enable vertical scroll on right side */
+  height: 100vh;
+  padding-top: 30vh; /* Replace margin-top with padding */
+}
+.inquiry-left-container {
+  max-width: 750px;     /* Or whatever width you want */
+  width: 100%;
+  padding-right: 2rem;  /* Matches left padding from .inquiry-left */
+}
+
+.inquiry-left-container h1 {
+  font-size: clamp(4rem, 10vw, 10rem); /* min 4rem, scales with 10vw, max 10rem */
+  margin-left: 0;
+  font-weight: 400;
+  line-height: 1.1;
+  margin-top: 1rem;
+}
+.inquiry-left-container h2 {
+  font-size: clamp(4rem, 10vw, 10rem); /* min 4rem, scales with 10vw, max 10rem */
+  margin-left: 0;
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 10rem;
+  margin-top: 1rem;
+  color: #54f3a4;
+}
+
+
+.inquiry-right-container h1 {
+    font-size: 3rem;
+    margin-left: 0rem;
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 4rem;
+    
+}
+
+.dropdown-email {
+   position: absolute;
+  top: 2rem;
+  right: 6rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 1000;
+  opacity: 1; /* Ensure this is present */
+}
+.navbar__email {
+  width: 290px;                /* ✅ Fixed width */
+  height: 65px;                /* ✅ Fixed height */
+  padding: 0 1.5rem;           /* ✅ Padding inside */
+  font-size: 1.4rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 999px;
+  background-color: rgb(39, 39, 39);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* or center/left depending on layout */
+  gap: 0rem;
+  margin-right: 0.5rem;
+  position: relative;
+  overflow: hidden; /* ensure the circle stays inside */
+  z-index: 1;
+}
+
+
+.dropdown-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #000000;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* ⬅️ align contents to the left */
+  justify-content: left;
+  transform: translateY(-100%);
+  transition: transform 0.5s ease;
+  z-index: 10000;
+  padding-left: 1.5rem; /* ⬅️ spacing from the left edge */
+  overflow: hidden; /* Make sure video doesn't spill */
+}
+
+.dropdown-menu.open {
+  transform: translateY(0);
+}
+
+.dropdown-links {
+  padding-bottom: 1rem;   /* or 0.75rem for tighter */
+  margin: 0;
+  line-height: 0.5;
+}
+
+.dropdown-links li {
+  margin: 0rem 0;
+  font-size: clamp(6rem, 6vw, 9rem);
+  padding-top: 4rem;
+}
+
+.dropdown-links a {
+  text-decoration: none;
+  color: white;
+  transition: color 0.3s ease;
+}
+
+.dropdown-links a:hover {
+  color: #54f3a4;
+}
+
+.close-menu {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: none;
+  border: none;
+  font-size: 3rem;
+  color: white;
+  cursor: pointer;
+}
+
+
+.dropdown-copyright {
+   position: absolute;
+  bottom: 2.5rem;
+  left: 2rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 1000;
+  opacity: 1; /* Ensure this is present */
+}
+
+.dropdown-email {
+   position: absolute;
+  top: 2rem;
+  right: 6rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 1000;
+  opacity: 1; /* Ensure this is present */
+}
+
+.dropdown-video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Behind all dropdown content */
+  overflow: hidden;
+}
+
+.dropdown-video-bg video {
+  width: 100%;
+  height: 200%;
+  object-fit: cover;
+  opacity: 1; /* Optional: make it subtle */
+  pointer-events: none;
+  z-index: -1;
+}
+.dropdown-content {
+  position: relative;
+  z-index: 1; /* ✅ brings all dropdown content above video */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.inquiry-right-container {
+  width: 100%;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.name-form {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  flex-wrap: wrap;
+  margin-bottom: 4rem;
+}
+
+.input-group {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #52605a;
+  padding: 0.5rem 0 2rem; /* Top: 0.5rem, Right: 0, Bottom: 1rem */
+  font-size: 1rem;
+  color: white;
+  width: 100%;
+  outline: none;
+}
+
+.input-name {
+  display: block;           /* ⬅️ Make label respect vertical margin */
+  font-size: 1.4rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;      /* Now this will work */
+}
+.inquiry-form-section {
+    margin-bottom: 3rem;
+}
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.radio-option {
+  flex: 1 1 45%;
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+  color: white;
+  gap: 2rem;
+  cursor: pointer;
+}
+
+/* Custom checkbox base */
+.radio-option input[type="checkbox"] {
+  appearance: none;
+  width: 45px;
+  height: 20px;
+  border: 2px solid #54f3a4;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Checked visual */
+.radio-option input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 25px;
+  height: 25px;
+  background-color: #54f3a4;
+  border-radius: 5px;
+}
+.get-in-touch-btn2 {
+  position: absolute;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  padding: 1rem 3rem;
+  border-radius: 9999px;
+  font-size: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+  margin-top: 3rem;
+}
+.get-in-touch-btn2:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+
+@media screen and (max-width: 768px) {
+  .inquiry-container {
+    flex-direction: column;
+    height: auto; /* allow height to grow with content */
+  }
+
+  .inquiry-left,
+  .inquiry-right {
+    width: 100%;
+    height: auto;
+    padding: 2rem;
+  }
+
+  .inquiry-right {
+    padding-top: 2rem;
+    overflow-y: visible; /* let content expand instead of scroll */
+  }
+
+  .get-in-touch-btn2 {
+    position: static; /* remove absolute positioning so it flows properly */
+    margin-top: 2rem;
+  }
+}

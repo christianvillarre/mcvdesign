@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smooth Scroll Confined Ring with Paragraphs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/Draggable.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/InertiaPlugin.min.js"></script>
+  <style>
+    html, body {
+       margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* ✅ Prevent horizontal scroll */
+      background: #000000;
+      font-family: 'Funnel Display', sans-serif;
+    }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+.glow {
+  color: #54f3a4;
+  
+}
+
+.intro {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: flex-end; /* ⬅️ Push content to bottom */
+  background: #000000;
+  color: white;
+}
+
+.intro::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top left, rgba(84, 243, 164, 0.15) 0%, transparent 20%),
+    radial-gradient(circle at top right, rgba(84, 243, 164, 0.1) 0%, transparent 20%);
+  opacity: var(--corner-opacity, 1);
+  transition: opacity 0.4s ease, background 0.3s ease;
+  z-index: 0;
+}
+.intro-content {
+  padding-left: 0rem;
+  padding-bottom: 4rem;   /* ⬅️ Space from bottom */
+  width: 90vw;
+}
+
+.intro-content h1 {
+  font-size: clamp(4rem, 8vw, 11rem); /* min 4rem, ideal 8vw, max 10rem */
+  margin: 0;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 5.5rem;
+}
+
+.intro-content p {
+  font-size: clamp(1.5rem, 3vw, 2.5rem); /* min 1.5rem, ideal 3vw, max 3.2rem */
+  margin: 0;
+  font-weight: 400;
+  width: 60vw;
+}
+
+
+
+
+
+
+
+    section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8rem;
+      color: white;
+    }
+
+    .circle-section {
+      background: #000000;
+      position: relative;
+    }
+
+    .circle-wrapper {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      width: 70vw;
+      height: 70vh;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 1;
+      
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      
+    }
+
+    circle {
+      fill: black;
+      stroke-width: 1;
+      border:none;
+      opacity: 0;
+      position: fixed;
+    }
+
+    .background-ring {
+      stroke: #333;
+    }
+
+    .progress-ring {
+  stroke: #54f3a4;
+  filter: drop-shadow(0 0 8px rgba(84, 243, 164, var(--glow, 1)));
+  transition: filter 0.3s ease;
+  
+}
+
+    .text-layer {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8rem;
+      color: white;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+      text-align: center;
+    }
+
+    .percent-counter {
+      font-size: 3rem;
+      top: calc(50% + 6rem);
+    }
+
+    .paragraph {
+      position: fixed;
+      bottom: 4rem;
+      left: 4rem;
+      width: 600px;
+      font-size: 1.8rem;
+      color: #ccc;
+      line-height: 1.6;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 15;
+    }
+   .circle-title {
+   position: absolute;
+  top: 4rem;
+  right: 4rem;
+  max-width: 600px;
+  font-size: 4rem;
+  color: #ccc;
+  line-height: 1.3;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 15;
+}
+
+
+
+
+.scroll-text-section {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* ✅ forces left alignment */
+  overflow: hidden;
+  cursor: grab;
+  position: relative;
+  width: 100vw;
+}
+
+    .scroll-text-section:active {
+      cursor: grabbing;
+    }
+
+.scroll-track {
+  display: inline-block;
+  will-change: transform;
+  white-space: nowrap;
+  min-width: max-content;
+  margin: 0;
+  padding: 0;
+}
+    .scroll-text {
+  white-space: nowrap;
+  font-size: clamp(2rem, 10vw, 20rem);
+  font-weight: 500;
+  color: #54f3a4;
+  filter: drop-shadow(0 0 10px #54f3a4);
+  padding-left: 0; /* ✅ Starts fully at edge */
+  display: inline-block;
+}
+
+  </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar__container">
+      <div class="navbar__left">
+        <a href="/" id="navbar__logo" class="logo">
+          <img class="logo1" src="images/logo2.png" alt="Logo" />
+        </a>
+      </div>
+<!--
+      <ul class="navbar__menu navbar__center">
+        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Work</span></a></li>
+        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Expertise</span></a></li>
+        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Process</span></a></li>
+        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">About</span></a></li>
+        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Latest</span></a></li>
+      </ul>
+-->
+      <div class="navbar__right">
+        <button class="navbar__email">
+          hello@mcvdesign.com
+        </button>
+        <a href="inquiry.html">
+        <button class="navbar__inquiry">
+          Send Inquiry
+          <span class="inquiry-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+              <path d="M7 17L17 7" />
+              <path d="M7 7h10v10" />
+            </svg>
+          </span>
+        </button></a>
+        <div class="navbar__contact"><span></span></div>
+      </div>
+
+      <div id="mobile-menu" class="navbar__toggle">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+    </div>
+  </nav>
+  
+
+
+  <!--DROPDOWN MENU-->
+<div class="dropdown-menu" id="navDropdown">
+   <div class="dropdown-video-bg">
+    <video autoplay muted loop playsinline>
+      <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos//sphere6.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <div class="dropdown-content">
+  <button class="close-menu" id="closeMenu">×</button>
+  <ul class="dropdown-links">
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/services.html">Services</a></li>
+    <li><a href="/work.html">Work</a></li>
+    <li><a href="/inquiry.html">Contact</a></li>
+  </ul>
+
+
+  <div class="dropdown-email">
+        <button class="navbar__email">
+          hello@mcvdesign.com
+        </button>
+      </div>
+  
+  <div class="dropdown-copyright"><h2>Copyright © 2025</h2></div>
+  <div class="social-button-container">
+      <button class="bottom-btn">LinkedIn</button>
+      <button class="bottom-btn">Instagram</button>
+      <button class="bottom-btn">Dribble</button>
+      <button class="bottom-btn">Behance</button>
+    </div>
+    </div>
+</div> 
+
+
+  <!-- Before -->
+<section class="intro">
+  <div class="intro-content">
+    <h1><span class="glow">Everything</span> for building your digital product.</h1>
+    <p>MCVDesign specializes in delivering cutting-edge solutions spanning
+product design, website and e-commerce site development,
+mobile and desktop app development, and brand visual identity.</p>
+  </div>
+</section>
+
+<script>
+  gsap.from(".intro-content h1", {
+    y: 50,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out",
+    delay: 0.3
+  });
+
+  gsap.from(".intro-content p", {
+    y: 50,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out",
+    delay: 0.6
+  });
+</script>
+
+  <!-- Confined Scroll Section -->
+  <section class="circle-section">
+    <div class="circle-wrapper">
+      <svg viewBox="0 0 100 100">
+        <circle class="background-ring" cx="50" cy="50" r="40" />
+        <circle class="progress-ring" cx="50" cy="50" r="40" />
+      </svg>
+    </div>
+
+    <div class="circle-container">
+    <div class="circle2">
+  <div class="dot" data-angle="0"></div>     <!-- 12 o'clock -->
+  <div class="dot" data-angle="0"></div>     <!-- 12 o'clock again -->
+  <div class="dot" data-angle="90"></div>    <!-- 3 o'clock -->
+  <div class="dot" data-angle="180"></div>   <!-- 6 o'clock -->
+  <div class="dot" data-angle="270"></div>   <!-- 9 o'clock -->
+</div>
+    </div>
+    <STYLE>
+        .circle-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60vmin;
+  height: 60vmin;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0; /* ✅ hide initially */
+}
+.circle2 {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid #333; /* placeholder for ring */
+  border: none;
+}
+
+.dot {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(-50%, -50%);
+  transition: background-color 0.3s ease;
+  padding: 1rem;
+}
+
+.dot.active {
+  background-color: #54f3a4;
+  /* ✅ Removed scale */
+}
+    </STYLE>
+
+<script>
+window.addEventListener("load", () => {
+  const circle = document.querySelector(".circle2");
+  const dots = document.querySelectorAll(".dot");
+  const baseRadius = circle.offsetWidth / 2;
+  const centerX = baseRadius;
+  const centerY = baseRadius;
+
+  const angles = [0, 0, 90, 180, 270];
+
+  dots.forEach((dot, i) => {
+    const obj = { angle: 0 };
+
+    gsap.to(obj, {
+      angle: angles[i],
+      scrollTrigger: {
+        trigger: ".circle-section",
+        start: "top center",
+        end: "bottom center",
+        scrub: true
+      },
+      onUpdate: () => {
+        const angleRad = (obj.angle - 90) * Math.PI / 180;
+        let radius = baseRadius - 20;
+        if (angles[i] === 0 || angles[i] === 270) radius = baseRadius - 18;
+
+        const x = centerX + radius * Math.cos(angleRad);
+        const y = centerY + radius * Math.sin(angleRad);
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+      }
+    });
+  });
+
+  // ✅ Fade in .circle-container as section scrolls in
+ gsap.to([".circle-container", ".circle", ".background-ring", ".progress-ring"], {
+  opacity: 1,
+  ease: "power2.out",
+  duration: 1,
+  scrollTrigger: {
+    trigger: ".circle-section",
+    start: "top center",
+    end: "top center",
+    toggleActions: "play none none reverse"
+  }
+});
+});
+</script>
+
+    <div class="text-layer" id="text0">Draft</div>
+    <div class="text-layer" id="text1">Design</div>
+    <div class="text-layer" id="text2">Build</div>
+    <div class="text-layer" id="text3">Launch</div>
+    <div class="text-layer percent-counter" id="percentText">0%</div>
+
+    <!-- Paragraphs -->
+     <div class="circle-title" id="circleTitle">Project Lifecycle</div>
+    <div class="paragraph" id="para0">
+      1 / Defining requirements and setting boundaries to ensure a clear project vision. Identifying constraints like budget and timeline helps manage expectations.
+    </div>
+    <div class="paragraph" id="para1">
+      2 / Structuring workflows, assigning tasks, and setting milestones create an efficient roadmap. A well-defined plan reduces risks and enhances coordination.
+    </div>
+    <div class="paragraph" id="para2">
+      3 / Developing, testing, and refining the solution ensure a high-quality product. Iterative improvements and feedback loops drive efficiency and reliability.
+    </div>
+    <div class="paragraph" id="para3">
+      4 / Deploying the final product and ensuring a smooth transition mark project success. Post-launch support and monitoring help maintain performance.
+    </div>
+  </section>
+
+  
+  <!-- After -->
+  <section class="scroll-text-section" id="scrollContainer">
+    <div class="scroll-track" id="scrollTrack">
+      <div class="scroll-text" id="scrollText">
+        Everything starts with design. Everything starts with design. Everything starts with design. Everything starts with design.
+      </div>
+    </div>
+  </section>
+
+  <section>Hello</section>
+
+<script>
+  gsap.registerPlugin(Draggable, InertiaPlugin);
+
+  window.addEventListener("load", () => {
+    const scrollTrack = document.getElementById("scrollTrack");
+    const scrollText = document.getElementById("scrollText");
+    const container = document.getElementById("scrollContainer");
+
+    const trackWidth = scrollText.scrollWidth;
+    const containerWidth = container.offsetWidth;
+    const maxX = 0;
+    const minX = -(trackWidth - containerWidth);
+
+    // Initial position
+    gsap.set(scrollTrack, { x: 0 });
+
+    // Draggable
+    const draggable = Draggable.create(scrollTrack, {
+      type: "x",
+      inertia: true,
+      bounds: { minX, maxX },
+      edgeResistance: 0.8,
+      allowContextMenu: true,
+      cursor: "grab",
+      activeCursor: "grabbing"
+    })[0];
+
+    // Always nudge on scroll
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener("scroll", () => {
+      const currentScrollY = window.scrollY;
+      const direction = currentScrollY > lastScrollY ? 1 : -1;
+      lastScrollY = currentScrollY;
+
+      const currentX = gsap.getProperty(scrollTrack, "x");
+      let targetX = currentX + direction * 20;
+      targetX = gsap.utils.clamp(minX, maxX, targetX);
+
+      gsap.to(scrollTrack, {
+        x: targetX,
+        duration: 0.5,
+        ease: "power3.out"
+      });
+    });
+  });
+</script>
+
+  <!-- GSAP -->
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+const ring = document.querySelector('.progress-ring');
+const radius = ring.r.baseVal.value;
+const circumference = 2 * Math.PI * radius;
+ring.style.strokeDasharray = circumference;
+ring.style.strokeDashoffset = circumference;
+
+let currentText = null;
+
+function showText(id) {
+  if (currentText === id) return;
+
+  gsap.killTweensOf('.text-layer');
+  gsap.killTweensOf('.paragraph');
+
+  gsap.set('.text-layer', { autoAlpha: 0 });
+  gsap.set('.paragraph', { autoAlpha: 0 });
+
+  if (id) {
+    gsap.fromTo(`#${id}`,
+      { autoAlpha: 0, scale: 0.9, filter: "blur(4px)" },
+      { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" }
+    );
+
+    const para = id.replace("text", "para");
+    gsap.to(`#${para}`, { autoAlpha: 1, duration: 1, ease: "power2.out" });
+  }
+
+  currentText = id;
+}
+
+const strokeTween = gsap.to(ring, {
+  strokeDashoffset: circumference,
+  ease: "power2.out",
+  duration: 0.3,
+  paused: true
+});
+
+ScrollTrigger.create({
+  trigger: ".circle-section",
+  start: "top top",
+  end: "+=4000",
+  scrub: 2,
+  pin: true,
+  anticipatePin: 1,
+  onEnter: () => {
+    gsap.to(ring, {
+      '--glow': 1,
+      duration: 0.6,
+      ease: 'power2.out',
+      onUpdate: () => {
+        ring.style.setProperty('--glow', gsap.getProperty(ring, '--glow'));
+      }
+    });
+  },
+  onLeave: () => {
+    gsap.to(ring, {
+      '--glow': 1,
+      duration: 0.6,
+      ease: 'power2.out',
+      onUpdate: () => {
+        ring.style.setProperty('--glow', gsap.getProperty(ring, '--glow'));
+      }
+    });
+  },
+  onEnterBack: () => {
+    gsap.to(ring, {
+      '--glow': 1,
+      duration: 0.6,
+      ease: 'power2.out',
+      onUpdate: () => {
+        ring.style.setProperty('--glow', gsap.getProperty(ring, '--glow'));
+      }
+    });
+  },
+  onLeaveBack: () => {
+    gsap.to(ring, {
+      '--glow': 1,
+      duration: 0.6,
+      ease: 'power2.out',
+      onUpdate: () => {
+        ring.style.setProperty('--glow', gsap.getProperty(ring, '--glow'));
+      }
+    });
+  },
+  onUpdate: self => {
+  const p = self.progress;
+  strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+  strokeTween.invalidate().restart();
+
+  // Dot activation logic
+  const dots = document.querySelectorAll('.dot');
+
+  // Define thresholds in order: [index, threshold]
+  const thresholds = [
+    [0, 0.01],
+    [1, 0.01],
+    [2, 0.25],
+    [3, 0.5],
+    [4, 0.75]
+  ];
+
+  thresholds.forEach(([index, threshold]) => {
+    if (p >= threshold) {
+      dots[index]?.classList.add('active');
+    } else {
+      dots[index]?.classList.remove('active');
+    }
+  });
+
+  // Text logic (just once per range)
+  if (p >= 0.75) {
+    showText("text3");
+  } else if (p >= 0.5) {
+    showText("text2");
+  } else if (p >= 0.25) {
+    showText("text1");
+  } else if (p >= 0.01) {
+    showText("text0");
+  } else {
+    showText(null);
+  }
+
+  document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
+}
+});
+</script>
+<script src="app.js"></script>
+</body>
+</html>

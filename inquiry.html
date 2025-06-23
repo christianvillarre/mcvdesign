@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inquiry</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Inter:wght@100..900&family=MuseoModerno:wght@100..900&family=Roboto:wght@100..900&family=Smooch&family=Vampiro+One&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="inquiry.css"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" crossorigin="anonymous" />
+
+  <!-- Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
+<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+
+</head>
+<body>
+    <nav class="navbar">
+    <div class="navbar__container">
+<div class="navbar__right">
+    <div class="dropdown-email">
+        <button class="navbar__email">
+          hello@mcvdesign.com
+        </button>
+      </div>
+
+    <div class="navbar__contact"><span></span></div>
+    <div class="dropdown-menu" id="navDropdown">
+   <div class="dropdown-video-bg">
+    <video autoplay muted loop playsinline>
+      <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos//sphere6.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <div class="dropdown-content">
+  <button class="close-menu" id="closeMenu">×</button>
+  <ul class="dropdown-links">
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/services.html">Services</a></li>
+    <li><a href="/work.html">Work</a></li>
+    <li><a href="/inquiry.html">Contact</a></li>
+  </ul>
+
+
+  
+  
+  <div class="dropdown-copyright"><h2>Copyright © 2025</h2></div>
+  <div class="social-button-container">
+      <button class="bottom-btn">LinkedIn</button>
+      <button class="bottom-btn">Instagram</button>
+      <button class="bottom-btn">Dribble</button>
+      <button class="bottom-btn">Behance</button>
+    </div>
+    </div>
+</div>
+</div>
+</div>
+</nav>
+
+
+
+    <div class="dropdown-email">
+        <button class="navbar__email">
+          hello@mcvdesign.com
+        </button>
+      </div>
+
+    <div class="inquiry-container">
+        <div class="inquiry-left">
+            <div class="inquiry-left-container"><h1>Send <br></h1><h2>Inquiry.</h2>
+            <p class="inquiry-subtext">Ready for a digital journey? Fill in the inquiry form to give us some idea about your project. We will do our best to reply in 24 hours.</p>
+            <button class="get-in-touch-btn2">Download Profile</button>
+        </div>
+        
+        </div>
+        <div class="inquiry-right">
+            <div class="inquiry-right-container">
+                <div class="inquiry-form-section">
+                <h1>1 / Let us get to know you.</h1>
+              <form class="name-form">
+                <div class="input-group">
+                <label for="firstName" class="input-name">First Name</label>
+                <input type="text" id="firstName" name="firstName" placeholder="John" required>
+                </div>
+                <div class="input-group">
+                <label for="lastName" class="input-name">Last Name</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+                </div>
+            </form>
+             <form class="name-form">
+                <div class="input-group">
+                <label for="firstName" class="input-name">Company Name</label>
+                <input type="text" id="firstName" name="firstName" placeholder="John" required>
+                </div>
+                <div class="input-group">
+                <label for="lastName" class="input-name">Contact Email</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+                </div>
+            </form>
+            </div>
+            <div class="inquiry-form-section">
+            <h1>2 / Describe Your Project</h1>
+             <form class="name-form">
+                <div class="input-group">
+                <label for="firstName" class="input-name">Project Title</label>
+                <input type="text" id="firstName" name="firstName" placeholder="e.g. My Company's Website Design" required>
+                </div>
+            </form>
+             <form class="name-form">
+                <div class="input-group">
+                <label for="firstName" class="input-name">Short description</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Desktop and Mobile App" required>
+                </div>
+            </form>
+            <label for="firstName" class="input-name">Project Scope (design + development)</label>
+            <div class="radio-group">
+            <label class="radio-option">
+                <input type="checkbox" name="projectType" value="design">
+                Website Design
+            </label>
+            <label class="radio-option">
+                <input type="checkbox" name="projectType" value="branding">
+                Branding
+            </label>
+            <label class="radio-option">
+                <input type="checkbox" name="projectType" value="development">
+                Business Cards
+            </label>
+            <label class="radio-option">
+                <input type="checkbox" name="projectType" value="consulting">
+                Videography
+            </label>
+            </div>
+
+            <!-- Another label and radio group below -->
+            <label for="anotherInput" class="input-name" style="margin-top: 3rem;">Additional (optional)</label>
+            <div class="radio-group">
+            <label class="radio-option">
+                <input type="checkbox" name="anotherProjectType" value="design" required>
+                Ecommerce
+            </label>
+            </div>
+
+
+            <form class="name-form">
+                <div class="input-group">
+                <label for="firstName" class="input-name">Current Website URL (if exists)</label>
+                <input type="text" id="firstName" name="firstName" placeholder="John" required>
+                </div>
+            </form>
+
+            <button class="navbar__inquiry">
+            Send Inquiry
+            <span class="inquiry-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                <path d="M7 17L17 7" />
+                <path d="M7 7h10v10" />
+                </svg>
+            </span>
+            </button>
+                        
+            </div>
+            </div>
+
+
+    
+            
+
+
+
+        </div>
+    </div>
+
+    <script>
+
+//NAVIGATION SCREEN
+const contactBtn = document.querySelector('.navbar__contact');
+const dropdownMenu = document.getElementById('navDropdown');
+const closeMenu = document.getElementById('closeMenu');
+
+contactBtn.addEventListener('click', () => {
+  dropdownMenu.classList.add('open');
+});
+
+closeMenu.addEventListener('click', () => {
+  dropdownMenu.classList.remove('open');
+});
+
+//SOCIAL CONTAINER BUTTONS FADE ON SCROLL
+document.addEventListener("scroll", () => {
+  const btnContainer = document.querySelector(".social-button-container");
+  if (!btnContainer) return;
+
+  const scrollY = window.scrollY;
+  const maxScroll = 1000; // adjust based on how fast you want the fade
+
+  // Calculate opacity: 1 (at top) to 0.1 (at maxScroll)
+  const newOpacity = Math.max(0.1, 1 - scrollY / maxScroll);
+  btnContainer.style.opacity = newOpacity;
+});
+
+
+    </script>
+<script src="app.js"></script>
+
+</body>
+</html>

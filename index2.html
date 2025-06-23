@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--
+      Site created by Brian Design on youtube @ www.youtube.com/channel/UCsKsymTY_4BYR-wytLjex7A?view_as=subscriber
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML CSS Website</title>
+    <link rel="stylesheet" href="styles2.css" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+      integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc"
+      crossorigin="anonymous"
+    />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Felipa&family=Funnel+Display:wght@300..800&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Kings&family=Lexend:wght@100..900&family=MuseoModerno:ital,wght@0,100..900;1,100..900&family=My+Soul&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&family=Romanesco&family=Smooch&family=UnifrakturMaguntia&family=Vampiro+One&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <script src="https://unpkg.com/gsap/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/gsap/dist/ScrollTrigger.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
+<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+
+  </head>
+  <body>
+    <div class="reveal-layer first"></div>
+  <div class="reveal-layer second"></div>
+    <!-- Navbar Section -->
+    <div data-scroll-container>
+    <nav class="navbar">
+      <div class="navbar__container">
+        
+        <!-- Left: Logo -->
+        <div class="navbar__left">
+          <a href="/" id="navbar__logo" class="logo"><img class="logo1" src="images/logo1.png" alt="Logo" /></a>
+        </div>
+    
+        <!-- Center: Main Links -->
+        <ul class="navbar__menu navbar__center">
+          <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Work</span></a></li>
+          <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Expertise</span></a></li>
+          <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Process</span></a></li>
+          <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">About</span></a></li>
+          <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Latest</span></a></li>
+        </ul>
+    
+        <!-- Right: Contact -->
+        <div class="navbar__right">
+          <a href="/contact" class="navbar__links navbar__contact">Contact</a>
+        </div>
+    
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="navbar__toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+    
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    
+    <div class="main">
+      
+      <div class="dot-grid" id="dotGrid"></div>
+      <div class="main-inner">
+        <div class="section-main">
+          <!-- CREATIVE -->
+          <div class="section1">
+            <div class="title1">
+              FULL STACK WEB DEVELOPERS<br>BASED IN HOUSTON, TX
+            </div>
+            <div class="effect-container">
+              
+            </div>
+            <div class="title2">
+              LOGOS, BRANDING, WEB DEV<br>CUSTOM APPS
+            </div>
+            <div class="header1">
+              <h1 class="text-creative">Creative</h1>
+            </div>
+          </div>
+    
+          <!-- DESIGNS -->
+          <div class="section2">
+            <div class="header2">
+              <div class="visual">
+                <h1 class="text-visual">Visual</h1>
+              </div>
+              <div class="design">
+                <h1 class="text-designs">Designs</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--
+    <script>
+      //reveal at page load
+  // Top layer slides first
+anime({
+  targets: '.reveal-layer.first',
+  translateY: ['0%', '-100%'],
+  duration: 1500,
+  easing: 'easeInOutQuart',
+  delay: 100,
+  complete: () => {
+    document.querySelector('.reveal-layer.first').remove();
+  }
+});
+
+// Second layer slides up slightly after
+anime({
+  targets: '.reveal-layer.second',
+  translateY: ['0%', '-100%'],
+  duration: 1500,
+  easing: 'easeInOutQuart',
+  delay: 450,
+  complete: () => {
+    document.querySelector('.reveal-layer.second').remove();
+  }
+});
+
+//Entrance effects for creative visual designs
+      anime({
+  targets: '.text-creative',
+  opacity: [0, 1],
+  translateY: [40, 0],
+  rotateX: [-90, 0],
+  duration: 1500,
+  delay: 1000,
+  easing: 'easeOutExpo'
+});
+
+anime({
+  targets: '.text-visual',
+  opacity: [0, 1],
+  translateY: [40, 0],
+  rotateX: [70, 0],
+  letterSpacing: ['0.2em', '0em'],
+  duration: 2000,
+  delay: 1000,
+  easing: 'easeOutExpo'
+});
+
+anime({
+  targets: '.text-designs',
+  opacity: [0, 1],
+  translateY: [40, 0],
+  rotateX: [-90, 0],
+  duration: 1500,
+  delay: 1000,
+  easing: 'easeOutExpo'
+});
+
+//scroll effect on creative visual designs
+// Shared scroll position tracker
+let scrollY = window.scrollY;
+
+// Global scroll event updates scrollY
+window.addEventListener('scroll', () => {
+  scrollY = window.scrollY;
+});
+
+// Animate creative + designs together
+function animateCreativeAndDesigns() {
+  const creativeOffset = scrollY * -0.1;
+  const designsOffset = scrollY * 0.1;
+
+  document.querySelector('.text-creative').style.transform = `translateX(${creativeOffset}px)`;
+  document.querySelector('.text-designs').style.transform = `translateX(${designsOffset}px)`;
+
+  requestAnimationFrame(animateCreativeAndDesigns);
+}
+
+// Animate visual independently
+function animateVisual() {
+  const visualOffset = scrollY * 0.1;
+  document.querySelector('.text-visual').style.transform = `translateX(${visualOffset}px)`;
+
+  requestAnimationFrame(animateVisual);
+}
+
+// Start both animation loops
+animateCreativeAndDesigns();
+animateVisual();
+    </script>-->
+<!-- DOT GRID -->
+ <div id="customCursor"></div>
+    <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+  const dotGrid = document.getElementById('dotGrid');
+  dotGrid.innerHTML = '';
+
+  const cols = Math.floor(window.innerWidth / 42);
+  const rows = Math.floor(window.innerHeight / 42);
+  const visibleDots = [];
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      dot.dataset.row = row;
+      dot.dataset.col = col;
+      visibleDots.push(dot);
+      dotGrid.appendChild(dot);
+    }
+  }
+
+  const defaultScale = 0.1;
+  const defaultOpacity = 0.2;
+  const maxHoverOpacity = 0.9;
+  const maxDist = 120;
+  const activeDots = new Map();
+
+  anime.set(visibleDots, {
+    scale: defaultScale,
+    opacity: defaultOpacity
+  });
+
+  const mainSection = document.querySelector('.main');
+
+  let prevX = 0;
+  let prevY = 0;
+  let prevTime = Date.now();
+
+  document.addEventListener('mousemove', (e) => {
+  const mouseX = e.clientX;
+  const mouseY = e.clientY;
+
+  const mainRect = mainSection.getBoundingClientRect();
+  const cursorY = e.clientY - mainRect.top;
+  const mainHeight = mainRect.height;
+  const verticalFadeFactor = 1 - Math.min(1, Math.max(0, cursorY / mainHeight));
+  const adjustedHoverOpacity = verticalFadeFactor * maxHoverOpacity;
+
+  visibleDots.forEach(dot => {
+    const rect = dot.getBoundingClientRect();
+    const dotX = rect.left + rect.width / 2;
+    const dotY = rect.top + rect.height / 2;
+
+    const dx = mouseX - dotX;
+    const dy = mouseY - dotY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance <= maxDist) {
+      const proximity = 1 - distance / maxDist;
+      const scale = defaultScale + proximity * 1.8;
+      const opacity = defaultOpacity + proximity * (adjustedHoverOpacity - defaultOpacity);
+
+      dot.style.transform = `scale(${scale})`;
+      dot.style.opacity = opacity.toFixed(2);
+    } else {
+      dot.style.transform = `scale(${defaultScale})`;
+      dot.style.opacity = defaultOpacity;
+    }
+  });
+});
+
+  // ✅ Click ripple effect
+  document.addEventListener('click', (e) => {
+    const clickX = e.clientX;
+    const clickY = e.clientY;
+    const rippleRadius = 120;
+
+    visibleDots.forEach(dot => {
+      const rect = dot.getBoundingClientRect();
+      const dotX = rect.left + rect.width / 2;
+      const dotY = rect.top + rect.height / 2;
+
+      const dx = clickX - dotX;
+      const dy = clickY - dotY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance <= rippleRadius) {
+        anime({
+          targets: dot,
+          scale: [
+            { value: 0.6, duration: 1 },
+            { value: 1.8, duration: 10 },
+            { value: defaultScale, duration: 300 }
+          ],
+          easing: 'easeInOutSine',
+          delay: distance * 1.5
+        });
+      }
+    });
+  });
+  
+});
+
+//MOUSE CIRCLE EFFECT
+const mouseCircle = document.createElement('div');
+mouseCircle.classList.add('mouse-circle');
+document.body.appendChild(mouseCircle);
+
+document.addEventListener('mousemove', (e) => {
+  mouseCircle.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+});
+
+                
+    </script>
+    <!--<h2>Design</h2>
+          <p>See what makes us different.</p>
+          <button class="main__btn"><a href="#">Get Started</a></button>
+        </div>-->
+        <!--
+        <div class="main__img--container">
+          <img id="main__img" src="images/image1.jpg" />
+        </div>
+
+        CREATIVE VISUAL DESIGNS
+
+   <div class="text-group-outer">
+    <div class="headline-wrapper">
+      <div class="box box-top">
+        <h1 class="headertxt_1">Creative</h1>
+      </div>
+    </div>
+
+   
+    <div class="subhead-wrapper">
+      <div class="box box-bottom">
+        <div class="box-bottom-visual">
+          <h1 class="headertxt_2">Visual</h1>
+        </div>
+        <h1 class="headertxt_3">Designs</h1>
+      </div>
+    </div>
+
+  </div>
+
+        -->
+
+    <!--
+    <div class="main">
+      <div class="main__container">
+        <div class="main__content">
+          <h1>Creative Visual Design</h1>
+          
+          <p>See what makes us different.</p>
+          <button class="main__btn"><a href="#">Get Started</a></button>
+        </div>
+        <div class="main__img--container">
+          <img id="main__img" src="images/image1.jpg" />
+        </div>
+      </div>
+    </div>
+    -->
+
+    <!-- Services Section -->
+     
+    <div class="services">
+      <div class="image-stack-container">
+        <div class="image-stack-container-section1">
+          <div class="services-about-us">
+            <h2>At MCVDesign, we create unconventional yet functional & visually pleasing interfaces for web and mobile.</h2>
+          </div>
+
+        </div>
+        <div class="image-stack-container-section2"><div class="image-stack">
+          <div class="img-wrapper" data-index="2"><img src="/images/image3.jpg" class="stacked-img" /></div>
+          <div class="img-wrapper" data-index="1"><img src="/images/image2.jpg" class="stacked-img" /></div>
+          <div class="img-wrapper" data-index="0"><img src="/images/image1.jpg" class="stacked-img" /></div>
+        </div></div>
+    </div>
+     
+      </div>
+    <!--
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const scrollContainer = document.querySelector('[data-scroll-container]');
+
+  // ✅ Initialize Locomotive Scroll
+  const scroll = new LocomotiveScroll({
+    el: scrollContainer,
+    smooth: true
+  });
+
+  const wrappers = document.querySelectorAll(".img-wrapper");
+  const baseRotation = [0.002, 0.0035, 0.005];
+  const baseShiftX = [0.05, 0.07, 0.1];
+  let scrollEnabled = false;
+
+  // ✅ Z-index setup
+  wrappers.forEach((wrapper, index) => {
+    const reversedZ = 3 - index;
+    wrapper.style.zIndex = reversedZ;
+    wrapper.dataset.originalZ = reversedZ;
+  });
+
+  // ✅ Initial layout animation
+  const observer = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          observer.disconnect();
+
+          wrappers.forEach((wrapper) => {
+            const index = parseInt(wrapper.dataset.index);
+            const img = wrapper.querySelector(".stacked-img");
+
+            img.style.transition = "transform 2s ease-out";
+
+            if (index === 2) {
+              img.style.transform =
+                "translateX(-40%) rotate(-15deg) translateY(0px)";
+            } else if (index === 1) {
+              img.style.transform =
+                "translateX(0%) rotate(-10deg) translateY(clamp(-60px, -6vw, 0px))";
+            } else if (index === 0) {
+              img.style.transform =
+                "translateX(45%) rotate(-5deg) translateY(clamp(-100px, -8vw, 0px))";
+            }
+          });
+
+          setTimeout(() => {
+            scrollEnabled = true;
+          }, 1400);
+        }
+      });
+    },
+    { threshold: 0 }
+  );
+
+  observer.observe(document.querySelector(".services-about-us"));
+
+  // ✅ Use Locomotive's scroll event instead of native scroll
+  scroll.on("scroll", (args) => {
+  if (!scrollEnabled) return;
+
+  const scrollY = args.scroll.y;
+
+  wrappers.forEach((wrapper) => {
+    const index = parseInt(wrapper.dataset.index);
+    const rotateTo = scrollY * baseRotation[index];
+    const shiftTo = scrollY * baseShiftX[index];
+
+    anime.set(wrapper, {
+      rotate: rotateTo,
+      translateX: shiftTo
+    });
+  });
+});
+
+  // ✅ Hover effects
+  wrappers.forEach((wrapper) => {
+    const img = wrapper.querySelector(".stacked-img");
+
+    wrapper.addEventListener("mouseenter", () => {
+      wrappers.forEach((w) => {
+        const wImg = w.querySelector(".stacked-img");
+        if (w !== wrapper) {
+          anime.remove(wImg);
+          anime({
+            targets: wImg,
+            opacity: 0.4,
+            filter: "grayscale(100%) brightness(0.6)",
+            duration: 400,
+            easing: "easeOutQuad"
+          });
+          w.style.zIndex = w.dataset.originalZ;
+        }
+      });
+
+      anime.remove(img);
+      anime({
+        targets: img,
+        opacity: 1,
+        filter: "grayscale(0%) brightness(1)",
+        duration: 400,
+        easing: "easeOutQuad"
+      });
+
+      wrapper.style.zIndex = 10;
+    });
+
+    wrapper.addEventListener("mouseleave", () => {
+      wrappers.forEach((w) => {
+        const wImg = w.querySelector(".stacked-img");
+        anime.remove(wImg);
+        anime({
+          targets: wImg,
+          opacity: 1,
+          filter: "grayscale(100%) brightness(0.7)",
+          duration: 500,
+          easing: "easeOutQuad"
+        });
+        w.style.zIndex = w.dataset.originalZ;
+      });
+    });
+  });
+});
+    </script>-->
+<script>
+  window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  const scrollPercent = scrollY / maxScroll;
+
+  const rotation = scrollPercent * 10 - 5; // range: -5deg to +5deg
+
+  anime.set('.scroll-rotate', {
+    rotate: rotation
+  });
+});
+</script>
+
+
+
+
+
+<div class="our-services">
+  <div class="our-services-container">
+    <div class="our-services-text">
+     
+      <div class="our-services-text3">
+        <h4>THINGS WE CAN HELP YOU WITH.</h4>
+      </div>
+      <div class="our-services-text2">
+      <h3>WEB & MOBILE / UI & UX / BRANDING / FRONT-END DEVELOPMENT</h3>
+    </div>
+    
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="featured">
+  <div class="featured-container">
+    <div class="featured-section1">
+      <h2>FeatWorks</h2>
+    </div>
+  </div>
+  <div class="featured-container2">
+    <div class="works-wrap">
+      <div class="row">
+        <div class="work img1"><img src="images/soccer.jpg" alt="Work 1"></div>
+        <div class="work img2"><img src="images/soccer.jpg" alt="Work 2"></div>
+      </div>
+      <div class="row2">
+        <div class="work img3"><img src="images/soccer.jpg" alt="Work 3"></div>
+       
+      </div>
+      <div class="row3">
+        <div class="work img4"><img src="images/soccer.jpg" alt="Work 5"></div>
+        <div class="work img5"><img src="images/soccer.jpg" alt="Work 6"></div>
+      </div>
+    </div>
+  </div>
+ </div>
+
+
+
+
+
+<!---->
+<div class="logos">
+  <div class="logos-container">
+    <div class="logos-section1">
+      <div class="logo-item"><img src="images/img1.png" alt="Logo 1"></div>
+      <div class="logo-item"><img src="images/img2.png" alt="Logo 2"></div>
+      <div class="logo-item"><img src="images/img3.png" alt="Logo 3"></div>
+      <div class="logo-item"><img src="images/img4.png" alt="Logo 4"></div>
+      <div class="logo-item"><img src="images/img5.png" alt="Logo 5"></div>
+      <div class="logo-item"><img src="images/img6.png" alt="Logo 6"></div>
+      <div class="logo-item"><img src="images/img7.png" alt="Logo 7"></div>
+      <div class="logo-item"><img src="images/img8.png" alt="Logo 8"></div>
+      <div class="logo-item"><img src="images/img9.png" alt="Logo 9"></div>
+      <div class="logo-item"><img src="images/img10.png" alt="Logo 10"></div>
+      <div class="logo-item"><img src="images/img11.png" alt="Logo 11"></div>
+      <div class="logo-item"><img src="images/img12.png" alt="Logo 12"></div>
+      <div class="logo-item"><img src="images/img13.png" alt="Logo 13"></div>
+      <div class="logo-item"><img src="images/img14.png" alt="Logo 14"></div>
+      <div class="logo-item"><img src="images/img15.png" alt="Logo 15"></div>
+      <div class="logo-item"><img src="images/img16.png" alt="Logo 16"></div>
+      <div class="logo-item"><img src="images/img17.png" alt="Logo 17"></div>
+      <div class="logo-item"><img src="images/img18.png" alt="Logo 18"></div>
+      <div class="logo-item"><img src="images/img19.png" alt="Logo 19"></div>
+      <div class="logo-item"><img src="images/img20.png" alt="Logo 20"></div>
+      <div class="logo-item"><img src="images/img21.png" alt="Logo 21"></div>
+      <div class="logo-item"><img src="images/img22.png" alt="Logo 22"></div>
+      <div class="logo-item"><img src="images/img23.png" alt="Logo 23"></div>
+      <div class="logo-item"><img src="images/img24.png" alt="Logo 24"></div>
+      <div class="logo-item"><img src="images/img25.png" alt="Logo 25"></div>
+      <div class="logo-item"><img src="images/img26.png" alt="Logo 26"></div>
+      <div class="logo-item"><img src="images/img27.png" alt="Logo 27"></div>
+      <div class="logo-item"><img src="images/img28.png" alt="Logo 28"></div>
+      <div class="logo-item"><img src="images/img29.png" alt="Logo 29"></div>
+      <div class="logo-item"><img src="images/img30.png" alt="Logo 30"></div>
+    </div>
+  </div>
+</div>
+
+
+
+    <!-- Footer Section -->
+    <div class="footer__container">
+      <div class="footer__links">
+        <div class="footer__link--wrapper">
+          <div class="footer__link--items">
+            <h2>About Us</h2>
+            <a href="/sign__up">How it works</a> <a href="/">Testimonials</a>
+            <a href="/">Careers</a> <a href="/">Investments</a>
+            <a href="/">Terms of Service</a>
+          </div>
+          <div class="footer__link--items">
+            <h2>Contact Us</h2>
+            <a href="/">Contact</a> <a href="/">Support</a>
+            <a href="/">Destinations</a> <a href="/">Sponsorships</a>
+          </div>
+        </div>
+        <div class="footer__link--wrapper">
+          <div class="footer__link--items">
+            <h2>Videos</h2>
+            <a href="/">Submit Video</a> <a href="/">Ambassadors</a>
+            <a href="/">Agency</a> <a href="/">Influencer</a>
+          </div>
+          <div class="footer__link--items">
+            <h2>Social Media</h2>
+            <a href="/">Instagram</a> <a href="/">Facebook</a>
+            <a href="/">Youtube</a> <a href="/">Twitter</a>
+          </div>
+        </div>
+      </div>
+      <section class="social__media">
+        <div class="social__media--wrap">
+          <div class="footer__logo">
+            <a href="/" id="footer__logo">MCV</a>
+          </div>
+          <p class="website__rights">© NEXT 2020. All rights reserved</p>
+          <div class="social__icons">
+            <a
+              class="social__icon--link"
+              href="/"
+              target="_blank"
+              aria-label="Facebook"
+            >
+              <i class="fab fa-facebook"></i>
+            </a>
+            <a
+              class="social__icon--link"
+              href="/"
+              target="_blank"
+              aria-label="Instagram"
+            >
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a
+              class="social__icon--link"
+              href="//www.youtube.com/channel/UCsKsymTY_4BYR-wytLjex7A?view_as=subscriber"
+              target="_blank"
+              aria-label="Youtube"
+            >
+              <i class="fab fa-youtube"></i>
+            </a>
+            <a
+              class="social__icon--link"
+              href="/"
+              target="_blank"
+              aria-label="Twitter"
+            >
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a
+              class="social__icon--link"
+              href="/"
+              target="_blank"
+              aria-label="LinkedIn"
+            >
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script>
+    //Locomotive scroll
+    
+    const scroll = new LocomotiveScroll({
+  el: document.querySelector('[data-scroll-container]'),
+  smooth: true
+});
+
+  </script>
+
+<script src="gsap.js"></script>
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('scroll', function() {
+          const navbar = document.querySelector('.navbar');
+          if (window.scrollY > 10) {
+            navbar.classList.add('scrolled');
+          } else {
+            navbar.classList.remove('scrolled');
+          }
+        });
+
+        const mobileMenu = document.getElementById('mobile-menu');
+        const centerMenu = document.querySelector('.navbar__center');
+        const rightMenu = document.querySelector('.navbar__right');
+
+        mobileMenu.addEventListener('click', function () {
+          mobileMenu.classList.toggle('is-active');
+          centerMenu.classList.toggle('active');
+          rightMenu.classList.toggle('active');
+        });
+
+        const links = document.querySelectorAll('.navbar__links');
+
+        links.forEach(link => {
+          const span = link.querySelector('.link-text');
+          const underline = document.createElement('style');
+          document.head.appendChild(underline);
+
+          link.addEventListener('mouseenter', () => {
+            span.style.setProperty('--origin', 'left');
+            span.classList.add('hovered');
+          });
+
+          link.addEventListener('mouseleave', () => {
+            span.style.setProperty('--origin', 'right');
+            span.classList.remove('hovered');
+          });
+        });
+
+        //img scroll
+        //const image = document.getElementById('main__img');
+
+
+        window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const maxScroll = 600; // adjust how long it takes to fully fade
+    const startOpacity = 0.15;
+    const minOpacity = 0.00;
+
+    const progress = Math.min(scrollY / maxScroll, 1); // clamp to [0, 1]
+    const opacity = startOpacity - (startOpacity - minOpacity) * progress;
+
+    document.documentElement.style.setProperty('--corner-opacity', opacity.toFixed(3));
+  });
+  
+      </script>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          // Step 2: Initialize Locomotive
+          const scrollContainer = document.querySelector("[data-scroll-container]");
+          
+          const scroll = new LocomotiveScroll({
+            el: scrollContainer,
+            smooth: true
+          });
+        
+          // Step 2 continued: Register ScrollTrigger
+          gsap.registerPlugin(ScrollTrigger);
+        
+          // Step 2 continued: Connect Locomotive + ScrollTrigger
+          ScrollTrigger.scrollerProxy(scrollContainer, {
+            scrollTop(value) {
+              return arguments.length
+                ? scroll.scrollTo(value, { duration: 0, disableLerp: true })
+                : scroll.scroll.instance.scroll.y;
+            },
+            getBoundingClientRect() {
+              return {
+                top: 0,
+                left: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+              };
+            },
+            pinType: scrollContainer.style.transform ? "transform" : "fixed"
+          });
+        
+          scroll.on("scroll", ScrollTrigger.update);
+          ScrollTrigger.addEventListener("refresh", () => scroll.update());
+          ScrollTrigger.refresh();
+        });
+        </script>
+  </body>
+</html>

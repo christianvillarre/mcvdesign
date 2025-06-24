@@ -120,11 +120,8 @@ if (!isMobile) {
       });
     }
   });
-}
-
-
 //BALL LOWERS ON SCREEN AND SCALES ON SCROLL
-window.addEventListener("scroll", () => {
+  window.addEventListener("scroll", () => {
   const scrollY = window.scrollY;
   const maxShift = 600; // Max downward movement
   const moveY = Math.min(scrollY * 0.5, maxShift); // Y movement factor
@@ -139,6 +136,11 @@ window.addEventListener("scroll", () => {
     ease: "power3.out"
   });
 });
+}
+
+
+
+
   // Draggable ball
   /*
   Draggable.create(ball, {

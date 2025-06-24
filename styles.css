@@ -1168,12 +1168,32 @@ a {
   color: #ffffff;
   text-align: center;
   pointer-events: none;
-  opacity: 0.15;
-  transition: opacity 0.6s ease-out;
-  
+  opacity: 1; /* Let GSAP handle it */
 }
 
 @media (max-width: 768px) {
+   .image-scroll-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    width: 100%;
+  }
+
+  .image-track {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    width: 100%;
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  #image-scroll {
+    height: auto;
+    overflow: visible;
+  }
   .image-card {
     width: 90vw;  /* Smaller width for mobile screens */
     height: 60vh; /* Adjust height proportionally */

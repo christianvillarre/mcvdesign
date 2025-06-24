@@ -230,14 +230,13 @@ gsap.fromTo(
     scale: 1,
     ease: "power2.out",
     scrollTrigger: {
-      trigger: ".image-track",        // Start fading as horizontal scroll enters
-      start: "top bottom",            // When image-track enters bottom of viewport
-      end: "top center",              // Fully visible by center
-      scrub: true                     // Makes it scroll-synced
+      trigger: ".scroll-intro",     // ✅ Not .image-track
+      start: "top bottom",          // When .scroll-intro enters
+      end: "top center",            // Fully visible by midpoint
+      scrub: true
     }
   }
 );
-
 //CARD MAKES TEXT FADE OUT
 // Fade out on scroll down
 gsap.to(".scroll-intro-title", {
@@ -287,13 +286,20 @@ window.addEventListener("load", () => {
 
   if (track) {
     const updateScroll = () => {
-      const trackWidth = track.scrollWidth;
-      const scrollDistance = trackWidth - window.innerWidth;
-
-      // Prevent scroll that’s too long
-      const clampedDistance = Math.max(scrollDistance, 100); 
+      const isMobile = window.innerWidth <= 768;
 
       ScrollTrigger.getAll().forEach(trigger => trigger.kill()); // Clean up old triggers
+
+      if (isMobile) {
+        gsap.set(track, { clearProps: "all" }); // Reset GSAP effects
+        track.style.transform = "none";
+        return; // Skip ScrollTrigger setup
+      }
+
+      const trackWidth = track.scrollWidth;
+      const scrollDistance = trackWidth - window.innerWidth;
+      const clampedDistance = Math.max(scrollDistance, 100);
+
       gsap.set(track, { x: window.innerWidth });
 
       gsap.to(track, {
@@ -310,13 +316,11 @@ window.addEventListener("load", () => {
         }
       });
 
-      // Optional: fade ball or other scroll effects
       ScrollTrigger.create({
         trigger: "#image-scroll",
         start: "top top",
         end: "+=" + (trackWidth + window.innerWidth),
         scrub: true,
-        markers: true, // shows green/pink lines
         onUpdate: (self) => {
           const progress = self.progress;
           const fadeOutStart = 0.8;
@@ -335,10 +339,9 @@ window.addEventListener("load", () => {
     };
 
     updateScroll();
-    window.addEventListener("resize", updateScroll); // Recalculate on resize
+    window.addEventListener("resize", updateScroll);
   }
 });
-
 
 
 

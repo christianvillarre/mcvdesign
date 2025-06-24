@@ -316,6 +316,7 @@ window.addEventListener("load", () => {
         start: "top top",
         end: "+=" + (trackWidth + window.innerWidth),
         scrub: true,
+        markers: true, // shows green/pink lines
         onUpdate: (self) => {
           const progress = self.progress;
           const fadeOutStart = 0.8;

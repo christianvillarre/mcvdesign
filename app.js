@@ -154,14 +154,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (track) {
     const updateScroll = () => {
+      // Kill all previous ScrollTriggers before re-initializing
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
       if (isMobile) {
+        // On mobile: remove transforms and pinning
         gsap.set(track, { clearProps: "all" });
         track.style.transform = "none";
+
+        // Optionally remove top padding/margin if any
+        document.querySelector("#image-scroll")?.style.setProperty("padding-top", "0");
         return;
       }
 
+      // Desktop horizontal scroll setup
       const trackWidth = track.scrollWidth;
       gsap.set(track, { x: window.innerWidth });
 
@@ -179,6 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
+      // Ball fade on horizontal scroll progress
       ScrollTrigger.create({
         trigger: "#image-scroll",
         start: "top top",
@@ -192,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ? 1
               : 1 - (progress - fadeOutStart) / (1 - fadeOutStart);
             gsap.to(".ball", {
-              opacity: opacity,
+              opacity,
               duration: 0.2,
               overwrite: true
             });

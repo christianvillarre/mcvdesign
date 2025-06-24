@@ -38,7 +38,7 @@ a {
 }
 @media (max-width: 768px) {
   .ball {
-     transform: translateX(-50%)
+     
   }
 }
 .ball-video {

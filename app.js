@@ -1,30 +1,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-
+  const isMobile = window.innerWidth <= 768;
   gsap.registerPlugin(ScrollTrigger);
 
 
-  // Animate top layer
-  gsap.to(".reveal-layer.first", {
-    y: "-100%",
-    duration: 1.5,
-    ease: "power2.inOut",
-    delay: 0.2,
-    onComplete: () => {
-      document.querySelector(".reveal-layer.first")?.remove();
-    }
-  });
-
-  // Animate underneath layer slightly later
-  gsap.to(".reveal-layer.second", {
-    y: "-100%",
-    duration: 1.5,
-    ease: "power2.inOut",
-    delay: 0.5,
-    onComplete: () => {
-      document.querySelector(".reveal-layer.second")?.remove();
-    }
-  });
    // Animate .text-designs
  gsap.to(".mcvdesign", {
   y: 0,
@@ -73,6 +52,8 @@ inquiryBtns.forEach(btn => {
 });
 
   // Animate ball on page load
+if (!isMobile) {
+  // Animate ball on page load
   const ball = document.getElementById("draggableBall");
 
   gsap.from(ball, {
@@ -98,6 +79,49 @@ inquiryBtns.forEach(btn => {
       duration: 2,
       ease: "sine.inOut"
     });
+
+  // Mouse repel effect
+  document.addEventListener("mousemove", (e) => {
+    if (isDragging || scrollLocked) return;
+
+    const rect = ball.getBoundingClientRect();
+    const ballX = rect.left + rect.width / 2;
+    const ballY = rect.top + rect.height / 2;
+
+    const dx = e.clientX - ballX;
+    const dy = e.clientY - ballY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < activationDistance) {
+      isReturning = false;
+
+      const dirX = dx / distance;
+      const dirY = dy / distance;
+
+      const repelX = -dirX * (activationDistance - distance) * pushStrength;
+      const repelY = -dirY * (activationDistance - distance) * pushStrength;
+
+      gsap.to(ball, {
+        x: repelX,
+        y: repelY,
+        scale: 0.92,
+        duration: 60,
+        ease: "power3.out"
+      });
+    } else if (!isReturning) {
+      isReturning = true;
+
+      gsap.to(ball, {
+        x: 0,
+        y: 0,
+        scale: 1,
+        duration: 18,
+        ease: "elastic.out(1, 0.4)"
+      });
+    }
+  });
+}
+
 
 //BALL LOWERS ON SCREEN AND SCALES ON SCROLL
 window.addEventListener("scroll", () => {
@@ -177,46 +201,6 @@ window.addEventListener("scroll", () => {
   // Optional: re-enable if scroll returns to top
   if (window.scrollY <= 50 && scrollLocked) {
     scrollLocked = false;
-  }
-});
-
-document.addEventListener("mousemove", (e) => {
-  if (isDragging || scrollLocked) return;
-
-  const rect = ball.getBoundingClientRect();
-  const ballX = rect.left + rect.width / 2;
-  const ballY = rect.top + rect.height / 2;
-
-  const dx = e.clientX - ballX;
-  const dy = e.clientY - ballY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  if (distance < activationDistance) {
-    isReturning = false;
-
-    const dirX = dx / distance;
-    const dirY = dy / distance;
-
-    const repelX = -dirX * (activationDistance - distance) * pushStrength;
-    const repelY = -dirY * (activationDistance - distance) * pushStrength;
-
-    gsap.to(ball, {
-      x: repelX,
-      y: repelY,
-      scale: 0.92,
-      duration: 60,
-      ease: "power3.out"
-    });
-  } else if (!isReturning) {
-    isReturning = true;
-
-    gsap.to(ball, {
-      x: 0,
-      y: 0,
-      scale: 1,
-      duration: 18,
-      ease: "elastic.out(1, 0.4)"
-    });
   }
 });
 

@@ -36,12 +36,19 @@ a {
   margin-top: 0px;
   opacity: 1; /* Just the base state, no transition here */ 
 }
-@media screen and (max-width: 960px) {
-    .ball {
-      width: 400px;
-  height: 400px;
-    }
+@media (max-width: 768px) {
+  .ball {
+    position: fixed !important;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) !important;
+    opacity: 1 !important;
+    scale: 1 !important;
+    box-shadow: none !important;
+    transition: none !important;
+    pointer-events: none;
   }
+}
 .ball-video {
   width: 100%;
   height: 100%;
@@ -604,7 +611,7 @@ a {
 }
 @media (max-width: 768px) {
   .design h1 {
-    font-size: clamp(3rem, 6vw, 8rem);
+    font-size: clamp(4rem, 14vw, 10rem);
   }
 }
   .effect-container {

@@ -149,57 +149,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Horizontal scroll section
   window.addEventListener("load", () => {
-    const track = document.querySelector(".image-track");
+  const track = document.querySelector(".image-track");
+  const isMobile = window.innerWidth <= 768;
 
-    if (track) {
-      const updateScroll = () => {
-        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  if (track) {
+    const updateScroll = () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
-        if (isMobile) {
-          gsap.set(track, { clearProps: "all" });
-          track.style.transform = "none";
-          return;
-        }
+      if (isMobile) {
+        gsap.set(track, { clearProps: "all" });
+        track.style.transform = "none";
+        return;
+      }
 
-        const trackWidth = track.scrollWidth;
-        gsap.set(track, { x: window.innerWidth });
+      const trackWidth = track.scrollWidth;
+      gsap.set(track, { x: window.innerWidth });
 
-        gsap.to(track, {
-          x: -trackWidth,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#image-scroll",
-            start: "top top",
-            end: "+=" + (trackWidth + window.innerWidth),
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true
-          }
-        });
-
-        ScrollTrigger.create({
+      gsap.to(track, {
+        x: -trackWidth,
+        ease: "none",
+        scrollTrigger: {
           trigger: "#image-scroll",
           start: "top top",
           end: "+=" + (trackWidth + window.innerWidth),
-          scrub: true,
-          onUpdate: (self) => {
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true
+        }
+      });
+
+      ScrollTrigger.create({
+        trigger: "#image-scroll",
+        start: "top top",
+        end: "+=" + (trackWidth + window.innerWidth),
+        scrub: true,
+        onUpdate: (self) => {
+          if (!isMobile) {
             const progress = self.progress;
             const fadeOutStart = 0.8;
             const opacity = progress < fadeOutStart
               ? 1
               : 1 - (progress - fadeOutStart) / (1 - fadeOutStart);
-            gsap.to(".ball", { opacity, duration: 0.2, overwrite: true });
+            gsap.to(".ball", {
+              opacity: opacity,
+              duration: 0.2,
+              overwrite: true
+            });
           }
-        });
+        }
+      });
 
-        ScrollTrigger.refresh();
-      };
+      ScrollTrigger.refresh();
+    };
 
-      updateScroll();
-      window.addEventListener("resize", updateScroll);
-    }
-  });
+    updateScroll();
+    window.addEventListener("resize", updateScroll);
+  }
+});
 
   // Navbar scroll behavior
   let lastScrollY = window.scrollY;

@@ -36,7 +36,12 @@ a {
   margin-top: 0px;
   opacity: 1; /* Just the base state, no transition here */ 
 }
-
+@media screen and (max-width: 960px) {
+    .ball {
+      width: 400px;
+  height: 400px;
+    }
+  }
 .ball-video {
   width: 100%;
   height: 100%;
@@ -643,7 +648,11 @@ a {
   z-index: 1000;
   opacity: 1; /* Ensure this is present */
 }
-
+@media screen and (max-width: 960px) {
+    .social-button-container{
+      visibility: hidden;
+    }
+  }
 .bottom-btn {
   background-color: rgb(39, 39, 39);
   color: #ffffff;
@@ -993,8 +1002,10 @@ a {
 
   .services-card {
     flex: 1 1 100%;
-    aspect-ratio: 4 / 3;
     max-width: 100%;
+    aspect-ratio: auto; /* 🔧 Let content define height */
+    height: auto;       /* Ensure card can grow */
+    min-height: 350px;  /* Optional: set a floor to avoid too-short cards */
   }
 
   .card-title {
@@ -1042,7 +1053,6 @@ a {
   display: flex;
   align-items: center; /* ✅ ensures vertical centering */
   justify-content: flex-start;
-  position: relative;
 }
 
 .image-track {
@@ -1160,7 +1170,7 @@ a {
   pointer-events: none;
   opacity: 0.15;
   transition: opacity 0.6s ease-out;
-  z-index: 99; /* ✅ Ensure it's above the video/cards */
+  
 }
 
 @media (max-width: 768px) {

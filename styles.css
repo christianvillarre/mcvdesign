@@ -38,15 +38,7 @@ a {
 }
 @media (max-width: 768px) {
   .ball {
-    position: fixed !important;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) !important;
-    opacity: 1 !important;
-    scale: 1 !important;
-    box-shadow: none !important;
-    transition: none !important;
-    pointer-events: none;
+     transform: translateX(-50%)
   }
 }
 .ball-video {
@@ -1179,6 +1171,19 @@ a {
 }
 
 @media (max-width: 768px) {
+  .scroll-intro {
+    height: auto !important;
+    padding: 2rem 0 !important;
+  }
+
+  .scroll-intro-title {
+    position: static !important;
+    transform: none !important;
+    padding: 0 !important;
+    text-align: center;
+    font-size: clamp(2rem, 6vw, 4rem);
+  }
+
    .image-scroll-container {
     display: flex;
     flex-direction: column;

@@ -171,6 +171,11 @@ a {
   position: relative;
   padding: 0;
 }
+@media screen and (max-width: 960px) {
+  .navbar__contact {
+    transform: scale(0.7); 
+  }
+}
 
 .navbar__contact:hover {
   background: #5a5a5a;
@@ -348,7 +353,11 @@ a {
   .navbar__email {
     display: none;
   }
-   
+   .logo {
+    transform: scale(0.2); /* Shrinks image to 80% size */
+    width:20px;
+    height:auto;
+  }
   
     .navbar__menu--left,
     .navbar__menu--right {

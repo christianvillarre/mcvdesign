@@ -956,7 +956,7 @@ a {
 }
 
 .large-text h1 {
-  font-size: clamp(2.9rem, 8vw, 12rem);
+  font-size: clamp(2.6rem, 8vw, 12rem);
   font-weight: 600;
   color: #ffffff;
   text-align: left;

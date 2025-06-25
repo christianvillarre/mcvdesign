@@ -265,12 +265,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Navigation dropdown
-  const contactBtn = document.querySelector('.navbar__contact');
-  const dropdownMenu = document.getElementById('navDropdown');
-  const closeMenu = document.getElementById('closeMenu');
+const contactBtn = document.querySelector('.navbar__contact');
+const dropdownMenu = document.getElementById('navDropdown');
+const closeMenu = document.getElementById('closeMenu');
 
-  contactBtn?.addEventListener('click', () => dropdownMenu?.classList.add('open'));
-  closeMenu?.addEventListener('click', () => dropdownMenu?.classList.remove('open'));
+contactBtn?.addEventListener('click', () => {
+  // Trigger layout read to force a reflow
+  dropdownMenu.offsetHeight;
+
+  // Force repaint via requestAnimationFrame
+  requestAnimationFrame(() => {
+    dropdownMenu?.classList.add('open');
+  });
+});
+
+closeMenu?.addEventListener('click', () => {
+  dropdownMenu?.classList.remove('open');
+});
 
   // Navbar link underline animation
   const links = document.querySelectorAll('.navbar__links');

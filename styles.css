@@ -534,6 +534,7 @@ a {
   transition: opacity 0.2s ease;
   z-index: 0;
 }
+
   .main {
     height: 100vh;
     background-color: #000000;
@@ -543,7 +544,7 @@ a {
     overflow-x: hidden;
     overflow-y: hidden;
     position: relative; /* Needed for ::before positioning */
-    z-index: 0;
+    z-index: 1;
     position: relative;
     
   }
@@ -1213,7 +1214,12 @@ a {
   text-transform: none;
   border: none;
 }
-
+@media (max-width: 768px) {
+  .card-label.dark-label {
+    font-size: 1.2rem; /* or even 1rem for tighter space */
+    padding: 0.4rem 0.8rem;
+  }
+}
 
 .card-label:hover {
   background-color: white;

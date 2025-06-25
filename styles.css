@@ -410,8 +410,17 @@ a {
 
 .dropdown-links li {
   margin: 0rem 0;
-  font-size: clamp(6rem, 6vw, 9rem);
+  font-size: clamp(4rem, 6vw, 9rem);
   padding-top: 4rem;
+}
+@media screen and (max-width: 960px){
+.dropdown-links li {
+  margin: 0rem 0;
+  font-size: clamp(4rem, 6vw, 9rem);
+  padding-top: 4rem;
+  line-height: 0.1;
+}
+
 }
 
 .dropdown-links a {

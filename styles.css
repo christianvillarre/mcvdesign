@@ -1217,7 +1217,7 @@ a {
 @media (max-width: 768px) {
   .card-label.dark-label {
     font-size: 12px !important;
-    padding: 0.2rem 0.6rem !important;
+    padding: 0.6rem 1rem !important;
     
   }
 }

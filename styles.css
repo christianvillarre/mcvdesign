@@ -1350,7 +1350,12 @@ a {
   padding: 5rem;           /* Vertical and horizontal spacing */
   text-align: left;             /* Center text */
 }
+@media (max-width: 768px) {
+  .footer {
+    padding: 2rem;
+  }
 
+}
 .footer-container {
   max-width: 100%;
   margin: 0 auto;                 /* Center the container */
@@ -1358,21 +1363,20 @@ a {
 }
 
 .footer-header h2 {
-  font-size: 7rem;              /* Adjust font size */
-  margin-bottom: 4rem;                      /* Remove default margin */
-  line-height: 1.2;               /* Tighter line spacing */
+  font-size: clamp(3.5rem, 6vw, 7rem);  /* Min 2.5rem on small screens, max 7rem */
+  margin-bottom: 4rem;
+  line-height: 1.2;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
 .footer-header p {
-  font-size: 2rem;              /* Adjust font size */
-  margin-bottom: 4rem;                      /* Remove default margin */
-  line-height: 1.2;               /* Tighter line spacing */
+  font-size: clamp(1.5rem, 3vw, 2rem);    /* Min 1rem on mobile, max 2rem on desktop */
+  margin-bottom: 4rem;
+  line-height: 1.2;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
-
 
 
 

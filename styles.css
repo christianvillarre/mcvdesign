@@ -42,7 +42,6 @@ a {
    margin-top: 200px;
    width: 500px;
   height: 500px;
-  z-index:0;
   }
 }
 .ball-video {
@@ -475,6 +474,12 @@ a {
   pointer-events: none;
   z-index: -1;
 }
+
+.dropdown-video-bg,
+.dropdown-video-bg video {
+  pointer-events: none;
+}
+
 .dropdown-content {
   position: relative;
   z-index: 1; /* ✅ brings all dropdown content above video */
@@ -482,6 +487,8 @@ a {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 

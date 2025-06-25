@@ -1214,6 +1214,11 @@ a {
   text-transform: none;
   border: none;
 }
+@media (max-width: 768px) {
+  .card-label.dark-label {
+    transform: scale(0.9);
+  }
+}
 
 
 .card-label:hover {

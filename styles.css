@@ -38,10 +38,11 @@ a {
 }
 @media (max-width: 768px) {
   .ball {
-   position: absolute;
-   margin-top: 200px;
+   position: fixed;
+   margin-top: 300px;
    width: 500px;
   height: 500px;
+  z-index: 0;
   }
 }
 .ball-video {
@@ -632,6 +633,19 @@ a {
   font-weight: 600;
 }
 @media (max-width: 768px) {
+  .main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(circle at top center, #54f3a4 4vw, transparent 45vw);
+  opacity: var(--corner-opacity);
+  transition: opacity 0.2s ease;
+  z-index: 0;
+}
   .design h1 {
     font-size: clamp(4rem, 14vw, 10rem);
   }
@@ -894,6 +908,9 @@ a {
   
   /* Mobile Responsive */
   @media screen and (max-width: 768px) {
+    .main {
+      height: 100vh;
+    }
     .main__container {
       display: grid;
       grid-template-columns: auto;
@@ -976,6 +993,10 @@ a {
   margin-top: 1rem;
   line-height: 1;
 }
+.large-text2 p {
+  visibility: hidden;
+}
+
 .services {
   z-index: 1;
   min-height: 70vh;
@@ -1024,11 +1045,11 @@ a {
     max-width: 100%;
   }
   .divider {
-  width: 30vw;
+  width: 75vw;
   border: none;
-  border-top: 1px solid rgb(199, 199, 199);
+  border-top: 2px solid rgb(68, 68, 68);
   margin: 0 auto; /* ✅ This centers it */
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
 }
   .large-text-container {
   width: 100%;
@@ -1037,6 +1058,15 @@ a {
   position: relative;
   margin-top: 1rem;
   margin-bottom: 2rem;
+}
+.large-text2 p {
+  font-size: clamp(1.3rem, 4.5vw, 4.5rem);
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 2rem;
+  line-height: 1;
+  visibility:visible;
 }
  
 }
@@ -1110,6 +1140,42 @@ a {
   z-index: 1;
 }
 
+.button-design2 {
+  width: 160px;                /* ✅ Fixed width */
+  height: 50px;                /* ✅ Fixed height */
+  padding: 0 1rem;           /* ✅ Padding inside */
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1px solid white;
+  border-radius: 999px;
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* or center/left depending on layout */
+  gap: 0rem;
+  margin-right: 0.2rem;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden; /* ensure the circle stays inside */
+  z-index: 1;
+  visibility: hidden;
+}
+
+
+.inquiry-arrow2 {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  transition: background 0.3s ease, transform 0.3s ease;
+  background-color: #54f3a4;
+}
 /* ✅ Stack on small screens */
 @media (max-width: 950px) {
   .services-container {
@@ -1140,6 +1206,29 @@ a {
     font-size: clamp(1rem, 4vw, 1.6rem);
     padding: clamp(0.75rem, 2vw, 1.2rem) clamp(1.5rem, 4vw, 2.5rem);
   }
+  .button-design2 {
+  width: 160px;                /* ✅ Fixed width */
+  height: 50px;                /* ✅ Fixed height */
+  padding: 0 1rem;           /* ✅ Padding inside */
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1px solid white;
+  border-radius: 999px;
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* or center/left depending on layout */
+  gap: 0rem;
+  margin-right: 0.2rem;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden; /* ensure the circle stays inside */
+  z-index: 1;
+  visibility: visible;
+}
 }
 
 /*

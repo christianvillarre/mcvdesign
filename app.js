@@ -86,6 +86,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Ball fade on scroll (mobile only)
+if (isMobile) {
+  const ball = document.querySelector(".ball");
+  if (ball) {
+    window.addEventListener("scroll", () => {
+      const scrollY = window.scrollY;
+      const fadeEnd = 150; // Adjust how fast it fades
+      const opacity = Math.max(0, 1 - scrollY / fadeEnd);
+
+      gsap.to(ball, {
+        opacity: opacity,
+        duration: 5.5,
+        overwrite: true
+      });
+    });
+  }
+}
+
   // ScrollTrigger animations (desktop only)
   if (!isMobile) {
     gsap.fromTo(".scroll-intro-title",

@@ -284,7 +284,7 @@
 
 <style>
   .scroll-text-section {
-  height: 60vh;
+  height: 40vh;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -293,6 +293,7 @@
   position: relative;
   width: 100vw;
   background: #000;
+  margin-bottom: 8rem;
 }
 
 .scroll-text-section:active {
@@ -348,6 +349,21 @@ section.spacer {
   color: #888;
   font-size: 2rem;
   visibility: hidden;
+}
+
+@media (max-width: 768px) {
+    .scroll-text-section {
+  height: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  cursor: grab;
+  position: relative;
+  width: 100vw;
+  background: #000;
+  margin-bottom: 5rem;
+}
 }
 </style>
 <script>

@@ -1050,14 +1050,14 @@ a {
   border: none;
   border-top: 2px solid rgb(68, 68, 68);
   margin: 0 auto; /* ✅ This centers it */
-  margin-bottom: 7rem;
+  margin-bottom: 3rem;
 }
   .large-text-container {
   width: 100%;
   max-width: 95vw;
   padding: 2rem;
   position: relative;
-  margin-top: 5rem;
+  margin-top: -7rem;
   margin-bottom: 2rem;
 }
 .large-text2 p {

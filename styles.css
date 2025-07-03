@@ -974,7 +974,7 @@ a {
  
 
 .large-text h1 {
-  font-size: clamp(4rem, 7.5vw, 12rem);
+  font-size: clamp(3.5rem, 7.5vw, 12rem);
   font-weight: 600;
   color: #ffffff;
   text-align: left;
@@ -1050,14 +1050,14 @@ a {
   border: none;
   border-top: 2px solid rgb(68, 68, 68);
   margin: 0 auto; /* ✅ This centers it */
-  margin-bottom: 3rem;
+  margin-bottom: 7rem;
 }
   .large-text-container {
   width: 100%;
   max-width: 95vw;
   padding: 2rem;
   position: relative;
-  margin-top: 1rem;
+  margin-top: 5rem;
   margin-bottom: 2rem;
 }
 .large-text2 p {
@@ -1074,8 +1074,8 @@ a {
 
 /* Typography that scales */
 .card-title {
-  font-size: clamp(2rem, 2.5vw, 5rem);
-  margin-bottom: 1rem;
+  font-size: clamp(2.2rem, 2.5vw, 5rem);
+  margin-bottom: 2rem;
   color: #54f3a4;
   font-weight: 200;
 }

@@ -1107,7 +1107,7 @@ a {
   }
 
   .card-title {
-    font-size: clamp(2rem, 6vw, 4rem); /* larger min size */
+    font-size: clamp(2.5rem, 6vw, 4rem); /* larger min size */
   }
 
   .card-text {
@@ -1115,7 +1115,7 @@ a {
   }
 
   .card-text2 {
-    font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+    font-size: clamp(1.2rem, 4.1vw, 2.2rem);
   }
 
   .card-btn {

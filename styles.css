@@ -38,7 +38,7 @@ a {
 }
 @media (max-width: 768px) {
   .ball {
-   position: fixed;
+   position: absolute;
    margin-top: 300px;
    width: 500px;
   height: 500px;
@@ -909,7 +909,7 @@ a {
   /* Mobile Responsive */
   @media screen and (max-width: 768px) {
     .main {
-      height: 100vh;
+      height: 120vh;
     }
     .main__container {
       display: grid;

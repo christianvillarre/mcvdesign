@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Horizontal + Color Scroll</title>
+  <title>Scroll Nudge Draggable</title>
   <style>
     body {
       margin: 0;
@@ -11,121 +11,148 @@
       background: #111;
     }
 
-    /* Horizontal Scroll */
-    #image-scroll {
+    section.spacer {
       height: 100vh;
-      position: relative;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 2rem;
+    }
+
+    .scroll-text-section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
       overflow: hidden;
+      cursor: grab;
+      position: relative;
+      width: 100vw;
       background: #000;
     }
 
-    .image-scroll-container {
-      display: flex;
-      align-items: center;
-      height: 100%;
+    .scroll-text-section:active {
+      cursor: grabbing;
     }
 
-    .image-track {
-      display: flex;
-      gap: 2rem;
+    .scroll-track {
+      display: inline-block;
+      white-space: nowrap;
+      min-width: max-content;
+      transform: translateX(0);
     }
 
-    .image-card {
-      width: 100vw;
-      height: 100vh;
-      background: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      color: white;
-    }
-
-    /* Color Scroll Section */
-    .color-scroll-section {
-      min-height: 300vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4rem;
-      background-color: black;
-      position: relative;
-      width: 100vw;
-      overflow: hidden;
-    }
-
-    .text-approach {
-      font-size: clamp(3rem, 8vw, 12rem);
-      font-weight: 600;
-      color: white;
-      line-height: 1.2;
-      text-align: center;
-      max-width: 80vw;
+    .scroll-text {
+      font-size: clamp(2rem, 10vw, 12rem);
+      font-weight: 500;
+      color: #ffffff;
+      white-space: nowrap;
+      padding-left: 5vw;
+      padding-right: 5vw;
     }
   </style>
 </head>
 <body>
 
-  <!-- Horizontal Scroll Section -->
-  <section id="image-scroll">
-    <div class="image-scroll-container">
-      <div class="image-track">
-        <div class="image-card">Project 1</div>
-        <div class="image-card">Project 2</div>
-        <div class="image-card">Project 3</div>
-        <div class="image-card">Project 4</div>
-      </div>
+<section class="spacer">Scroll down ↓</section>
+
+<section class="scroll-text-section" id="scrollContainer">
+  <div class="scroll-track" id="scrollTrack">
+    <div class="scroll-text" id="scrollText">
+      Everything starts with design. Everything starts with design.
+      Everything starts with design. Everything starts with design.
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Color Changing Section -->
-  <section class="color-scroll-section">
-    <div class="text-approach">
-      Our approach is guided by a clear set of principles and best practices.
-    </div>
-  </section>
+<section class="spacer">Scroll up ↑</section>
 
-  <!-- GSAP + ScrollTrigger -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+<script src="https://unpkg.com/gsap@3/dist/InertiaPlugin.min.js"></script>
 
-  <script>
-    gsap.registerPlugin(ScrollTrigger);
+<script>
+  gsap.registerPlugin(ScrollTrigger, Draggable, InertiaPlugin);
 
-    // Horizontal scroll logic
-    const track = document.querySelector(".image-track");
-    const trackWidth = track.scrollWidth;
-    const totalScroll = trackWidth - window.innerWidth;
+  window.addEventListener("load", () => {
+    const scrollTrack = document.getElementById("scrollTrack");
+    const scrollText = document.getElementById("scrollText");
+    const scrollContainer = document.getElementById("scrollContainer");
 
-    gsap.to(track, {
-      x: -totalScroll,
-      ease: "none",
-      scrollTrigger: {
-        trigger: "#image-scroll",
-        start: "top top",
-        end: () => "+=" + totalScroll,
-        scrub: true,
-        pin: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
+    const trackWidth = scrollText.scrollWidth;
+    const containerWidth = scrollContainer.offsetWidth;
+    const maxX = 0;
+    const minX = -(trackWidth - containerWidth);
+
+    gsap.set(scrollTrack, { x: 0 });
+
+    Draggable.create(scrollTrack, {
+      type: "x",
+      inertia: true,
+      bounds: { minX, maxX },
+      edgeResistance: 0.8,
+      cursor: "grab",
+      activeCursor: "grabbing"
+    });
+
+    let hasViewedSection = false;
+    let nudgedRight = false;
+    let lastScrollY = window.scrollY;
+
+    ScrollTrigger.create({
+      trigger: scrollContainer,
+      start: "top 85%",
+      onEnter: () => {
+        if (!hasViewedSection) {
+          const currentX = gsap.getProperty(scrollTrack, "x");
+          const targetX = gsap.utils.clamp(minX, maxX, currentX - 100);
+          gsap.to(scrollTrack, {
+            x: targetX,
+            duration: 0.8,
+            ease: "power3.out"
+          });
+          hasViewedSection = true;
+        }
       }
     });
 
-    // Color scroll logic
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".color-scroll-section",
-        start: "top top",
-        end: "+=300%",
-        scrub: true,
-        pin: true,
+    window.addEventListener("scroll", () => {
+      const currentY = window.scrollY;
+      const scrollingUp = currentY < lastScrollY;
+      const scrollingDown = currentY > lastScrollY;
+      lastScrollY = currentY;
+
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const inView = containerRect.top < window.innerHeight && containerRect.bottom > 0;
+
+      const currentX = gsap.getProperty(scrollTrack, "x");
+
+      if (scrollingUp && inView && hasViewedSection && !nudgedRight) {
+        const targetX = gsap.utils.clamp(minX, maxX, currentX + 100);
+        gsap.to(scrollTrack, {
+          x: targetX,
+          duration: 0.8,
+          ease: "power3.out"
+        });
+        nudgedRight = true;
+      }
+
+      if (scrollingDown && inView && hasViewedSection && nudgedRight) {
+        const targetX = gsap.utils.clamp(minX, maxX, currentX - 100);
+        gsap.to(scrollTrack, {
+          x: targetX,
+          duration: 0.8,
+          ease: "power3.out"
+        });
+        nudgedRight = false;
       }
     });
 
-    tl.to(".color-scroll-section", { backgroundColor: "#ffffff", color: "#000", duration: 1 })
-      .to(".color-scroll-section", { backgroundColor: "#ffb6c1", duration: 1 })
-      .to(".color-scroll-section", { backgroundColor: "#87cefa", duration: 1 })
-      .to(".color-scroll-section", { backgroundColor: "#54f3a4", duration: 1 });
-  </script>
+    ScrollTrigger.refresh();
+  });
+</script>
 </body>
 </html>

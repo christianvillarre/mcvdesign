@@ -17,10 +17,11 @@
   
 
   <!-- Animations -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/InertiaPlugin.min.js"></script>
 </head>
 <body>
   
@@ -267,12 +268,178 @@
   </div> <!-- .image-scroll-container -->
 </section>
 
+<section class="spacer">Scroll down ↓</section>
 
+<section class="scroll-text-section" id="scrollContainer">
+  <div class="scroll-track" id="scrollTrack">
+  <div class="scroll-text-wrapper">
+    <div class="scroll-text" id="scrollText">
+      Design is not just what it looks like and feels like. Design is how it works.
+    </div>
+  </div>
+</div>
+</section>
 
+<section class="spacer">Scroll up ↑</section>
 
+<style>
+  .scroll-text-section {
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  cursor: grab;
+  position: relative;
+  width: 100vw;
+  background: #000;
+}
 
+.scroll-text-section:active {
+  cursor: grabbing;
+}
 
+.scroll-track {
+  display: inline-block;
+  white-space: nowrap;
+  min-width: max-content;
+  transform: translateX(0);
+}
 
+.scroll-text-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.scroll-text-wrapper::before,
+.scroll-text-wrapper::after {
+  content: "";
+  position: absolute;
+  left: -25vw;
+  right: -25vw;
+  height: 2px;
+  background: #ffffff;
+}
+
+.scroll-text-wrapper::before {
+  top: 0;
+}
+
+.scroll-text-wrapper::after {
+  bottom: 0;
+}
+
+.scroll-text {
+  font-size: clamp(2rem, 10vw, 12rem);
+  font-weight: 500;
+  color: #ffffff;
+  white-space: nowrap;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  line-height: 1.5;
+}
+
+section.spacer {
+  height: 2vh;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 2rem;
+  visibility: hidden;
+}
+</style>
+<script>
+gsap.registerPlugin(ScrollTrigger, Draggable, InertiaPlugin);
+
+document.addEventListener("DOMContentLoaded", () => {
+  initScrollTrack();
+});
+
+function initScrollTrack() {
+  const scrollTrack = document.getElementById("scrollTrack");
+  const scrollText = document.getElementById("scrollText");
+  const scrollContainer = document.getElementById("scrollContainer");
+
+  const trackWidth = scrollText.scrollWidth;
+  const containerWidth = scrollContainer.offsetWidth;
+  const maxX = 0;
+  const minX = -(trackWidth - containerWidth);
+
+  gsap.set(scrollTrack, { x: 0 });
+
+  Draggable.create(scrollTrack, {
+    type: "x",
+    inertia: true,
+    bounds: { minX, maxX },
+    edgeResistance: 0.8,
+    cursor: "grab",
+    activeCursor: "grabbing"
+  });
+
+  let hasViewedSection = false;
+  let nudgedRight = false;
+  let lastScrollY = window.scrollY;
+
+  const nudgeLeft = () => {
+    const currentX = gsap.getProperty(scrollTrack, "x");
+    const targetX = gsap.utils.clamp(minX, maxX, currentX - 100);
+    gsap.to(scrollTrack, {
+      x: targetX,
+      duration: 0.8,
+      ease: "power3.out"
+    });
+  };
+
+  const nudgeRight = () => {
+    const currentX = gsap.getProperty(scrollTrack, "x");
+    const targetX = gsap.utils.clamp(minX, maxX, currentX + 100);
+    gsap.to(scrollTrack, {
+      x: targetX,
+      duration: 0.8,
+      ease: "power3.out"
+    });
+  };
+
+  // 🔁 Use a requestAnimationFrame loop to wait until it's truly in view
+  function waitUntilInViewAndNudge() {
+    const rect = scrollContainer.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+
+    if (inView && !hasViewedSection) {
+      nudgeLeft();
+      hasViewedSection = true;
+      ScrollTrigger.refresh();
+    } else if (!hasViewedSection) {
+      requestAnimationFrame(waitUntilInViewAndNudge);
+    }
+  }
+
+  waitUntilInViewAndNudge(); // Start visibility detection loop
+
+  // Scroll-based nudging logic
+  window.addEventListener("scroll", () => {
+    const currentY = window.scrollY;
+    const scrollingUp = currentY < lastScrollY;
+    const scrollingDown = currentY > lastScrollY;
+    lastScrollY = currentY;
+
+    const rect = scrollContainer.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+
+    if (scrollingUp && inView && hasViewedSection && !nudgedRight) {
+      nudgeRight();
+      nudgedRight = true;
+    }
+
+    if (scrollingDown && inView && hasViewedSection && nudgedRight) {
+      nudgeLeft();
+      nudgedRight = false;
+    }
+  });
+}
+</script>
 
   <div class="large-text-container">
     <div class="divider"></div>

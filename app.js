@@ -105,65 +105,7 @@ if (isMobile) {
 }
 */
   // ScrollTrigger animations (desktop only)
-  if (!isMobile) {
-    gsap.fromTo(".scroll-intro-title",
-      { opacity: 0, scale: 0.9 },
-      {
-        opacity: 1,
-        scale: 1,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".scroll-intro",
-          start: "top bottom",
-          end: "top center",
-          scrub: true
-        }
-      });
 
-    gsap.to(".scroll-intro-title", {
-      opacity: 0,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: document.body,
-        start: "top+=2000 top",
-        end: "top+=2500 top",
-        scrub: true
-      }
-    });
-
-    gsap.to(".gradient-overlay", {
-      opacity: 1,
-      scrollTrigger: {
-        trigger: ".contact-section",
-        start: "top bottom",
-        end: "top center",
-        scrub: true
-      }
-    });
-
-    gsap.fromTo(".scroll-intro-title",
-      { opacity: 1 },
-      {
-        opacity: 1,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: document.body,
-          start: "top top",
-          end: "top+=1999 top",
-          scrub: true
-        }
-      });
-
-    gsap.to(".background-fade", {
-      opacity: 1,
-      scrollTrigger: {
-        trigger: ".contact-section",
-        start: "top center",
-        end: "bottom center",
-        scrub: true
-      }
-    });
-  }
 
   // Horizontal scroll section
   window.addEventListener("load", () => {
@@ -319,3 +261,4 @@ closeMenu?.addEventListener('click', () => {
   });
 });
 
+  

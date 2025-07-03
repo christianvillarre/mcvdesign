@@ -6,7 +6,7 @@
 }
 body {
   background: black;
-  overflow-x: visible;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 a {
@@ -1378,7 +1378,8 @@ a {
   color: #ffffff;
   text-align: center;
   pointer-events: none;
-  opacity: 1; /* Let GSAP handle it */
+  will-change: transform, opacity;
+  z-index: 0;
 }
 
 @media (max-width: 768px) {

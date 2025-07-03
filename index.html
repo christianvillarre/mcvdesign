@@ -268,22 +268,22 @@
   </div> <!-- .image-scroll-container -->
 </section>
 
-<section class="spacer">Scroll down ↓</section>
+<section class="spacer spacer-top"></section>
 
 <section class="scroll-text-section" id="scrollContainer">
   <div class="scroll-track" id="scrollTrack">
-  <div class="scroll-text-wrapper">
-    <div class="scroll-text" id="scrollText">
-      Design is not just what it looks like and feels like. Design is how it works.
+    <div class="scroll-text-wrapper">
+      <div class="scroll-text" id="scrollText">
+        Design is not just what it looks like and feels like. Design is how it works.
+      </div>
     </div>
   </div>
-</div>
 </section>
 
-<section class="spacer">Scroll up ↑</section>
+<section class="spacer spacer-bottom"></section>
 
 <style>
-  .scroll-text-section {
+.scroll-text-section {
   height: 40vh;
   display: flex;
   align-items: center;
@@ -293,7 +293,7 @@
   position: relative;
   width: 100vw;
   background: #000;
-  margin-bottom: 8rem;
+  margin-bottom: 1rem;
 }
 
 .scroll-text-section:active {
@@ -312,24 +312,6 @@
   display: inline-block;
 }
 
-.scroll-text-wrapper::before,
-.scroll-text-wrapper::after {
-  content: "";
-  position: absolute;
-  left: -25vw;
-  right: -25vw;
-  height: 2px;
-  background: #ffffff;
-}
-
-.scroll-text-wrapper::before {
-  top: 0;
-}
-
-.scroll-text-wrapper::after {
-  bottom: 0;
-}
-
 .scroll-text {
   font-size: clamp(2rem, 10vw, 12rem);
   font-weight: 500;
@@ -337,33 +319,33 @@
   white-space: nowrap;
   padding-left: 5vw;
   padding-right: 5vw;
-  line-height: 1.5;
 }
 
+/* Spacer Styles */
 section.spacer {
-  height: 2vh;
+  height: 1vh;
   background: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #888;
   font-size: 2rem;
-  visibility: hidden;
+  
+}
+
+section.spacer-top {
+  border-bottom: 2px solid #ffffff;
+}
+
+section.spacer-bottom {
+  border-top: 2px solid #ffffff;
 }
 
 @media (max-width: 768px) {
-    .scroll-text-section {
-  height: 30vh;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  overflow: hidden;
-  cursor: grab;
-  position: relative;
-  width: 100vw;
-  background: #000;
-  margin-bottom: 5rem;
-}
+  .scroll-text-section {
+    height: 30vh;
+    margin-bottom: 5rem;
+  }
 }
 </style>
 <script>

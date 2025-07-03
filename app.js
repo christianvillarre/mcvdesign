@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
       gsap.to(".ball", { y: moveY, scale: scaleFactor, duration: 0.4, ease: "power3.out" });
     });
   }
-
+/*
   // Ball fade on scroll (mobile only)
 if (isMobile) {
   const ball = document.querySelector(".ball");
@@ -103,7 +103,7 @@ if (isMobile) {
     });
   }
 }
-
+*/
   // ScrollTrigger animations (desktop only)
   if (!isMobile) {
     gsap.fromTo(".scroll-intro-title",

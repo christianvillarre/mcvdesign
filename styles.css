@@ -39,7 +39,7 @@ a {
 @media (max-width: 768px) {
   .ball {
    position: absolute;
-   margin-top: 300px;
+   margin-top: 350px;
    width: 500px;
   height: 500px;
   z-index: 0;
@@ -909,7 +909,7 @@ a {
   /* Mobile Responsive */
   @media screen and (max-width: 768px) {
     .main {
-      height: 120vh;
+      height: 130vh;
     }
     .main__container {
       display: grid;

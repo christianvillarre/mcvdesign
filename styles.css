@@ -39,9 +39,9 @@ a {
 @media (max-width: 768px) {
   .ball {
    position: absolute;
-   margin-top: 200px;
-   width: 500px;
-  height: 500px;
+   margin-top: 150px;
+   width: 750px;
+  height: 750px;
   z-index: 0;
   }
 }
@@ -909,7 +909,7 @@ a {
   /* Mobile Responsive */
   @media screen and (max-width: 768px) {
     .main {
-      height: 130vh;
+      height: 120vh;
     }
     .main__container {
       display: grid;
@@ -920,7 +920,16 @@ a {
       margin: 0 auto;
       height: 90vh;
     }
-  
+     
+  .section-main {
+    scale: 1.1;
+    margin-top: 0px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+    
     .main__content {
       text-align: center;
       margin-bottom: 4rem;
@@ -1213,7 +1222,7 @@ a {
   font-weight: 600;
   border: 1px solid white;
   border-radius: 999px;
-  background-color: transparent;
+  background-color: black;
   color: white;
   cursor: pointer;
   transition: background 0.3s ease;

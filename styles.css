@@ -954,14 +954,16 @@ a {
   margin-top: 5rem;
   margin-bottom: 2rem;
 }
+ 
 
 .large-text h1 {
   font-size: clamp(2.1rem, 7.5vw, 12rem);
   font-weight: 600;
   color: #ffffff;
   text-align: left;
-  margin-bottom: 5rem;
+  margin-bottom: clamp(1.6rem, 3vw, 5rem);
   line-height: 0.9; /* Tighter spacing than default */
+  
 }
 .highlight {
   color: #54f3a4;
@@ -1021,6 +1023,22 @@ a {
     flex: 1 1 100%;
     max-width: 100%;
   }
+  .divider {
+  width: 30vw;
+  border: none;
+  border-top: 1px solid rgb(199, 199, 199);
+  margin: 0 auto; /* ✅ This centers it */
+  margin-bottom: 2.5rem;
+}
+  .large-text-container {
+  width: 100%;
+  max-width: 95vw;
+  padding: 2rem;
+  position: relative;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+ 
 }
 
 /* Typography that scales */
@@ -1097,7 +1115,7 @@ a {
   .services-container {
     justify-content: center;
   }
-
+  
   .services-card {
     flex: 1 1 100%;
     max-width: 100%;

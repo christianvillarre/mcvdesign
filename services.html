@@ -211,6 +211,75 @@
 }
 
   </style>
+
+
+<style>
+  @media (max-width: 768px) {
+
+    .intro-content h1 {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  margin: 0;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+
+.intro-content p {
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  margin: 0;
+  font-weight: 400;
+  width: 90vw;
+  
+}
+
+    .intro {
+  width: 100%;
+  height: 65vh;
+  display: flex;
+  align-items: flex-end; /* ⬅️ Push content to bottom */
+  background: #000000;
+  color: white;
+}
+
+    .circle-wrapper {
+      width: 90vw;
+      height: 90vw;
+    }
+
+    .circle-container {
+      width: 70vmin;
+      height: 70vmin;
+    }
+
+    .text-layer {
+      font-size: clamp(2.5rem, 7vw, 5rem);
+    }
+
+    .percent-counter {
+      font-size: 1.8rem;
+      top: calc(50% + 4rem);
+    }
+
+    .paragraph {
+      font-size: 1.2rem;
+      width: 90vw;
+      left: 5vw;
+      bottom: 2rem;
+    }
+
+    .circle-title {
+      font-size: 2rem;
+      right: 2rem;
+      top: 2rem;
+      max-width: 90vw;
+    }
+
+    .scroll-text {
+      font-size: clamp(1.8rem, 12vw, 10rem);
+    }
+  }
+</style>
+
 </head>
 <body>
 
@@ -369,13 +438,44 @@ mobile and desktop app development, and brand visual identity.</p>
   background-color: white;
   transform: translate(-50%, -50%);
   transition: background-color 0.3s ease;
-  padding: 1rem;
+  
 }
 
 .dot.active {
   background-color: #54f3a4;
   /* ✅ Removed scale */
 }
+  @media (max-width: 768px) {
+    .dot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(-50%, -50%);
+  transition: background-color 0.3s ease;
+  
+}
+        .circle-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vmin;
+  height: 80vmin;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0; /* ✅ hide initially */
+}
+.circle2 {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid #333; /* placeholder for ring */
+  border: none;
+}
+  }
     </STYLE>
 
 <script>

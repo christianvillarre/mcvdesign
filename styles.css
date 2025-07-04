@@ -10,7 +10,11 @@ body {
   overflow-y: auto;
 }
 a {
+  color: white;
   text-decoration: none;
+}
+.chat-link {
+  text-decoration: underline;
 }
   
 .ball {

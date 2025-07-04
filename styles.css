@@ -1483,7 +1483,7 @@ a {
 }
 
 .footer-header h2 {
-  font-size: clamp(3.5rem, 6vw, 7rem);  /* Min 2.5rem on small screens, max 7rem */
+  font-size: clamp(2.8rem, 6vw, 7rem);  /* Min 2.5rem on small screens, max 7rem */
   margin-bottom: 4rem;
   line-height: 1.2;
   font-weight: 600;

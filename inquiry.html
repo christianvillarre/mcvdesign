@@ -129,24 +129,24 @@
           </div>
 
           <label class="input-name">Project Scope (design + development)</label>
-          <div class="radio-group">
-            <label class="radio-option">
-              <input type="checkbox" name="projectScope[]" value="Website Design">
-              Website Design
-            </label>
-            <label class="radio-option">
-              <input type="checkbox" name="projectScope[]" value="Branding">
-              Branding
-            </label>
-            <label class="radio-option">
-              <input type="checkbox" name="projectScope[]" value="Business Cards">
-              Business Cards
-            </label>
-            <label class="radio-option">
-              <input type="checkbox" name="projectScope[]" value="Videography">
-              Videography
-            </label>
-          </div>
+          <div class="radio-group project-scope-group">
+  <label class="radio-option">
+    <input type="checkbox" name="projectScope[]" value="Website Design">
+    Website Design
+  </label>
+  <label class="radio-option">
+    <input type="checkbox" name="projectScope[]" value="Branding">
+    Branding
+  </label>
+  <label class="radio-option">
+    <input type="checkbox" name="projectScope[]" value="Business Cards">
+    Business Cards
+  </label>
+  <label class="radio-option">
+    <input type="checkbox" name="projectScope[]" value="Videography">
+    Videography
+  </label>
+</div>
 
           <label for="additional" class="input-name" style="margin-top: 3rem;">Additional (optional)</label>
           <div class="radio-group">
@@ -176,7 +176,95 @@
     </div>
   </div>
 </div>
+<style>
+/* Neutral baseline */
+input {
+  border-bottom: 1px solid #52605a;
+  transition: border-color 0.3s ease;
+  background: transparent;
+  border-bottom: 1px solid #52605a;
+  color: white;
+}
 
+/* Show red ONLY if user has interacted and input is still invalid */
+input.user-touched:invalid {
+  border-bottom-color: #ff4d4d;
+}
+
+/* Optional: shake animation on second try */
+input.user-touched:invalid:focus {
+  animation: shake 0.2s ease-in-out 2;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+input:-webkit-autofill {
+  background-color: transparent !important;
+  -webkit-box-shadow: 0 0 0 1000px black inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Prevent the input look from changing on focus */
+input:focus {
+   border-bottom-color: #52605a;
+  outline: none;
+}
+
+/* 🔴 Make checkbox and text red when group is invalid and touched */
+.project-scope-group.user-touched.invalid .radio-option {
+  color: #ff4d4d;
+}
+
+.project-scope-group.user-touched.invalid input[type="checkbox"] {
+  border-color: #ff4d4d;
+}
+
+/* ✅ Keep checkbox border green when selected */
+.project-scope-group.user-touched.invalid input[type="checkbox"]:checked {
+  border-color: #54f3a4;
+}
+</style>
+<script>
+  document.querySelectorAll('input[required]').forEach(input => {
+    input.addEventListener('blur', () => {
+      input.classList.add('user-touched');
+    });
+  });
+</script>
+<script>
+  document.querySelectorAll('input[required]').forEach(input => {
+    input.addEventListener('blur', () => {
+      if (!input.classList.contains('user-touched')) {
+        input.classList.add('user-touched');
+      }
+    });
+  });
+</script>
+<script>
+  const scopeGroup = document.querySelector('.project-scope-group');
+  const scopeCheckboxes = scopeGroup.querySelectorAll('input[type="checkbox"]');
+
+  function validateScopeGroup() {
+    const anyChecked = Array.from(scopeCheckboxes).some(cb => cb.checked);
+
+    scopeGroup.classList.add('user-touched');
+    
+    if (!anyChecked) {
+      scopeGroup.classList.add('invalid');
+    } else {
+      scopeGroup.classList.remove('invalid');
+    }
+  }
+
+  scopeCheckboxes.forEach(cb => {
+    cb.addEventListener('change', validateScopeGroup);
+  });
+</script>
     <script>
 
 //NAVIGATION SCREEN

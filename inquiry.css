@@ -359,7 +359,8 @@ input {
     margin-top: 2rem;
   }
   .inquiry-left-container{
-    height: 45vh;
+     min-height: auto;
+    height: auto;
   }
 
   .inquiry-left-container h1 {

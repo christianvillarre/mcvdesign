@@ -23,14 +23,14 @@
 <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
 </head>
 <body>
- <!-- Navbar -->
-  <nav class="navbar">
+ <nav class="navbar">
     <div class="navbar__container">
       <div class="navbar__left">
         <a href="/" id="navbar__logo" class="logo2">
           <img class="logo1" src="images/logo3.png" alt="Logo" />
         </a>
       </div>
+     
 <!--
       <ul class="navbar__menu navbar__center">
         <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Work</span></a></li>
@@ -41,20 +41,7 @@
       </ul>
 -->
       <div class="navbar__right">
-        <button class="navbar__email">
-          hello@mcvdesign.com
-        </button>
-        <a href="inquiry.html">
-        <button class="navbar__inquiry">
-          Send Inquiry
-          <span class="inquiry-arrow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
-              <path d="M7 17L17 7" />
-              <path d="M7 7h10v10" />
-            </svg>
-          </span>
-        </button></a>
+        
         <div class="navbar__contact"><span></span></div>
       </div>
 
@@ -65,10 +52,10 @@
       </div>
     </div>
   </nav>
- 
+  
 
 
-<!--DROPDOWN MENU-->
+  <!--DROPDOWN MENU-->
 <div class="dropdown-menu" id="navDropdown">
    <div class="dropdown-video-bg">
     <video autoplay muted loop playsinline>
@@ -86,11 +73,7 @@
   </ul>
 
 
-  <div class="dropdown-email">
-        <button class="navbar__email">
-          hello@mcvdesign.com
-        </button>
-      </div>
+
   
   <div class="dropdown-copyright"><h2>Copyright © 2025</h2></div>
   <div class="social-button-container">
@@ -100,7 +83,8 @@
       <button class="bottom-btn">Behance</button>
     </div>
     </div>
-</div>
+</div> 
+
 
 <div class="ball2" id="draggableBall">
       <video class="ball-video" autoplay muted loop playsinline>
@@ -405,7 +389,7 @@ body {
   z-index: 1;
 }
 .logo2 {
-    transform: scale(0.3); /* Shrinks image to 80% size */
+    transform: scale(0.2); /* Shrinks image to 80% size */
     width:20px;
     height:auto;
   }
@@ -432,12 +416,97 @@ body {
 
 .text1,
 .text2 {
-  font-size: 8rem;
+  font-size: clamp(1rem, 8vw, 8rem); 
   margin: 1rem 0;
   will-change: transform;
   z-index: 9999;
   color: #727376
 }
+
+@media screen and (max-width: 768px) {
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  will-change: transform;
+  transform-style: preserve-3d;
+  align-items: center;
+}
+
+.logo-container img {
+  width: 1700px;
+  max-width: 95%;
+  height: auto;
+  opacity: 0.3; /* starting opacity */
+  transform: scale(0.85); /* starting scale */
+  will-change: opacity, transform;
+}
+
+.scroll-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+
+.card1 {
+  min-height: auto;
+  padding: 5vh 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.card1-content {
+  width: 90vw; /* ✅ matches image width */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* ✅ aligns text left inside container */
+  gap: 2rem;
+}
+
+.card1-img {
+  width: 100%;
+  height: 50vh;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
+  position: relative;
+}
+
+.card1-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card1:hover .card1-img img {
+  transform: scale(1.1);
+}
+
+.card1:hover .card1-txt {
+  color: gray;
+}
+
+.card1-txt {
+  font-family: sans-serif;
+  text-align: left;
+  width: 100%; /* ✅ match container */
+  font-size: 1.2rem;
+  z-index: 1;
+  text-align: center;
+}
+
+}
+
+
 </style>
 <script>
   //BALL SCROLL
@@ -565,6 +634,37 @@ gsap.fromTo(".text2",
   }
 );
 </script>
+
+ <script>
+
+//NAVIGATION SCREEN
+const contactBtn = document.querySelector('.navbar__contact');
+const dropdownMenu = document.getElementById('navDropdown');
+const closeMenu = document.getElementById('closeMenu');
+
+contactBtn.addEventListener('click', () => {
+  dropdownMenu.classList.add('open');
+});
+
+closeMenu.addEventListener('click', () => {
+  dropdownMenu.classList.remove('open');
+});
+
+//SOCIAL CONTAINER BUTTONS FADE ON SCROLL
+document.addEventListener("scroll", () => {
+  const btnContainer = document.querySelector(".social-button-container");
+  if (!btnContainer) return;
+
+  const scrollY = window.scrollY;
+  const maxScroll = 1000; // adjust based on how fast you want the fade
+
+  // Calculate opacity: 1 (at top) to 0.1 (at maxScroll)
+  const newOpacity = Math.max(0.1, 1 - scrollY / maxScroll);
+  btnContainer.style.opacity = newOpacity;
+});
+
+
+    </script>
 <script src="app.js"></script>
 </body>
 </html>

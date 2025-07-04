@@ -76,111 +76,106 @@
       </div>
 
     <div class="inquiry-container">
-        <div class="inquiry-left">
-            <div class="inquiry-left-container"><h1>Send <br></h1><h2>Inquiry.</h2>
-            <p class="inquiry-subtext">Ready for a digital journey? Fill in the inquiry form to give us some idea about your project. We will do our best to reply in 24 hours.</p>
-            <button class="get-in-touch-btn2">Download Profile</button>
-        </div>
-        
-        </div>
-        <div class="inquiry-right">
-            <div class="inquiry-right-container">
-                <div class="inquiry-form-section">
-                <h1>1 / Let us get to know you.</h1>
-              <form class="name-form">
-                <div class="input-group">
-                <label for="firstName" class="input-name">First Name</label>
-                <input type="text" id="firstName" name="firstName" placeholder="John" required>
-                </div>
-                <div class="input-group">
-                <label for="lastName" class="input-name">Last Name</label>
-                <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
-                </div>
-            </form>
-             <form class="name-form">
-                <div class="input-group">
-                <label for="firstName" class="input-name">Company Name</label>
-                <input type="text" id="firstName" name="firstName" placeholder="John" required>
-                </div>
-                <div class="input-group">
-                <label for="lastName" class="input-name">Contact Email</label>
-                <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
-                </div>
-            </form>
-            </div>
-            <div class="inquiry-form-section">
-            <h1>2 / Describe Your Project</h1>
-             <form class="name-form">
-                <div class="input-group">
-                <label for="firstName" class="input-name">Project Title</label>
-                <input type="text" id="firstName" name="firstName" placeholder="e.g. My Company's Website Design" required>
-                </div>
-            </form>
-             <form class="name-form">
-                <div class="input-group">
-                <label for="firstName" class="input-name">Short description</label>
-                <input type="text" id="firstName" name="firstName" placeholder="Desktop and Mobile App" required>
-                </div>
-            </form>
-            <label for="firstName" class="input-name">Project Scope (design + development)</label>
-            <div class="radio-group">
-            <label class="radio-option">
-                <input type="checkbox" name="projectType" value="design">
-                Website Design
-            </label>
-            <label class="radio-option">
-                <input type="checkbox" name="projectType" value="branding">
-                Branding
-            </label>
-            <label class="radio-option">
-                <input type="checkbox" name="projectType" value="development">
-                Business Cards
-            </label>
-            <label class="radio-option">
-                <input type="checkbox" name="projectType" value="consulting">
-                Videography
-            </label>
-            </div>
+  <div class="inquiry-left">
+    <div class="inquiry-left-container">
+      <h1>Send <br></h1>
+      <h2>Inquiry.</h2>
+      <p class="inquiry-subtext">
+        Ready for a digital journey? Fill in the inquiry form to give us some idea about your project. We will do our best to reply in 24 hours.
+      </p>
+      <button class="get-in-touch-btn2">Download Profile</button>
+    </div>
+  </div>
 
-            <!-- Another label and radio group below -->
-            <label for="anotherInput" class="input-name" style="margin-top: 3rem;">Additional (optional)</label>
-            <div class="radio-group">
+  <div class="inquiry-right">
+    <div class="inquiry-right-container">
+      <form action="https://formspree.io/f/meokdnny" method="POST" class="name-form" id="inquiryForm">
+        <div class="inquiry-form-section">
+          <h1>1 / Let us get to know you.</h1>
+
+          <div class="name-form">
+  <div class="input-group half">
+    <label for="firstName" class="input-name">First Name</label>
+    <input type="text" id="firstName" name="firstName" placeholder="John" required>
+  </div>
+
+  <div class="input-group half">
+    <label for="lastName" class="input-name">Last Name</label>
+    <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+  </div>
+
+  <div class="input-group half">
+    <label for="companyName" class="input-name">Company Name</label>
+    <input type="text" id="companyName" name="companyName" placeholder="Company Inc." required>
+  </div>
+
+  <div class="input-group half">
+    <label for="email" class="input-name">Contact Email</label>
+    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+  </div>
+</div>
+
+        <div class="inquiry-form-section">
+          <h1>2 / Describe Your Project</h1>
+
+          <div class="input-group">
+            <label for="projectTitle" class="input-name">Project Title</label>
+            <input type="text" id="projectTitle" name="projectTitle" placeholder="e.g. Website Redesign" required>
+          </div>
+
+          <div class="input-group">
+            <label for="projectDescription" class="input-name">Short description</label>
+            <input type="text" id="projectDescription" name="projectDescription" placeholder="Desktop and Mobile App" required>
+          </div>
+
+          <label class="input-name">Project Scope (design + development)</label>
+          <div class="radio-group">
             <label class="radio-option">
-                <input type="checkbox" name="anotherProjectType" value="design" required>
-                Ecommerce
+              <input type="checkbox" name="projectScope[]" value="Website Design">
+              Website Design
             </label>
-            </div>
+            <label class="radio-option">
+              <input type="checkbox" name="projectScope[]" value="Branding">
+              Branding
+            </label>
+            <label class="radio-option">
+              <input type="checkbox" name="projectScope[]" value="Business Cards">
+              Business Cards
+            </label>
+            <label class="radio-option">
+              <input type="checkbox" name="projectScope[]" value="Videography">
+              Videography
+            </label>
+          </div>
 
+          <label for="additional" class="input-name" style="margin-top: 3rem;">Additional (optional)</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="checkbox" name="additional[]" value="Ecommerce">
+              Ecommerce
+            </label>
+          </div>
 
-            <form class="name-form">
-                <div class="input-group">
-                <label for="firstName" class="input-name">Current Website URL (if exists)</label>
-                <input type="text" id="firstName" name="firstName" placeholder="John" required>
-                </div>
-            </form>
+          <div class="input-group">
+            <label for="websiteUrl" class="input-name">Current Website URL (if exists)</label>
+            <input type="url" id="websiteUrl" name="websiteUrl" placeholder="https://example.com">
+          </div>
 
-            <button class="navbar__inquiry2">
+          <button type="submit" class="navbar__inquiry2">
             Send Inquiry
             <span class="inquiry-arrow">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
                 <path d="M7 17L17 7" />
                 <path d="M7 7h10v10" />
-                </svg>
+              </svg>
             </span>
-            </button>
-                        
-            </div>
-            </div>
-
-
-    
-            
-
-
-
+          </button>
         </div>
+      </form>
     </div>
+  </div>
+</div>
 
     <script>
 

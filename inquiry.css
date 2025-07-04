@@ -331,8 +331,24 @@ input {
   position: relative;
   overflow: hidden; /* ensure the circle stays inside */
   z-index: 1;
+  margin-top: 4rem;
+}
+.name-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
 
+.input-group.half {
+  flex: 0 0 calc(50% - 1rem); /* 2 per row with 2rem gap */
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 768px) {
+  .input-group.half {
+    flex: 0 0 100%;
+  }
+}
 @media screen and (max-width: 768px) {
   .inquiry-container {
     flex-direction: column;

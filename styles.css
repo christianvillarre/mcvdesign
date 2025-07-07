@@ -1311,6 +1311,20 @@ a {
   bottom: -8rem;
   right: -8rem;
 }
+/* Hide mobile video by default */
+.video-mobile {
+  display: none;
+}
+
+/* Show mobile video and hide desktop video on small screens */
+@media (max-width: 768px) {
+  .video-desktop {
+    display: none;
+  }
+  .video-mobile {
+    display: block;
+  }
+}
 
 .card-label {
   position: absolute;

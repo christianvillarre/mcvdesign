@@ -246,7 +246,7 @@ input {
 
 .input-name {
   display: block;           /* ⬅️ Make label respect vertical margin */
-  font-size: 1.4rem;
+  font-size: clamp(1.2rem, 1vw, 1.7rem); /* min 4rem, scales with 10vw, max 10rem */
   margin-top: 2rem;
   margin-bottom: 2rem;      /* Now this will work */
 }
@@ -354,6 +354,13 @@ input {
     flex-direction: column;
     height: auto; /* allow height to grow with content */
   }
+  .input-name {
+  display: block;           /* ⬅️ Make label respect vertical margin */
+  font-size: clamp(1.2rem, 1vw, 1.7rem); /* min 4rem, scales with 10vw, max 10rem */
+  margin-top: 1rem;
+  margin-bottom: 0rem;      /* Now this will work */
+}
+
 
   .inquiry-left,
   .inquiry-right {
@@ -380,14 +387,14 @@ input {
   }
 
   .inquiry-left-container h1 {
-  font-size: clamp(6rem, 10vw, 10rem); /* min 4rem, scales with 10vw, max 10rem */
+  font-size: clamp(4rem, 10vw, 10rem); /* min 4rem, scales with 10vw, max 10rem */
   margin-left: 0;
   font-weight: 400;
   line-height: 1.1;
   margin-top: 0rem;
 }
 .inquiry-left-container h2 {
-  font-size: clamp(6rem, 10vw, 10rem); /* min 4rem, scales with 10vw, max 10rem */
+  font-size: clamp(4rem, 10vw, 10rem); /* min 4rem, scales with 10vw, max 10rem */
   margin-left: 0;
   font-weight: 400;
   line-height: 1;
@@ -410,18 +417,19 @@ input {
   background: transparent;
   color: #ffffff;
   border: 1px solid #ffffff;
-  padding: 1rem 3rem;
+  padding: 0.8rem 1.2rem;
   border-radius: 9999px;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease, color 0.3s ease;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   
 }
 
 .inquiry-form-section h1 {
-    font-size: 2rem;
+    font-size: clamp(1.7rem, 2vw, 2rem); /* min 4rem, scales with 10vw, max 10rem */
+    margin-bottom: 2rem;
 }
 
 .input-group {
@@ -434,11 +442,70 @@ input {
   flex: 1 1 45%;
   display: flex;
   align-items: center;
-  font-size: 1.3rem;
+  font-size: 1rem;
   color: white;
   gap: 2rem;
   cursor: pointer;
   min-width: 80vw;
+  
   margin-bottom: 0rem;
 }
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0rem 0rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+.radio-option input[type="checkbox"] {
+  appearance: none;
+  width: 45px;
+  height: 20px;
+  min-height: 0;
+  border: 2px solid #54f3a4;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  scale: 0.8;
+}
+
+/* Checked visual */
+.radio-option input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 25px;
+  height: 25px;
+  background-color: #54f3a4;
+  border-radius: 5px;
+}
+  .input-group input[type="text"] {
+    padding: 6px 0px;       /* smaller vertical padding */
+    line-height: 3;       /* tighter line height */
+  
+  }
+    .input-group input[type="url"] {
+    padding: 6px 0px;       /* smaller vertical padding */
+    line-height: 3;       /* tighter line height */
+  
+  }
+.input-group input[type="email"] {
+    padding: 6px 0px;       /* smaller vertical padding */
+    line-height: 3;       /* tighter line height */
+  
+  }
+  .input-group.half {
+    margin-bottom: 0rem;    /* control spacing between fields */
+  }
+    .input-group [type="text"] {
+    padding: 6px 0px;       /* smaller vertical padding */
+    line-height: 3;       /* tighter line height */
+  
+  }
+
+  .input-group {
+    margin-bottom: 2rem;    /* control spacing between fields */
+  }
 }

@@ -102,7 +102,7 @@
     }
 
     .circle-wrapper {
-      position: fixed;
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) rotate(-90deg);
@@ -125,8 +125,7 @@
       fill: black;
       stroke-width: 1;
       border:none;
-      opacity: 0;
-      position: fixed;
+  
     }
 
     .background-ring {
@@ -490,52 +489,122 @@ mobile and desktop app development, and brand visual identity.</p>
     </STYLE>
 
 <script>
-window.addEventListener("load", () => {
-  const circle = document.querySelector(".circle2");
-  const dots = document.querySelectorAll(".dot");
-  const baseRadius = circle.offsetWidth / 2;
-  const centerX = baseRadius;
-  const centerY = baseRadius;
+  // Requires GSAP + ScrollTrigger already loaded
+  window.addEventListener("load", () => {
+    const circleEl = document.querySelector(".circle2");
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    if (!circleEl || !dots.length) return;
 
-  const angles = [0, 0, 90, 180, 270];
+    // --- helpers ---
+    function getBase() {
+      const r = circleEl.offsetWidth / 2;
+      return { baseRadius: r, cx: r, cy: r };
+    }
 
-  dots.forEach((dot, i) => {
-    const obj = { angle: 0 };
+    function placeDot(dot, deg, baseRadius, cx, cy) {
+      const rad = (deg - 90) * Math.PI / 180; // 0deg at 12 o'clock
+      let radius = baseRadius - 20;
+      if (deg === 0 || deg === 270) radius = baseRadius - 18; // your tweak
+      const x = cx + radius * Math.cos(rad);
+      const y = cy + radius * Math.sin(rad);
+      dot.style.left = `${x}px`;
+      dot.style.top  = `${y}px`;
+    }
 
-    gsap.to(obj, {
-      angle: angles[i],
-      scrollTrigger: {
-        trigger: ".circle-section",
-        start: "top center",
-        end: "bottom center",
-        scrub: true
-      },
-      onUpdate: () => {
-        const angleRad = (obj.angle - 90) * Math.PI / 180;
-        let radius = baseRadius - 20;
-        if (angles[i] === 0 || angles[i] === 270) radius = baseRadius - 18;
-
-        const x = centerX + radius * Math.cos(angleRad);
-        const y = centerY + radius * Math.sin(angleRad);
-        dot.style.left = `${x}px`;
-        dot.style.top = `${y}px`;
+    // Wait until the element actually has a size (fonts/layout can delay)
+    function waitForSizeThen(fn, retries = 20) {
+      const { baseRadius } = getBase();
+      if (baseRadius > 0) {
+        fn();
+      } else if (retries > 0) {
+        requestAnimationFrame(() => waitForSizeThen(fn, retries - 1));
       }
+    }
+
+    // Target angles per dot
+    const targetAngles = [0, 0, 90, 180, 270];
+
+    // Main init that we can re-run on resize
+    function initDots() {
+      // Clean up any prior ST created by this init
+      ScrollTrigger.getAll().forEach(st => {
+        if (st.vars && st.vars.trigger === ".circle-section" && st._callbackCache) {
+          // leave other STs; we only kill the one we create below by label
+        }
+      });
+
+      const { baseRadius, cx, cy } = getBase();
+      if (baseRadius <= 0) return; // safety
+
+      // 1) Place all dots at 12 o'clock immediately
+      dots.forEach(dot => placeDot(dot, 0, baseRadius, cx, cy));
+
+      // 2) Drive angle from progress (0 -> target)
+      // Kill any previous instance we might have made
+      if (window.__dotST) {
+        window.__dotST.kill();
+        window.__dotST = null;
+      }
+
+      window.__dotST = ScrollTrigger.create({
+        trigger: ".circle-section",
+        start: "top top",      // match your pin start
+        end: "bottom center",
+        scrub: true,
+        onUpdate: self => {
+          const p = self.progress; // 0..1
+          dots.forEach((dot, i) => {
+            const ang = targetAngles[i] * p;
+            placeDot(dot, ang, baseRadius, cx, cy);
+          });
+        }
+      });
+    }
+
+    // Run when size is ready
+    waitForSizeThen(() => {
+      initDots();
+
+      // Optional: fade in at pin start (so nothing floats pre-lock)
+      gsap.fromTo([".circle-container"], { opacity: 0 }, {
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.out",
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: ".circle-section",
+          start: "top top",
+          end: "top top",
+          toggleActions: "play none none reverse"
+        }
+      });
+
+      // Recompute on resize (fonts/viewport changes)
+      let ro;
+      if (window.ResizeObserver) {
+        ro = new ResizeObserver(() => {
+          // Debounce a bit
+          clearTimeout(window.__dotResizeTO);
+          window.__dotResizeTO = setTimeout(() => {
+            if (window.__dotST) window.__dotST.kill();
+            initDots();
+            ScrollTrigger.refresh();
+          }, 100);
+        });
+        ro.observe(circleEl);
+      }
+
+      // Fallback plain resize
+      window.addEventListener("resize", () => {
+        clearTimeout(window.__dotResizeTO2);
+        window.__dotResizeTO2 = setTimeout(() => {
+          if (window.__dotST) window.__dotST.kill();
+          initDots();
+          ScrollTrigger.refresh();
+        }, 150);
+      });
     });
   });
-
-  // ✅ Fade in .circle-container as section scrolls in
- gsap.to([".circle-container", ".circle", ".background-ring", ".progress-ring"], {
-  opacity: 1,
-  ease: "power2.out",
-  duration: 1,
-  scrollTrigger: {
-    trigger: ".circle-section",
-    start: "top center",
-    end: "top center",
-    toggleActions: "play none none reverse"
-  }
-});
-});
 </script>
 
     <div class="text-layer" id="text0">Draft</div>
@@ -749,6 +818,9 @@ ScrollTrigger.create({
   document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
 }
 });
+
+
+
 </script>
 
 

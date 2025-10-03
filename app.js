@@ -265,6 +265,16 @@ window.addEventListener('scroll', () => {
   lastScrollY = y;
 });
 
+// Social button fade on scroll
+  document.addEventListener("scroll", () => {
+    const btnContainer = document.querySelector(".social-button-container");
+    if (!btnContainer) return;
+    const scrollY = window.scrollY;
+    const newOpacity = Math.max(0.1, 1 - scrollY / 1000);
+    btnContainer.style.opacity = newOpacity;
+  });
+
+
 // === Mobile toggle (ensure navbar stays visible when open) ===
 if (mobileMenuToggle && leftMenu && rightMenu) {
   mobileMenuToggle.addEventListener('click', () => {

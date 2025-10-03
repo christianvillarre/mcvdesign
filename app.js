@@ -185,6 +185,7 @@ if (isMobile) {
 });
 
   // Navbar scroll behavior
+  /*    OLD BEHAVIOR - LOGO STAYS NAV
   let lastScrollY = window.scrollY;
   const emailBtn = document.querySelector('.navbar__email');
   const inquiryBtn = document.querySelector('.navbar__inquiry');
@@ -232,6 +233,49 @@ if (isMobile) {
       rightMenu.classList.toggle('active');
     });
   }
+    */
+
+  let lastScrollY = window.scrollY;
+const navbar = document.querySelector('.navbar');
+
+// Support either your previous #mobile-menu OR the circular .navbar__contact
+const mobileMenuToggle =
+  document.getElementById('mobile-menu') ||
+  document.querySelector('.navbar__contact');
+
+const leftMenu  = document.querySelector('.navbar__menu--left');
+const rightMenu = document.querySelector('.navbar__menu--right');
+
+const isMenuOpen = () => {
+  // If you toggle a class on the toggle button, check it here:
+  return mobileMenuToggle?.classList.contains('is-active')
+    // Or, if you toggle the panels:
+    || leftMenu?.classList.contains('active')
+    || rightMenu?.classList.contains('active');
+};
+
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+
+  if (y > lastScrollY && y > 200 && !isMenuOpen()) {
+    navbar?.classList.add('nav--hidden');
+  } else {
+    navbar?.classList.remove('nav--hidden');
+  }
+  lastScrollY = y;
+});
+
+// === Mobile toggle (ensure navbar stays visible when open) ===
+if (mobileMenuToggle && leftMenu && rightMenu) {
+  mobileMenuToggle.addEventListener('click', () => {
+    mobileMenuToggle.classList.toggle('is-active');
+    leftMenu.classList.toggle('active');
+    rightMenu.classList.toggle('active');
+
+    // Keep bar visible while menu is open
+    if (isMenuOpen()) navbar?.classList.remove('nav--hidden');
+  });
+}
 
   // Navigation dropdown
 const contactBtn = document.querySelector('.navbar__contact');

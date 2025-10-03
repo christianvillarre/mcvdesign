@@ -79,7 +79,9 @@ a {
   transform: translateY(0); /* start in place */
   transition: transform 0.3s ease; /* smooth animation */
 }
-
+.navbar.nav--hidden {
+  transform: translateY(-100%);
+}
 .navbar.scrolled::after {
   width: 100%; /* ✅ Animate full width when scrolled */
 }

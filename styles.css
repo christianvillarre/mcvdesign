@@ -15,6 +15,7 @@ a {
 }
 .chat-link {
   text-decoration: underline;
+  z-index: 99;
 }
   
 .ball {
@@ -40,6 +41,12 @@ a {
   margin-top: 0px;
   opacity: 1; /* Just the base state, no transition here */ 
 }
+.ball,
+#draggableBall {
+  pointer-events: none !important;
+  z-index: 0; /* keep it under nav/buttons */
+}
+
 @media (max-width: 768px) {
   .ball {
    position: absolute;
@@ -1505,6 +1512,7 @@ a {
   color: #fff;                    /* White text */
   padding: 5rem;           /* Vertical and horizontal spacing */
   text-align: left;             /* Center text */
+  z-index: 99;
 }
 @media (max-width: 768px) {
   .footer {

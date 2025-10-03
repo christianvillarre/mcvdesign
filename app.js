@@ -12,20 +12,29 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // White circle hover effect
-  const inquiryBtns = document.querySelectorAll('.navbar__inquiry, .navbar__email, .button-design');
-  inquiryBtns.forEach(btn => {
-    btn.addEventListener('mouseenter', () => {
-      btn.style.setProperty('--circle-scale', 3);
-      gsap.to(btn.querySelector('.arrow-icon'), { color: 'black', duration: 0.6, ease: 'power2.inOut' });
-      gsap.to(btn, { color: 'black', duration: 0.6, ease: 'power2.inOut' });
-    });
+const inquiryBtns = document.querySelectorAll('.navbar__inquiry, .navbar__email, .button-design');
 
-    btn.addEventListener('mouseleave', () => {
-      btn.style.setProperty('--circle-scale', 0);
-      gsap.to(btn.querySelector('.arrow-icon'), { color: 'white', duration: 0.5, ease: 'power2.inOut' });
-      gsap.to(btn, { color: 'white', duration: 0.5, ease: 'power2.inOut' });
-    });
-  });
+inquiryBtns.forEach(btn => {
+  const toBlack = () => {
+    const icon = btn.querySelector('.arrow-icon');
+    gsap.killTweensOf([btn, icon]);              // stop in-flight tweens
+    gsap.to(btn,  { color: 'black', duration: 0.4, ease: 'power2.inOut', overwrite: 'auto' });
+    if (icon) gsap.to(icon, { color: 'black', duration: 0.4, ease: 'power2.inOut', overwrite: 'auto' });
+    btn.style.setProperty('--circle-scale', 3);
+  };
+
+  const toWhite = () => {
+    const icon = btn.querySelector('.arrow-icon');
+    gsap.killTweensOf([btn, icon]);              // stop in-flight tweens
+    gsap.to(btn,  { color: 'white', duration: 0.35, ease: 'power2.inOut', overwrite: 'auto' });
+    if (icon) gsap.to(icon, { color: 'white', duration: 0.35, ease: 'power2.inOut', overwrite: 'auto' });
+    btn.style.setProperty('--circle-scale', 0);
+  };
+
+  btn.addEventListener('pointerenter', toBlack);
+  btn.addEventListener('pointerleave', toWhite);
+  btn.addEventListener('pointercancel', toWhite);   // safety net on touch/drag cancel
+});
 
   // Ball animation (desktop only)
   if (!isMobile) {

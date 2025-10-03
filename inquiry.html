@@ -99,90 +99,116 @@
 
   <div class="inquiry-right">
     <div class="inquiry-right-container">
-      <form action="https://formspree.io/f/meokdnny" method="POST" class="name-form" id="inquiryForm">
-        <div class="inquiry-form-section">
-          <h1>1 / Let us get to know you.</h1>
+      
+          <form
+  name="inquiryForm"
+  method="POST"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  data-netlify-recaptcha="true"
+  action="/thank-you"
+  class="name-form"
+  id="inquiryForm"
+>
+  <!-- Honeypot (hidden) -->
+  <p hidden>
+    <label>Don’t fill this out: <input name="bot-field" /></label>
+  </p>
 
-          <div class="name-form">
-  <div class="input-group half">
-    <label for="firstName" class="input-name">First Name</label>
-    <input type="text" id="firstName" name="firstName" placeholder="John" required>
+  <!-- Required hidden form-name for Netlify -->
+  <input type="hidden" name="form-name" value="inquiryForm" />
+
+  <div class="inquiry-form-section">
+    <h1>1 / Let us get to know you.</h1>
+
+    <div class="name-form">
+      <div class="input-group half">
+        <label for="firstName" class="input-name">First Name</label>
+        <input type="text" id="firstName" name="firstName" placeholder="John" required>
+      </div>
+
+      <div class="input-group half">
+        <label for="lastName" class="input-name">Last Name</label>
+        <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+      </div>
+
+      <div class="input-group half">
+        <label for="companyName" class="input-name">Company Name</label>
+        <input type="text" id="companyName" name="companyName" placeholder="Company Inc." required>
+      </div>
+
+      <div class="input-group half">
+        <label for="email" class="input-name">Contact Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      </div>
+    </div>
   </div>
 
-  <div class="input-group half">
-    <label for="lastName" class="input-name">Last Name</label>
-    <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+  <div class="inquiry-form-section">
+    <h1>2 / Describe Your Project</h1>
+
+    <div class="input-group">
+      <label for="projectTitle" class="input-name">Project Title</label>
+      <input type="text" id="projectTitle" name="projectTitle" placeholder="e.g. Website Redesign" required>
+    </div>
+
+    <div class="input-group">
+      <label for="projectDescription" class="input-name">Short description</label>
+      <input type="text" id="projectDescription" name="projectDescription" placeholder="Desktop and Mobile App" required>
+    </div>
+
+    <label class="input-name">Project Scope (design + development)</label>
+    <div class="radio-group project-scope-group">
+      <label class="radio-option">
+        <input type="checkbox" name="projectScope[]" value="Website Design">
+        Website Design
+      </label>
+      <label class="radio-option">
+        <input type="checkbox" name="projectScope[]" value="Branding">
+        Branding
+      </label>
+      <label class="radio-option">
+        <input type="checkbox" name="projectScope[]" value="SEO/Google">
+        SEO/Google
+      </label>
+      <label class="radio-option">
+        <input type="checkbox" name="projectScope[]" value="Videography">
+        Videography
+      </label>
+    </div>
+
+    <label for="additional" class="input-name" style="margin-top: 3rem;">Additional (optional)</label>
+    <div class="radio-group">
+      <label class="radio-option">
+        <input type="checkbox" name="additional[]" value="Ecommerce">
+        Ecommerce
+      </label>
+    </div>
+
+    <div class="input-group">
+      <label for="websiteUrl" class="input-name">Current Website URL (if exists)</label>
+      <input type="url" id="websiteUrl" name="websiteUrl" placeholder="https://example.com">
+    </div>
+
+    <!-- reCAPTCHA appears here -->
+    <div data-netlify-recaptcha="true"></div>
+
+    <button type="submit" class="navbar__inquiry2">
+      Send Inquiry
+      <span class="inquiry-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+          <path d="M7 17L17 7" />
+          <path d="M7 7h10v10" />
+        </svg>
+      </span>
+    </button>
   </div>
+</form>
 
-  <div class="input-group half">
-    <label for="companyName" class="input-name">Company Name</label>
-    <input type="text" id="companyName" name="companyName" placeholder="Company Inc." required>
-  </div>
 
-  <div class="input-group half">
-    <label for="email" class="input-name">Contact Email</label>
-    <input type="email" id="email" name="email" placeholder="you@example.com" required>
-  </div>
-</div>
 
-        <div class="inquiry-form-section">
-          <h1>2 / Describe Your Project</h1>
 
-          <div class="input-group">
-            <label for="projectTitle" class="input-name">Project Title</label>
-            <input type="text" id="projectTitle" name="projectTitle" placeholder="e.g. Website Redesign" required>
-          </div>
-
-          <div class="input-group">
-            <label for="projectDescription" class="input-name">Short description</label>
-            <input type="text" id="projectDescription" name="projectDescription" placeholder="Desktop and Mobile App" required>
-          </div>
-
-          <label class="input-name">Project Scope (design + development)</label>
-          <div class="radio-group project-scope-group">
-  <label class="radio-option">
-    <input type="checkbox" name="projectScope[]" value="Website Design">
-    Website Design
-  </label>
-  <label class="radio-option">
-    <input type="checkbox" name="projectScope[]" value="Branding">
-    Branding
-  </label>
-  <label class="radio-option">
-    <input type="checkbox" name="projectScope[]" value="Business Cards">
-    SEO/Google
-  </label>
-  <label class="radio-option">
-    <input type="checkbox" name="projectScope[]" value="Videography">
-    Videography
-  </label>
-</div>
-
-          <label for="additional" class="input-name" style="margin-top: 3rem;">Additional (optional)</label>
-          <div class="radio-group">
-            <label class="radio-option">
-              <input type="checkbox" name="additional[]" value="Ecommerce">
-              Ecommerce
-            </label>
-          </div>
-
-          <div class="input-group">
-            <label for="websiteUrl" class="input-name">Current Website URL (if exists)</label>
-            <input type="url" id="websiteUrl" name="websiteUrl" placeholder="https://example.com">
-          </div>
-
-          <button type="submit" class="navbar__inquiry2">
-            Send Inquiry
-            <span class="inquiry-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
-                <path d="M7 17L17 7" />
-                <path d="M7 7h10v10" />
-              </svg>
-            </span>
-          </button>
-        </div>
-      </form>
     </div>
   </div>
 </div>

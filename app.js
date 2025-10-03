@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // White circle hover effect
-  const inquiryBtns = document.querySelectorAll('.navbar__inquiry, .navbar__email');
+  const inquiryBtns = document.querySelectorAll('.navbar__inquiry, .navbar__email, .button-design');
   inquiryBtns.forEach(btn => {
     btn.addEventListener('mouseenter', () => {
       btn.style.setProperty('--circle-scale', 3);

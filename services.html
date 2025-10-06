@@ -455,6 +455,21 @@ mobile and desktop app development, and brand visual identity.</p>
   background-color: #54f3a4;
   /* ✅ Removed scale */
 }
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* tablet-specific tweaks */
+          .circle-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 78vmin;
+  height: 78vmin;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0; /* ✅ hide initially */
+}
+}
+
   @media (max-width: 768px) {
     .dot {
   position: absolute;
@@ -471,8 +486,8 @@ mobile and desktop app development, and brand visual identity.</p>
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 78vmin;
-  height: 78vmin;
+  width: 80vmin;
+  height: 80vmin;
   z-index: 10;
   pointer-events: none;
   opacity: 0; /* ✅ hide initially */

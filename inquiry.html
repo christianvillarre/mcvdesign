@@ -106,7 +106,6 @@
   data-netlify="true"
   netlify-honeypot="bot-field"
   data-netlify-recaptcha="true"
-  action="/thank-you"
   class="name-form"
   id="inquiryForm"
 >
@@ -186,9 +185,16 @@
     </div>
 
     <div class="input-group" style="margin-bottom: 2rem;">
-      <label for="websiteUrl" class="input-name">Current Website URL (if exists)</label>
-      <input type="url" id="websiteUrl" name="websiteUrl" placeholder="https://example.com">
-    </div>
+  <label for="websiteUrl" class="input-name">Current Website URL (if exists)</label>
+  <input
+    type="text"
+    id="websiteUrl"
+    name="websiteUrl"
+    placeholder="https://example.com"
+    inputmode="url"
+    autocomplete="url"
+  >
+</div>
 
     <!-- reCAPTCHA appears here -->
     <div data-netlify-recaptcha="true" style="margin-top: 2rem;"></div>

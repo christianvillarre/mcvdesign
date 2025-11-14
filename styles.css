@@ -216,7 +216,7 @@ a {
   bottom: 30px;
 }
 .navbar__email {
-  width: 290px;                /* ✅ Fixed width */
+  width: 330px;                /* ✅ Fixed width */
   height: 65px;                /* ✅ Fixed height */
   padding: 0 1.5rem;           /* ✅ Padding inside */
   font-size: 1.4rem;
@@ -269,7 +269,7 @@ a {
 .navbar__email::before {
   content: "";
   position: absolute;
-  width: 100px; /* smaller than 200% */
+  width: 120px; /* smaller than 200% */
   height: 100px;
   top: 50%;
   left: 50%;

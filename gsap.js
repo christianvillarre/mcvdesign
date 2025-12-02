@@ -224,3 +224,43 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+// Fade "We are a forward-thinking design lab" when first card slides over it
+gsap.ticker.add(() => {
+  const title = document.querySelector(".scroll-intro-title");
+  const firstCard = document.querySelector(".image-card");
+
+  if (!title || !firstCard) return;
+
+  // Only do this when the whole image-scroll section is in view
+  const section = document.getElementById("image-scroll");
+  if (!section) return;
+
+  const sectionRect = section.getBoundingClientRect();
+  const inView = sectionRect.bottom > 0 && sectionRect.top < window.innerHeight;
+  if (!inView) return;
+
+  const titleRect = title.getBoundingClientRect();
+  const cardRect = firstCard.getBoundingClientRect();
+
+  // How much the card has moved into the title horizontally
+  const overlap = titleRect.right - cardRect.left;
+
+  // When overlap <= 0 → no fade
+  // When overlap >= title width → fully faded
+  const fadeStart = 0;
+  const fadeEnd = titleRect.width; // you can tweak, e.g. *0.7 to fade faster
+
+  let t = (overlap - fadeStart) / (fadeEnd - fadeStart);
+  t = gsap.utils.clamp(0, 1, t);
+
+  const targetOpacity = 1 - t;
+
+  gsap.to(title, {
+    opacity: targetOpacity,
+    duration: 0.15,
+    ease: "power2.out",
+    overwrite: true
+  });
+});

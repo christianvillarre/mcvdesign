@@ -409,30 +409,55 @@ section.spacer-bottom {
 <script>
 gsap.registerPlugin(ScrollTrigger, Draggable, InertiaPlugin);
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // ✅ Wait for web fonts to finish loading so scrollWidth is correct
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
   initScrollTrack();
 });
 
 function initScrollTrack() {
   const scrollTrack = document.getElementById("scrollTrack");
-  const scrollText = document.getElementById("scrollText");
   const scrollContainer = document.getElementById("scrollContainer");
-
-  const trackWidth = scrollText.scrollWidth;
-  const containerWidth = scrollContainer.offsetWidth;
-  const maxX = 0;
-  const minX = -(trackWidth - containerWidth);
 
   gsap.set(scrollTrack, { x: 0 });
 
-  Draggable.create(scrollTrack, {
+  let draggable;
+
+  // ✅ Recalculate bounds any time layout/fonts change
+  function updateBounds() {
+    const trackWidth = scrollTrack.scrollWidth;          // measure the actual draggable element
+    const containerWidth = scrollContainer.clientWidth;  // more stable than offsetWidth
+
+    const maxX = 0;
+    const minX = Math.min(0, -(trackWidth - containerWidth));
+
+    // If Draggable already exists, update bounds live
+    if (draggable) {
+      draggable.applyBounds({ minX, maxX });
+      draggable.update(true);
+    }
+
+    return { minX, maxX };
+  }
+
+  // Initial bounds calc
+  const { minX, maxX } = updateBounds();
+
+  // Create draggable
+  draggable = Draggable.create(scrollTrack, {
     type: "x",
     inertia: true,
     bounds: { minX, maxX },
     edgeResistance: 0.8,
     cursor: "grab",
     activeCursor: "grabbing"
-  });
+  })[0];
+
+  // Keep bounds accurate on resize / ScrollTrigger refresh
+  window.addEventListener("resize", updateBounds);
+  ScrollTrigger.addEventListener("refreshInit", updateBounds);
 
   let hasViewedSection = false;
   let nudgedRight = false;
@@ -440,25 +465,31 @@ function initScrollTrack() {
 
   const nudgeLeft = () => {
     const currentX = gsap.getProperty(scrollTrack, "x");
+    const { minX, maxX } = updateBounds(); // ensure we clamp to current bounds
     const targetX = gsap.utils.clamp(minX, maxX, currentX - 100);
+
     gsap.to(scrollTrack, {
       x: targetX,
       duration: 0.8,
-      ease: "power3.out"
+      ease: "power3.out",
+      onUpdate: () => draggable && draggable.update()
     });
   };
 
   const nudgeRight = () => {
     const currentX = gsap.getProperty(scrollTrack, "x");
+    const { minX, maxX } = updateBounds(); // ensure we clamp to current bounds
     const targetX = gsap.utils.clamp(minX, maxX, currentX + 100);
+
     gsap.to(scrollTrack, {
       x: targetX,
       duration: 0.8,
-      ease: "power3.out"
+      ease: "power3.out",
+      onUpdate: () => draggable && draggable.update()
     });
   };
 
-  // 🔁 Use a requestAnimationFrame loop to wait until it's truly in view
+  // 🔁 Wait until truly in view, then nudge once
   function waitUntilInViewAndNudge() {
     const rect = scrollContainer.getBoundingClientRect();
     const inView = rect.top < window.innerHeight && rect.bottom > 0;
@@ -472,7 +503,7 @@ function initScrollTrack() {
     }
   }
 
-  waitUntilInViewAndNudge(); // Start visibility detection loop
+  waitUntilInViewAndNudge();
 
   // Scroll-based nudging logic
   window.addEventListener("scroll", () => {

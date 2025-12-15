@@ -159,8 +159,17 @@
           <div class="header2">
             <div class="design">
               <div class="mcv-mask">
-              <h1 class="mcvdesign">mcvdesign.</h1>
+               <!-- SEO H1 (static, indexed) -->
+              <h1 class="mcvdesign">
+                Houston Design Lab
+              </h1>
+
+              
+
               </div>
+              <p class="hero-animated" aria-hidden="true">
+                <span class="swap" id="swapWord"></span>
+              </p>
             </div>
           </div>
         </div>
@@ -187,13 +196,46 @@
 .mcv-mask {
   overflow: hidden;
   display: inline-block;
-   line-height: 1.2;          /* slightly looser line spacing */
+   line-height: 1;          /* slightly looser line spacing */
   padding-bottom: 0.2em;     /* gives room for letters like g, y, p */
 }
 
 .mcvdesign {
   display: inline-block;
   transform: translateY(100%); /* start off-screen */
+}
+.hero-animated {
+  margin-top: 1rem;
+  font-size: clamp(1.2rem, 10vw, 10rem);
+  font-weight: 1000;
+  color: #dddddd;
+  letter-spacing: 0.02em;
+}
+
+.swap {
+  display: inline-flex;
+}
+
+/* EACH LETTER */
+.swap span {
+  display: inline-block;
+
+  /* 🔒 NO FILL */
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+
+  /* ✅ OUTLINE */
+  -webkit-text-stroke: 3px #54f3a4;
+
+  /* Animation states */
+  opacity: 0;
+  transform: translateY(10px);
+  filter: blur(6px);
+
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease,
+    filter 0.35s ease;
 }
   </style>
 
@@ -206,7 +248,7 @@
   <div class="image-scroll-container">
     <!-- ✅ Changed from <section> to <div> for valid structure -->
     <div class="scroll-intro">
-      <h2 class="scroll-intro-title">We are a forward-<br>thinking design lab</h2>
+      <h2 class="scroll-intro-title">We are a forward-thinking<br>digital design lab</h2>
     </div>
     <div class="image-track">
       <!-- 💡 Repeating image-card structure -->
@@ -530,13 +572,13 @@ function initScrollTrack() {
 
   <div class="large-text-container">
     
-    <div class="large-text"><h1><span class="highlight">Services you need </span><br>to build your product.</h1> </div>
+    <div class="large-text"><h2><span class="highlight">Digital Design & Development Services</span><br>for Websites, Apps, and Brands</h2> </div>
     <div class="large-text"><p>We specialize in delivering cutting-edge solutions spanning product design, website and e-commerce site development, mobile and desktop app development, and brand visual identity.</p></div>
   </div>
   <div class="services">
   <div class="services-container">
     <div class="services-card">
-      <h2 class="card-title">Design</h2>
+      <h3 class="card-title">Design</h3>
       <div class="card-text">Our design services combine aesthetics and functionality to create digital products.</div>
       <div class="card-text2">+ Branding<br>+ Website & E-commerce<br>+ Mobile & Web App<br>+ User Experience</div>
       <hr class="card-divider">
@@ -554,7 +596,7 @@ function initScrollTrack() {
     </div>
 
     <div class="services-card">
-      <h2 class="card-title">Development</h2>
+      <h3 class="card-title">Development</h3>
       <div class="card-text">Our development solutions merge innovation and efficiency to engineer digital solutions.</div>
       <div class="card-text2">+ Mobile & Web Apps<br>+ Web Development<br>+ Cross-Platform<br>+ Embedded Software</div>
       <hr class="card-divider">
@@ -572,7 +614,7 @@ function initScrollTrack() {
     </div>
 
     <div class="services-card">
-      <h2 class="card-title">Growth</h2>
+      <h3 class="card-title">Growth</h3>
       <div class="card-text">Versatile solutions tailored to your unique requirements, providing support across diverse domains.</div>
       <div class="card-text2">+ Scoping<br>+ Consulting<br>+ Management<br>+ Support</div>
       <hr class="card-divider">

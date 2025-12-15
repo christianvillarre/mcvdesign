@@ -117,71 +117,99 @@ if (isMobile) {
 
 
   // Horizontal scroll section
-  window.addEventListener("load", () => {
+window.addEventListener("load", () => {
   const track = document.querySelector(".image-track");
-  const isMobile = window.innerWidth <= 768;
 
-  if (track) {
-    const updateScroll = () => {
-      // Kill all previous ScrollTriggers before re-initializing
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  if (!track) return;
 
-      if (isMobile) {
-        // On mobile: remove transforms and pinning
-        gsap.set(track, { clearProps: "all" });
-        track.style.transform = "none";
+  const updateScroll = () => {
+    const isMobile = window.innerWidth <= 768;
 
-        // Optionally remove top padding/margin if any
-        document.querySelector("#image-scroll")?.style.setProperty("padding-top", "0");
-        return;
-      }
+    // Kill all previous ScrollTriggers before re-initializing
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
-      // Desktop horizontal scroll setup
-      const trackWidth = track.scrollWidth;
-      gsap.set(track, { x: window.innerWidth });
+    // ✅ Mobile: no pinning, no transforms
+    if (isMobile) {
+      gsap.set(track, { clearProps: "all" });
+      track.style.transform = "none";
+      document.querySelector("#image-scroll")?.style.setProperty("padding-top", "0");
 
-      gsap.to(track, {
-        x: -trackWidth,
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#image-scroll",
-          start: "top top",
-          end: "+=" + (trackWidth + window.innerWidth),
-          scrub: 1,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true
-        }
-      });
+      // Keep title visible on mobile
+      gsap.set(".scroll-intro-title", { clearProps: "opacity,transform,filter" });
+      ScrollTrigger.refresh();
+      return;
+    }
 
-      // Ball fade on horizontal scroll progress
-      ScrollTrigger.create({
+    // ✅ Desktop: horizontal scroll setup
+    const trackWidth = track.scrollWidth;
+
+    gsap.set(track, { x: window.innerWidth });
+
+    // Main pinned horizontal tween
+    gsap.to(track, {
+      x: -trackWidth,
+      ease: "none",
+      scrollTrigger: {
         trigger: "#image-scroll",
         start: "top top",
         end: "+=" + (trackWidth + window.innerWidth),
-        scrub: true,
-        onUpdate: (self) => {
-          if (!isMobile) {
-            const progress = self.progress;
-            const fadeOutStart = 0.8;
-            const opacity = progress < fadeOutStart
-              ? 1
-              : 1 - (progress - fadeOutStart) / (1 - fadeOutStart);
-            gsap.to(".ball", {
-              opacity,
-              duration: 0.2,
-              overwrite: true
-            });
-          }
-        }
-      });
+        scrub: 1,
+        pin: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true
+      }
+    });
 
-      ScrollTrigger.refresh();
-    };
+    // Ensure title starts visible
+    gsap.set(".scroll-intro-title", { opacity: 1, y: 0, filter: "blur(0px)" });
 
-    updateScroll();
-    window.addEventListener("resize", updateScroll);
-  }
+    // ✅ Title fade tied to horizontal progress (NOT when approaching section)
+    ScrollTrigger.create({
+      trigger: "#image-scroll",
+      start: "top top",
+      end: "+=" + (trackWidth + window.innerWidth),
+      scrub: true,
+      onUpdate: (self) => {
+        // Fade only AFTER horizontal motion begins
+        const fadeStart = 0.03; // 3% into horizontal
+        const fadeEnd   = 0.14; // 14% into horizontal
+        const t = gsap.utils.clamp(0, 1, (self.progress - fadeStart) / (fadeEnd - fadeStart));
+
+        gsap.set(".scroll-intro-title", {
+          opacity: 1 - t,
+          y: -40 * t,
+          filter: `blur(${6 * t}px)`
+        });
+      }
+    });
+
+    // ✅ Ball fade on horizontal scroll progress (your original logic)
+    ScrollTrigger.create({
+      trigger: "#image-scroll",
+      start: "top top",
+      end: "+=" + (trackWidth + window.innerWidth),
+      scrub: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        const fadeOutStart = 0.8;
+        const opacity =
+          progress < fadeOutStart
+            ? 1
+            : 1 - (progress - fadeOutStart) / (1 - fadeOutStart);
+
+        gsap.to(".ball", {
+          opacity,
+          duration: 0.2,
+          overwrite: true
+        });
+      }
+    });
+
+    ScrollTrigger.refresh();
+  };
+
+  updateScroll();
+  window.addEventListener("resize", updateScroll);
 });
 
   // Navbar scroll behavior
@@ -288,22 +316,31 @@ if (mobileMenuToggle && leftMenu && rightMenu) {
 }
 
   // Navigation dropdown
+  function lockScroll() {
+  document.body.style.overflow = "hidden";
+  document.body.style.height = "100vh";
+}
+
+function unlockScroll() {
+  document.body.style.overflow = "";
+  document.body.style.height = "";
+}
 const contactBtn = document.querySelector('.navbar__contact');
 const dropdownMenu = document.getElementById('navDropdown');
 const closeMenu = document.getElementById('closeMenu');
 
 contactBtn?.addEventListener('click', () => {
-  // Trigger layout read to force a reflow
-  dropdownMenu.offsetHeight;
+  dropdownMenu.offsetHeight; // force reflow
 
-  // Force repaint via requestAnimationFrame
   requestAnimationFrame(() => {
     dropdownMenu?.classList.add('open');
+    lockScroll(); // 🔒 STOP SCROLL
   });
 });
 
 closeMenu?.addEventListener('click', () => {
   dropdownMenu?.classList.remove('open');
+  unlockScroll(); // 🔓 RESTORE SCROLL
 });
 
   // Navbar link underline animation
@@ -324,4 +361,49 @@ closeMenu?.addEventListener('click', () => {
   });
 });
 
-  
+
+
+//RECENT CHANGES
+//ROTATING TEXT WEBSITES, BRANDING, SEO
+
+  const words = ["websites", "branding", "SEO"];
+  const el = document.getElementById("swapWord");
+
+  let index = 0;
+
+  function animateWord(word) {
+    el.innerHTML = "";
+
+    [...word].forEach((ch, i) => {
+      const span = document.createElement("span");
+      span.textContent = ch === " " ? "\u00A0" : ch;
+
+      // Initial hidden state
+      span.style.opacity = "0";
+      span.style.transform = "translateY(10px)";
+      span.style.filter = "blur(6px)";
+
+      el.appendChild(span);
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          span.style.opacity = "1";
+          span.style.transform = "translateY(0)";
+          span.style.filter = "blur(0)";
+        }, i * 70);
+      });
+    });
+  }
+
+  // ⏳ WAIT before first animation
+  setTimeout(() => {
+    animateWord(words[index]);
+
+    // 🔁 Normal loop AFTER first animation
+    setInterval(() => {
+      index = (index + 1) % words.length;
+      animateWord(words[index]);
+    }, 3600);
+
+  }, 2400); // ⬅️ delay before first appearance
+

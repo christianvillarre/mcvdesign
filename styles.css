@@ -913,7 +913,7 @@ a {
   
   /* Mobile Responsive */
   @media screen and (max-width: 768px) {
-    html, body { overflow-x: hidden; }
+    html, body { overflow-x: clip; }
     .main {
       height: 120vh;
       overflow-x: clip;

@@ -50,7 +50,7 @@ a {
 @media (max-width: 768px) {
   .ball {
    position: absolute;
-   margin-top: 150px;
+   margin-top: 0px;
    width: 750px;
   height: 750px;
   z-index: 0;
@@ -490,10 +490,10 @@ a {
 
 .dropdown-video-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  bottom: 0;
+  right: 0;
+  width: 80%;
+  height: 80%;
   z-index: 0; /* Behind all dropdown content */
   overflow: hidden;
 }
@@ -673,7 +673,7 @@ a {
   display: inline-block;
   will-change: transform;
 }
-  
+
   .main__content h2 {
     font-size: 4rem;
     margin-top: 10px;
@@ -961,6 +961,24 @@ a {
       margin-top: 1rem;
       font-size: 1.5rem;
     }
+    .dropdown-video-bg {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 90%;
+  z-index: 0; /* Behind all dropdown content */
+  overflow: hidden;
+}
+
+.dropdown-video-bg video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1; /* Optional: make it subtle */
+  pointer-events: none;
+  z-index: -1;
+}
   }
   
   @media screen and (max-width: 480px) {
@@ -1475,6 +1493,7 @@ a {
   #image-scroll {
     height: auto;
     overflow: visible;
+    margin-top: -15vh;
   }
   .image-card {
     width: 90vw;  /* Smaller width for mobile screens */

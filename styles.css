@@ -652,7 +652,7 @@ a {
   z-index: 0;
 }
   .design h1 {
-    font-size: clamp(4rem, 14vw, 10rem);
+    font-size: clamp(1.5rem, 2vw, 2rem);
   }
 }
   .effect-container {

@@ -50,7 +50,7 @@ a {
 @media (max-width: 768px) {
   .ball {
    position: absolute;
-   margin-top: 0px;
+   margin-top: 0vh;
    width: 750px;
   height: 750px;
   z-index: 0;

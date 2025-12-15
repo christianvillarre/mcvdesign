@@ -50,7 +50,7 @@ a {
 @media (max-width: 768px) {
   .ball {
    position: absolute;
-   margin-top: 0vh;
+   margin-top: 150px;
    width: 750px;
   height: 750px;
   z-index: 0;
@@ -490,10 +490,10 @@ a {
 
 .dropdown-video-bg {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 80%;
-  height: 80%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0; /* Behind all dropdown content */
   overflow: hidden;
 }
@@ -549,16 +549,25 @@ a {
   z-index: 0;
 }
 
-.main {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center; /* change from flex-start */
-}
+  .main {
+    height: 100vh;
+    background-color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: relative; /* Needed for ::before positioning */
+    z-index: 0;
+    position: relative;
+    
+  }
   
   .main-inner {
     width: 100%;
     height: 100%;
+    padding-inline: clamp(2rem, 8vw, 10rem); /* Side margins */
+    padding-block: 5rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -566,21 +575,21 @@ a {
     margin-top: 0px;
   }
   
-.section-main {
-  width: 100%;
-  height: 85vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;  /* add */
-  align-items: center;
-  text-align: center;
-}
+  .section-main {
+    scale: 1.1;
+    margin-top: 85px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   
   .section1,
   .section2 {
     width: 100%;
     display: flex;
     justify-content: center;
+    margin-bottom: 0;
     margin: 0px;
   }
   .section2 {
@@ -597,7 +606,6 @@ a {
     display: flex; /* make Visual and Designs side-by-side */
     align-items: center;
     gap: clamp(1rem, calc((100vw - 1600px) * 0.5 + 1rem), 7rem);
-    
   }
   
   /* Separate font sizes */
@@ -633,7 +641,7 @@ a {
   }
 .design h1 {
   margin: 0;
-  font-size: clamp(1rem, 2vw, 2.4rem);
+  font-size: clamp(5rem, 8vw, 12rem);
   font-family: 'Funnel Display';
   font-weight: 600;
 }
@@ -652,7 +660,7 @@ a {
   z-index: 0;
 }
   .design h1 {
-    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-size: clamp(4rem, 14vw, 10rem);
   }
 }
   .effect-container {
@@ -665,7 +673,7 @@ a {
   display: inline-block;
   will-change: transform;
 }
-
+  
   .main__content h2 {
     font-size: 4rem;
     margin-top: 10px;
@@ -913,10 +921,8 @@ a {
   
   /* Mobile Responsive */
   @media screen and (max-width: 768px) {
-    html, body { overflow-x: hidden; }
     .main {
       height: 120vh;
-      overflow-x: hidden;
     }
     .main__container {
       display: grid;
@@ -929,7 +935,7 @@ a {
     }
      
   .section-main {
-    
+    scale: 1.1;
     margin-top: 0px;
     text-align: center;
     display: flex;
@@ -955,24 +961,6 @@ a {
       margin-top: 1rem;
       font-size: 1.5rem;
     }
-    .dropdown-video-bg {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 90%;
-  z-index: 0; /* Behind all dropdown content */
-  overflow: hidden;
-}
-
-.dropdown-video-bg video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 1; /* Optional: make it subtle */
-  pointer-events: none;
-  z-index: -1;
-}
   }
   
   @media screen and (max-width: 480px) {
@@ -1007,8 +995,8 @@ a {
 }
  
 
-.large-text h2 {
-  font-size: clamp(3.5rem, 5.3vw, 8rem);
+.large-text h1 {
+  font-size: clamp(3.5rem, 7.5vw, 12rem);
   font-weight: 600;
   color: #ffffff;
   text-align: left;
@@ -1075,15 +1063,6 @@ a {
   justify-content: space-between;
 }
 @media (max-width: 768px) {
-  .large-text h2 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: #ffffff;
-  text-align: left;
-  margin-bottom: clamp(2.5rem, 3vw, 5rem);
-  line-height: 0.9; /* Tighter spacing than default */
-  
-}
   .services-card {
     flex: 1 1 100%;
     max-width: 100%;
@@ -1495,9 +1474,7 @@ a {
 
   #image-scroll {
     height: auto;
-    overflow-x: hidden;   /* or clip */
-    overflow-y: visible;
-    margin-top: -15vh;
+    overflow: visible;
   }
   .image-card {
     width: 90vw;  /* Smaller width for mobile screens */

@@ -49,11 +49,13 @@ a {
 
 @media (max-width: 768px) {
   .ball {
-   position: absolute;
-   margin-top: 0vh;
-   width: 750px;
-  height: 750px;
-  z-index: 0;
+    position: absolute;      /* ✅ stays absolute */
+    top: 0;                  /* ✅ stick to top */
+    left: 50%;
+    transform: translateX(-50%); /* ✅ horizontal only */
+    width: 750px;
+    height: 750px;
+    z-index: 0;
   }
 }
 .ball-video {
@@ -917,6 +919,9 @@ a {
     width: 100%;
     overflow-x: hidden; /* use clip if you want stricter */
   }
+  .main {
+    position: relative;
+  }
 
   /* if you're using 100vw anywhere, this helps on iOS */
   body { position: relative; }
@@ -980,7 +985,7 @@ a {
   pointer-events: none;
   z-index: -1;
 }
-  }
+  
   
   @media screen and (max-width: 480px) {
     .main__content h1 {

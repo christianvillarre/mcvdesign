@@ -1096,6 +1096,9 @@ a {
   line-height: 0.9; /* Tighter spacing than default */
   
 }
+.large-text p {
+  font-size: clamp(1.3rem, 1.5vw, 2rem);
+}
   .services-card {
     flex: 1 1 100%;
     max-width: 100%;

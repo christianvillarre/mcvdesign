@@ -50,7 +50,7 @@ a {
 @media (max-width: 768px) {
   .ball {
     position: absolute;      /* ✅ stays absolute */
-    top: 0;                  /* ✅ stick to top */
+    top: 100px;                 /* ✅ stick to top */
     left: 50%;
     transform: translateX(-50%); /* ✅ horizontal only */
     width: 750px;

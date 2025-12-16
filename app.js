@@ -366,7 +366,7 @@ closeMenu?.addEventListener('click', () => {
 //RECENT CHANGES
 //ROTATING TEXT WEBSITES, BRANDING, SEO
 
-  const words = ["websites", "branding", "SEO"];
+  const words = ["websites", "branding", "seo"];
   const el = document.getElementById("swapWord");
 
   let index = 0;

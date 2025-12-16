@@ -7,92 +7,89 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-GJ18RLBWPT');
   </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Services | MCVDesign – Houston Web Design & Creative Studio</title>
   <meta name="description" content="Explore MCVDesign services, including web design, branding, graphics, and digital content for businesses in Houston and beyond.">
   <link rel="icon" type="image/png" href="images/favicon.jpg"/>
 
-
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css"/>
+
   <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
   <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/gsap@3/dist/Draggable.min.js"></script>
   <script src="https://unpkg.com/gsap@3/dist/InertiaPlugin.min.js"></script>
+
   <style>
     html, body {
-       margin: 0;
-  padding: 0;
-  overflow-x: hidden; /* ✅ Prevent horizontal scroll */
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden; /* ✅ Prevent horizontal scroll */
       background: #000000;
       font-family: 'Funnel Display', sans-serif;
     }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-.glow {
-  color: #54f3a4;
-  
-}
+    *, *::before, *::after { box-sizing: border-box; }
 
-.intro {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: flex-end; /* ⬅️ Push content to bottom */
-  background: #000000;
-  color: white;
-}
+    .glow { color: #54f3a4; }
 
-.intro::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at top left, rgba(84, 243, 164, 0.15) 0%, transparent 20%),
-    radial-gradient(circle at top right, rgba(84, 243, 164, 0.1) 0%, transparent 20%);
-  opacity: var(--corner-opacity, 1);
-  transition: opacity 0.4s ease, background 0.3s ease;
-  z-index: 0;
-}
-.intro-content {
-  padding-left: 0rem;
-  padding-bottom: 4rem;   /* ⬅️ Space from bottom */
-  width: 90vw;
-}
-
-.intro-content h1 {
-  font-size: clamp(4rem, 8vw, 11rem); /* min 4rem, ideal 8vw, max 10rem */
-  margin: 0;
-  font-weight: 400;
-  line-height: 1;
-  margin-bottom: 5.5rem;
-}
-
-.intro-content p {
-  font-size: clamp(1.5rem, 3vw, 2.5rem); /* min 1.5rem, ideal 3vw, max 3.2rem */
-  margin: 0;
-  font-weight: 400;
-  width: 60vw;
-}
-
-
-
-
-
-
-
-    section {
+    .intro {
+      width: 100%;
       height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      background: #000000;
+      color: white;
+      position: relative;
+    }
+
+    .intro::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top left, rgba(84, 243, 164, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at top right, rgba(84, 243, 164, 0.1) 0%, transparent 20%);
+      opacity: var(--corner-opacity, 1);
+      transition: opacity 0.4s ease, background 0.3s ease;
+      z-index: 0;
+    }
+
+    .intro-content {
+      padding-left: 0rem;
+      padding-bottom: 4rem;
+      width: 90vw;
+      position: relative;
+      z-index: 1;
+    }
+
+    .intro-content h1 {
+      font-size: clamp(4rem, 8vw, 11rem);
+      margin: 0;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 5.5rem;
+    }
+
+    .intro-content p {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      margin: 0;
+      font-weight: 400;
+      width: 60vw;
+    }
+
+    /* ✅ IMPORTANT: do NOT force height:100vh globally on mobile.
+       Use svh so the address bar show/hide doesn't shift layout and trigger pin glitches */
+    section {
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -115,33 +112,27 @@
       pointer-events: none;
       z-index: 10;
       opacity: 1;
-      
     }
 
     svg {
       width: 100%;
       height: 100%;
       overflow: visible;
-      
     }
 
     circle {
       fill: black;
       stroke-width: 1;
       border:none;
-  
     }
 
-    .background-ring {
-      stroke: #333;
-    }
+    .background-ring { stroke: #333; }
 
     .progress-ring {
-  stroke: #54f3a4;
-  filter: drop-shadow(0 0 8px rgba(84, 243, 164, var(--glow, 0.2)));
-  transition: filter 0.3s ease;
-  
-}
+      stroke: #54f3a4;
+      filter: drop-shadow(0 0 8px rgba(84, 243, 164, var(--glow, 0.2)));
+      transition: filter 0.3s ease;
+    }
 
     .text-layer {
       position: fixed;
@@ -173,131 +164,122 @@
       pointer-events: none;
       z-index: 15;
     }
-   .circle-title {
-   position: absolute;
-  top: 6rem;
-  right: 4rem;
-  max-width: 600px;
-  font-size: 4rem;
-  color: #e9e9e9;
-  line-height: 1.3;
-  opacity: 1;
-  pointer-events: none;
-  z-index: 15;
-}
-
-
-
-
-.scroll-text-section {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* ✅ forces left alignment */
-  overflow: hidden;
-  cursor: grab;
-  position: relative;
-  width: 100vw;
-}
-
-    .scroll-text-section:active {
-      cursor: grabbing;
-    }
-
-.scroll-track {
-  display: inline-block;
-  will-change: transform;
-  white-space: nowrap;
-  min-width: max-content;
-  margin: 0;
-  padding: 0;
-}
-    .scroll-text {
-  white-space: nowrap;
-  font-size: clamp(2rem, 10vw, 20rem);
-  font-weight: 500;
-  color: #54f3a4;
-  filter: drop-shadow(0 0 10px #54f3a4);
-  padding-left: 0; /* ✅ Starts fully at edge */
-  display: inline-block;
-}
-
-  </style>
-
-
-<style>
-  @media (max-width: 768px) {
-
-    .intro-content h1 {
-  font-size: clamp(3.5rem, 7vw, 6rem);
-  margin: 0;
-  font-weight: 400;
-  line-height: 1;
-  margin-bottom: 1.5rem;
-}
-
-.intro-content p {
-  font-size: clamp(1.5rem, 4vw, 1.5rem);
-  margin: 0;
-  font-weight: 400;
-  width: 90vw;
-  margin-bottom: 3rem;
-}
-
-    .intro {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: flex-end; /* ⬅️ Push content to bottom */
-  background: #000000;
-  color: white;
-}
-
-    .circle-wrapper {
-      width: 90vw;
-      height: 90vw;
-    }
-
-    .circle-container {
-      width: 70vmin;
-      height: 70vmin;
-      opacity: 0;
-  position: fixed;
-    }
-
-    .text-layer {
-      font-size: clamp(4.5rem, 7vw, 5rem);
-    }
-
-    .percent-counter {
-      font-size: 1.8rem;
-      top: calc(50% + 4rem);
-    }
-
-    .paragraph {
-      font-size: 1.2rem;
-      width: 90vw;
-      left: 5vw;
-      bottom: 2rem;
-    }
 
     .circle-title {
-      font-size: 2rem;
-      right: 2rem;
-      top: 7rem;
-      max-width: 90vw;
+      position: absolute;
+      top: 6rem;
+      right: 4rem;
+      max-width: 600px;
+      font-size: 4rem;
+      color: #e9e9e9;
+      line-height: 1.3;
+      opacity: 1;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .scroll-text-section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+      cursor: grab;
+      position: relative;
+      width: 100vw;
+    }
+
+    .scroll-text-section:active { cursor: grabbing; }
+
+    .scroll-track {
+      display: inline-block;
+      will-change: transform;
+      white-space: nowrap;
+      min-width: max-content;
+      margin: 0;
+      padding: 0;
     }
 
     .scroll-text {
-      font-size: clamp(2.8rem, 12vw, 10rem);
+      white-space: nowrap;
+      font-size: clamp(2rem, 10vw, 20rem);
+      font-weight: 500;
+      color: #54f3a4;
+      filter: drop-shadow(0 0 10px #54f3a4);
+      padding-left: 0;
+      display: inline-block;
     }
-  }
-</style>
+  </style>
+
+  <style>
+    @media (max-width: 768px) {
+
+      /* ✅ Stabilize viewport height on mobile */
+      section { min-height: 100svh; height: auto; }
+      .intro { min-height: 100svh; height: auto; }
+
+      .intro-content h1 {
+        font-size: clamp(3.5rem, 7vw, 6rem);
+        margin: 0;
+        font-weight: 400;
+        line-height: 1;
+        margin-bottom: 1.5rem;
+      }
+
+      .intro-content p {
+        font-size: clamp(1.5rem, 4vw, 1.5rem);
+        margin: 0;
+        font-weight: 400;
+        width: 90vw;
+        margin-bottom: 3rem;
+      }
+
+      .circle-wrapper {
+        width: 90vw;
+        height: 90vw;
+      }
+
+      .circle-container {
+        width: 70vmin;
+        height: 70vmin;
+        opacity: 0;
+        position: fixed;
+      }
+
+      .text-layer {
+        font-size: clamp(4.5rem, 7vw, 5rem);
+      }
+
+      .percent-counter {
+        font-size: 1.8rem;
+        top: calc(50% + 4rem);
+      }
+
+      .paragraph {
+        font-size: 1.2rem;
+        width: 90vw;
+        left: 5vw;
+        bottom: 2rem;
+      }
+
+      .circle-title {
+        font-size: 2rem;
+        right: 2rem;
+        top: 7rem;
+        max-width: 90vw;
+      }
+
+      .scroll-text {
+        font-size: clamp(2.8rem, 12vw, 10rem);
+      }
+    }
+  </style>
 
 </head>
+
 <body>
 
-    <!-- Navbar -->
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="navbar__container">
       <div class="navbar__left">
@@ -305,30 +287,23 @@
           <img class="logo1" src="images/logo2.png" alt="Logo" />
         </a>
       </div>
-<!--
-      <ul class="navbar__menu navbar__center">
-        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Work</span></a></li>
-        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Expertise</span></a></li>
-        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Process</span></a></li>
-        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">About</span></a></li>
-        <li class="navbar__item"><a href="#" class="navbar__links"><span class="link-text">Latest</span></a></li>
-      </ul>
--->
+
       <div class="navbar__right">
         <a href="mailto:christian@mcvdesign.com" class="navbar__email">
-  christian@mcvdesign.com
-</a>
+          christian@mcvdesign.com
+        </a>
         <a href="inquiry.html">
-        <button class="navbar__inquiry">
-          Send Inquiry
-          <span class="inquiry-arrow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
-              <path d="M7 17L17 7" />
-              <path d="M7 7h10v10" />
-            </svg>
-          </span>
-        </button></a>
+          <button class="navbar__inquiry">
+            Send Inquiry
+            <span class="inquiry-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                <path d="M7 17L17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
+            </span>
+          </button>
+        </a>
         <div class="navbar__contact"><span></span></div>
       </div>
 
@@ -339,117 +314,114 @@
       </div>
     </div>
   </nav>
-  
-
 
   <!--DROPDOWN MENU-->
-<div class="dropdown-menu" id="navDropdown">
-   <div class="dropdown-video-bg">
-    <video autoplay muted loop playsinline>
-      <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
-    </video>
-  </div>
+  <div class="dropdown-menu" id="navDropdown">
+    <div class="dropdown-video-bg">
+      <video autoplay muted loop playsinline>
+        <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
+      </video>
+    </div>
 
-  <div class="dropdown-content">
-  <button class="close-menu" id="closeMenu">×</button>
-  <ul class="dropdown-links">
-    <li><a href="/index.html">Home</a></li>
-    <li><a href="/services.html">Services</a></li>
-    <li><a href="/work.html">Work</a></li>
-    <li><a href="/inquiry.html">Contact</a></li>
-  </ul>
+    <div class="dropdown-content">
+      <button class="close-menu" id="closeMenu">×</button>
+      <ul class="dropdown-links">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/services.html">Services</a></li>
+        <li><a href="/work.html">Work</a></li>
+        <li><a href="/inquiry.html">Contact</a></li>
+      </ul>
 
-
-  <div class="dropdown-email">
+      <div class="dropdown-email">
         <button class="navbar__email">
           christian@mcvdesign.com
         </button>
       </div>
-  
-  <div class="dropdown-copyright"><h2>Copyright © 2025</h2></div>
-  <div class="social-button-container">
-      <button class="bottom-btn">LinkedIn</button>
-      <button class="bottom-btn">Instagram</button>
-      <button class="bottom-btn">Dribble</button>
-      <button class="bottom-btn">Behance</button>
+
+      <div class="dropdown-copyright"><h2>Copyright © 2025</h2></div>
+      <div class="social-button-container">
+        <button class="bottom-btn">LinkedIn</button>
+        <button class="bottom-btn">Instagram</button>
+        <button class="bottom-btn">Dribble</button>
+        <button class="bottom-btn">Behance</button>
+      </div>
     </div>
+  </div>
+
+  <!-- Intro -->
+  <section class="intro">
+    <div class="services-video-bg">
+      <video autoplay muted loop playsinline>
+        <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
+      </video>
     </div>
-</div> 
+    <div class="intro-content">
+      <h1><span class="glow">A complete</span> digital product lifecycle.</h1>
+      <p>We take products from draft to design, from build to launch; delivering branding, UX/UI, websites, e-commerce, and custom web apps every step of the way.</p>
+    </div>
+  </section>
 
+  <style>
+    .services-video-bg {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
 
-  <!-- Before -->
-<section class="intro">
-  <div class="services-video-bg">
-    <video autoplay muted loop playsinline>
-      <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
-    </video>
-  </div>
-  <div class="intro-content">
-    <h1><span class="glow">A complete</span> digital product lifecycle.</h1>
-    <p>We take products from draft to design, from build to launch; delivering branding, UX/UI, websites, e-commerce, and custom web apps every step of the way.</p>
-  </div>
-</section>
+    .services-video-bg video {
+      width: 100%;
+      height: 100%;
+      margin-left: 50vw;
+      scale: 1;
+      object-fit: cover;
+      opacity: 1;
+      pointer-events: none;
+      z-index: -1;
+    }
 
-<style>
+    @media (max-width: 768px) {
       .services-video-bg {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0; /* Behind all dropdown content */
-  overflow: hidden;
-}
+        height: 60vh;
+        bottom: auto;
+        top: 0;
+      }
 
-.services-video-bg video {
-  width: 100%;
-  height: 100%;
-  margin-left: 50vw;
-  scale: 1;
-  object-fit: cover;
-  opacity: 1; /* Optional: make it subtle */
-  pointer-events: none;
-  z-index: -1;
-}
-@media (max-width: 768px) {
-  .services-video-bg {
-    height: 60vh;              /* ⬅️ limit visual height */
-    bottom: auto;
-    top: 0;
-  }
+      .services-video-bg video {
+        width: 100%;
+        height: 100%;
+        margin-left: 0;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0.65;
+        scale: 1.5;
+        transform:translateY(-30%);
+      }
+    }
+  </style>
 
-  .services-video-bg video {
-    width: 100%;
-    height: 100%;
-    margin-left: 0;
-    object-fit: cover;
-    object-position: center;
-    opacity: 0.65;             /* ⬅️ feels smaller instantly */
-    scale: 1.5;    /* ⬅️ subtle shrink */
-    transform:translateY(-30%);
-  }
-}
-</style>
+  <script>
+    gsap.from(".intro-content h1", {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.3
+    });
 
-<script>
-  gsap.from(".intro-content h1", {
-    y: 50,
-    opacity: 0,
-    duration: 1,
-    ease: "power3.out",
-    delay: 0.3
-  });
+    gsap.from(".intro-content p", {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.6
+    });
+  </script>
 
-  gsap.from(".intro-content p", {
-    y: 50,
-    opacity: 0,
-    duration: 1,
-    ease: "power3.out",
-    delay: 0.6
-  });
-</script>
-
-  <!-- Confined Scroll Section -->
+  <!-- Circle Section -->
   <section class="circle-section">
     <div class="circle-wrapper">
       <svg viewBox="0 0 100 100">
@@ -459,216 +431,68 @@
     </div>
 
     <div class="circle-container">
-    <div class="circle2">
-  <div class="dot" data-angle="0"></div>     <!-- 12 o'clock -->
-  <div class="dot" data-angle="0"></div>     <!-- 12 o'clock again -->
-  <div class="dot" data-angle="90"></div>    <!-- 3 o'clock -->
-  <div class="dot" data-angle="180"></div>   <!-- 6 o'clock -->
-  <div class="dot" data-angle="270"></div>   <!-- 9 o'clock -->
-</div>
+      <div class="circle2">
+        <div class="dot" data-angle="0"></div>
+        <div class="dot" data-angle="0"></div>
+        <div class="dot" data-angle="90"></div>
+        <div class="dot" data-angle="180"></div>
+        <div class="dot" data-angle="270"></div>
+      </div>
     </div>
-    <STYLE>
+
+    <style>
+      .circle-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60vmin;
+        height: 60vmin;
+        z-index: 10;
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      .circle2 {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: none;
+      }
+
+      .dot {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: white;
+        transform: translate(-50%, -50%);
+        transition: background-color 0.3s ease;
+      }
+
+      .dot.active {
+        background-color: #54f3a4;
+      }
+
+      @media (min-width: 768px) and (max-width: 1024px) {
         .circle-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60vmin;
-  height: 60vmin;
-  z-index: 10;
-  pointer-events: none;
-  opacity: 0; /* ✅ hide initially */
-}
-.circle2 {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 3px solid #333; /* placeholder for ring */
-  border: none;
-}
+          width: 78vmin;
+          height: 78vmin;
+        }
+      }
 
-.dot {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: white;
-  transform: translate(-50%, -50%);
-  transition: background-color 0.3s ease;
-  
-}
+      @media (max-width: 768px) {
+        .dot { transform: translate(-50%, -50%) scale(0.8); }
 
-.dot.active {
-  background-color: #54f3a4;
-  /* ✅ Removed scale */
-}
-@media (min-width: 768px) and (max-width: 1024px) {
-  /* tablet-specific tweaks */
-          .circle-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 78vmin;
-  height: 78vmin;
-  z-index: 10;
-  pointer-events: none;
-  opacity: 0; /* ✅ hide initially */
-}
-}
-
-  @media (max-width: 768px) {
-    .dot {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: white;
-  transform: translate(-50%, -50%) scale(0.8);
-  transition: background-color 0.3s ease;
-  
-}
         .circle-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80vmin;
-  height: 80vmin;
-  z-index: 10;
-  pointer-events: none;
-  opacity: 0; /* ✅ hide initially */
-}
-.circle2 {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 3px solid #333; /* placeholder for ring */
-  border: none;
-}
-  }
-    </STYLE>
-
-<script>
-  // Requires GSAP + ScrollTrigger already loaded
-  window.addEventListener("load", () => {
-    const circleEl = document.querySelector(".circle2");
-    const dots = Array.from(document.querySelectorAll(".dot"));
-    if (!circleEl || !dots.length) return;
-
-    // --- helpers ---
-    function getBase() {
-      const r = circleEl.offsetWidth / 2;
-      return { baseRadius: r, cx: r, cy: r };
-    }
-
-    function placeDot(dot, deg, baseRadius, cx, cy) {
-      const rad = (deg - 90) * Math.PI / 180; // 0deg at 12 o'clock
-      let radius = baseRadius - 20;
-      if (deg === 0 || deg === 270) radius = baseRadius - 18; // your tweak
-      const x = cx + radius * Math.cos(rad);
-      const y = cy + radius * Math.sin(rad);
-      dot.style.left = `${x}px`;
-      dot.style.top  = `${y}px`;
-    }
-
-    // Wait until the element actually has a size (fonts/layout can delay)
-    function waitForSizeThen(fn, retries = 20) {
-      const { baseRadius } = getBase();
-      if (baseRadius > 0) {
-        fn();
-      } else if (retries > 0) {
-        requestAnimationFrame(() => waitForSizeThen(fn, retries - 1));
-      }
-    }
-
-    // Target angles per dot
-    const targetAngles = [0, 0, 90, 180, 270];
-
-    // Main init that we can re-run on resize
-    function initDots() {
-      // Clean up any prior ST created by this init
-      ScrollTrigger.getAll().forEach(st => {
-        if (st.vars && st.vars.trigger === ".circle-section" && st._callbackCache) {
-          // leave other STs; we only kill the one we create below by label
+          width: 80vmin;
+          height: 80vmin;
         }
-      });
 
-      const { baseRadius, cx, cy } = getBase();
-      if (baseRadius <= 0) return; // safety
-
-      // 1) Place all dots at 12 o'clock immediately
-      dots.forEach(dot => placeDot(dot, 0, baseRadius, cx, cy));
-
-      // 2) Drive angle from progress (0 -> target)
-      // Kill any previous instance we might have made
-      if (window.__dotST) {
-        window.__dotST.kill();
-        window.__dotST = null;
+        .circle2 { border: none; }
       }
-
-      window.__dotST = ScrollTrigger.create({
-        trigger: ".circle-section",
-        start: "top top",      // match your pin start
-        end: "bottom center",
-        scrub: true,
-        onUpdate: self => {
-          const p = self.progress; // 0..1
-          dots.forEach((dot, i) => {
-            const ang = targetAngles[i] * p;
-            placeDot(dot, ang, baseRadius, cx, cy);
-          });
-        }
-      });
-    }
-
-    // Run when size is ready
-    waitForSizeThen(() => {
-      initDots();
-
-      // Optional: fade in at pin start (so nothing floats pre-lock)
-      gsap.fromTo([".circle-container"], { opacity: 0 }, {
-        opacity: 1,
-        duration: 0.5,
-        ease: "power2.out",
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: ".circle-section",
-          start: "top top",
-          end: "top top",
-          toggleActions: "play none none reverse"
-        }
-      });
-
-      // Recompute on resize (fonts/viewport changes)
-      let ro;
-      if (window.ResizeObserver) {
-        ro = new ResizeObserver(() => {
-          // Debounce a bit
-          clearTimeout(window.__dotResizeTO);
-          window.__dotResizeTO = setTimeout(() => {
-            if (window.__dotST) window.__dotST.kill();
-            initDots();
-            ScrollTrigger.refresh();
-          }, 100);
-        });
-        ro.observe(circleEl);
-      }
-
-      // Fallback plain resize
-      window.addEventListener("resize", () => {
-        clearTimeout(window.__dotResizeTO2);
-        window.__dotResizeTO2 = setTimeout(() => {
-          if (window.__dotST) window.__dotST.kill();
-          initDots();
-          ScrollTrigger.refresh();
-        }, 150);
-      });
-    });
-  });
-</script>
+    </style>
 
     <div class="text-layer" id="text0">Draft</div>
     <div class="text-layer" id="text1">Design</div>
@@ -676,8 +500,8 @@
     <div class="text-layer" id="text3">Launch</div>
     <div class="text-layer percent-counter" id="percentText">0%</div>
 
-    <!-- Paragraphs -->
-     <div class="circle-title" id="circleTitle">Project Lifecycle</div>
+    <div class="circle-title" id="circleTitle">Project Lifecycle</div>
+
     <div class="paragraph" id="para0">
       1 / Defining requirements and setting boundaries to ensure a clear project vision. Identifying constraints like budget and timeline helps manage expectations.
     </div>
@@ -692,199 +516,245 @@
     </div>
   </section>
 
-  
-  <!-- 
-  <section class="scroll-text-section" id="scrollContainer">
-    <div class="scroll-track" id="scrollTrack">
-      <div class="scroll-text" id="scrollText">
-        Everything starts with design. Everything starts with design. Everything starts with design. Everything starts with design.
-      </div>
-    </div>
-  </section>
+  <!-- ✅ FIXED GSAP / ScrollTrigger -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
 
-  <section>Hello</section>
+    // ✅ Critical mobile fix: prevents address-bar resize from shifting pin starts mid-scroll
+    ScrollTrigger.config({ ignoreMobileResize: true });
 
-<script>
-  gsap.registerPlugin(Draggable, InertiaPlugin);
+    const ring = document.querySelector('.progress-ring');
+    const radius = ring.r.baseVal.value;
+    const circumference = 2 * Math.PI * radius;
 
-  window.addEventListener("load", () => {
-    const scrollTrack = document.getElementById("scrollTrack");
-    const scrollText = document.getElementById("scrollText");
-    const container = document.getElementById("scrollContainer");
+    ring.style.strokeDasharray = circumference;
+    ring.style.strokeDashoffset = circumference;
 
-    const trackWidth = scrollText.scrollWidth;
-    const containerWidth = container.offsetWidth;
-    const maxX = 0;
-    const minX = -(trackWidth - containerWidth);
+    let currentText = null;
 
-    // Initial position
-    gsap.set(scrollTrack, { x: 0 });
+    function showText(id) {
+      if (currentText === id) return;
 
-    // Draggable
-    const draggable = Draggable.create(scrollTrack, {
-      type: "x",
-      inertia: true,
-      bounds: { minX, maxX },
-      edgeResistance: 0.8,
-      allowContextMenu: true,
-      cursor: "grab",
-      activeCursor: "grabbing"
-    })[0];
+      gsap.killTweensOf('.text-layer');
+      gsap.killTweensOf('.paragraph');
 
-    // Always nudge on scroll
-    let lastScrollY = window.scrollY;
+      gsap.set('.text-layer', { autoAlpha: 0 });
+      gsap.set('.paragraph', { autoAlpha: 0 });
 
-    window.addEventListener("scroll", () => {
-      const currentScrollY = window.scrollY;
-      const direction = currentScrollY > lastScrollY ? 1 : -1;
-      lastScrollY = currentScrollY;
+      if (id) {
+        gsap.fromTo(`#${id}`,
+          { autoAlpha: 0, scale: 0.9, filter: "blur(4px)" },
+          { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" }
+        );
 
-      const currentX = gsap.getProperty(scrollTrack, "x");
-      let targetX = currentX + direction * 20;
-      targetX = gsap.utils.clamp(minX, maxX, targetX);
-
-      gsap.to(scrollTrack, {
-        x: targetX,
-        duration: 0.5,
-        ease: "power3.out"
-      });
-    });
-  });
-</script>-->
-
-  <!-- GSAP -->
-<script>
-  gsap.registerPlugin(ScrollTrigger);
-
-const ring = document.querySelector('.progress-ring');
-const radius = ring.r.baseVal.value;
-const circumference = 2 * Math.PI * radius;
-ring.style.strokeDasharray = circumference;
-ring.style.strokeDashoffset = circumference;
-
-let currentText = null;
-
-function showText(id) {
-  if (currentText === id) return;
-
-  gsap.killTweensOf('.text-layer');
-  gsap.killTweensOf('.paragraph');
-
-  gsap.set('.text-layer', { autoAlpha: 0 });
-  gsap.set('.paragraph', { autoAlpha: 0 });
-
-  if (id) {
-    gsap.fromTo(`#${id}`,
-      { autoAlpha: 0, scale: 0.9, filter: "blur(4px)" },
-      { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" }
-    );
-
-    const para = id.replace("text", "para");
-    gsap.to(`#${para}`, { autoAlpha: 1, duration: 1, ease: "power2.out" });
-  }
-
-  currentText = id;
-}
-
-const strokeTween = gsap.to(ring, {
-  strokeDashoffset: circumference,
-  ease: "power2.out",
-  duration: 0.3,
-  paused: true
-});
-
-ScrollTrigger.create({
-  trigger: ".circle-section",
-  start: "top top",
-  end: "+=4000",
-  scrub: 2,
-  pin: true,
-  anticipatePin: 1,
-  onEnter: () => {
-    gsap.to(ring, {
-      '--glow': 0.2,
-      duration: 0.6,
-      ease: 'power2.out',
-      onUpdate: () => {
-        ring.style.setProperty('--glow', gsap.getProperty(ring, '--glow'));
+        const para = id.replace("text", "para");
+        gsap.to(`#${para}`, { autoAlpha: 1, duration: 1, ease: "power2.out" });
       }
-    });
-  },
-  onLeave: () => {
-    gsap.to(ring, {
-      '--glow': 0.3,
-      duration: 0.6,
-      ease: 'power2.out',
-      onUpdate: () => {
-        ring.style.setProperty('--glow', gsap.getProperty(ring, '--glow'));
-      }
-    });
-  },
-  onEnterBack: () => {
-    gsap.to(ring, {
-      '--glow': 0.4,
-      duration: 0.6,
-      ease: 'power2.out',
-      onUpdate: () => {
-        ring.style.setProperty('--glow', gsap.getProperty(ring, '--glow'));
-      }
-    });
-  },
-  onLeaveBack: () => {
-    gsap.to(ring, {
-      '--glow': 0.5,
-      duration: 0.6,
-      ease: 'power2.out',
-      onUpdate: () => {
-        ring.style.setProperty('--glow', gsap.getProperty(ring, '--glow'));
-      }
-    });
-  },
-  onUpdate: self => {
-  const p = self.progress;
-  strokeTween.vars.strokeDashoffset = circumference * (1 - p);
-  strokeTween.invalidate().restart();
 
-  // Dot activation logic
-  const dots = document.querySelectorAll('.dot');
-
-  // Define thresholds in order: [index, threshold]
-  const thresholds = [
-    [0, 0.01],
-    [1, 0.01],
-    [2, 0.25],
-    [3, 0.5],
-    [4, 0.75]
-  ];
-
-  thresholds.forEach(([index, threshold]) => {
-    if (p >= threshold) {
-      dots[index]?.classList.add('active');
-    } else {
-      dots[index]?.classList.remove('active');
+      currentText = id;
     }
-  });
 
-  // Text logic (just once per range)
-  if (p >= 0.75) {
-    showText("text3");
-  } else if (p >= 0.5) {
-    showText("text2");
-  } else if (p >= 0.25) {
-    showText("text1");
-  } else if (p >= 0.01) {
-    showText("text0");
-  } else {
-    showText(null);
-  }
+    const strokeTween = gsap.to(ring, {
+      strokeDashoffset: circumference,
+      ease: "power2.out",
+      duration: 0.3,
+      paused: true
+    });
 
-  document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
-}
-});
+    // -----------------------------
+    // Dot motion trigger (✅ matches the pinned timeline range exactly)
+    // -----------------------------
+    (function initDots() {
+      window.addEventListener("load", () => {
+        const circleEl = document.querySelector(".circle2");
+        const dots = Array.from(document.querySelectorAll(".dot"));
+        if (!circleEl || !dots.length) return;
 
+        function getBase() {
+          const r = circleEl.offsetWidth / 2;
+          return { baseRadius: r, cx: r, cy: r };
+        }
 
+        function placeDot(dot, deg, baseRadius, cx, cy) {
+          const rad = (deg - 90) * Math.PI / 180;
+          let radius = baseRadius - 20;
+          if (deg === 0 || deg === 270) radius = baseRadius - 18;
+          const x = cx + radius * Math.cos(rad);
+          const y = cy + radius * Math.sin(rad);
+          dot.style.left = `${x}px`;
+          dot.style.top  = `${y}px`;
+        }
 
-</script>
+        const targetAngles = [0, 0, 90, 180, 270];
+
+        function initDotST() {
+          const { baseRadius, cx, cy } = getBase();
+          if (baseRadius <= 0) return;
+
+          // Place all dots at 12 o'clock first
+          dots.forEach(dot => placeDot(dot, 0, baseRadius, cx, cy));
+
+          if (window.__dotST) window.__dotST.kill();
+
+          // ✅ IMPORTANT: match your pinned trigger’s exact range so dots don't "start early"
+          window.__dotST = ScrollTrigger.create({
+            trigger: ".circle-section",
+            start: "top top",
+            end: "+=1000",
+            scrub: true,
+            invalidateOnRefresh: true,
+            onUpdate: self => {
+              const p = self.progress;
+              dots.forEach((dot, i) => {
+                const ang = targetAngles[i] * p;
+                placeDot(dot, ang, baseRadius, cx, cy);
+              });
+            }
+          });
+        }
+
+        initDotST();
+
+        // Fade circle-container in at pin start
+        gsap.fromTo([".circle-container"], { opacity: 0 }, {
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2.out",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: ".circle-section",
+            start: "top top",
+            end: "top top",
+            toggleActions: "play none none reverse",
+            invalidateOnRefresh: true
+          }
+        });
+
+        // Recompute on resize
+        window.addEventListener("resize", () => {
+          clearTimeout(window.__dotResizeTO2);
+          window.__dotResizeTO2 = setTimeout(() => {
+            if (window.__dotST) window.__dotST.kill();
+            initDotST();
+            ScrollTrigger.refresh();
+          }, 150);
+        });
+      });
+    })();
+
+    // -----------------------------
+    // Pinned circle trigger (✅ isolated per breakpoint)
+    // -----------------------------
+    ScrollTrigger.matchMedia({
+
+      "(max-width: 768px)": function () {
+        ScrollTrigger.create({
+          trigger: ".circle-section",
+          start: "top+=1 top",   // ✅ tiny offset prevents seam-pin weirdness on mobile
+          end: "+=4000",
+          scrub: 2,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+
+          onEnter: () => {
+            gsap.to(ring, { '--glow': 0.2, duration: 0.6, ease: 'power2.out' });
+          },
+          onLeave: () => {
+            gsap.to(ring, { '--glow': 0.3, duration: 0.6, ease: 'power2.out' });
+          },
+          onEnterBack: () => {
+            gsap.to(ring, { '--glow': 0.4, duration: 0.6, ease: 'power2.out' });
+          },
+          onLeaveBack: () => {
+            gsap.to(ring, { '--glow': 0.5, duration: 0.6, ease: 'power2.out' });
+          },
+
+          onUpdate: self => {
+            const p = self.progress;
+
+            strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+            strokeTween.invalidate().restart();
+
+            // Dot activation logic
+            const dots = document.querySelectorAll('.dot');
+            const thresholds = [
+              [0, 0.01],
+              [1, 0.01],
+              [2, 0.25],
+              [3, 0.5],
+              [4, 0.75]
+            ];
+
+            thresholds.forEach(([index, threshold]) => {
+              if (p >= threshold) dots[index]?.classList.add('active');
+              else dots[index]?.classList.remove('active');
+            });
+
+            // Text logic
+            if (p >= 0.75) showText("text3");
+            else if (p >= 0.5) showText("text2");
+            else if (p >= 0.25) showText("text1");
+            else if (p >= 0.01) showText("text0");
+            else showText(null);
+
+            document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
+          }
+        });
+      },
+
+      "(min-width: 769px)": function () {
+        ScrollTrigger.create({
+          trigger: ".circle-section",
+          start: "top top",
+          end: "+=4000",
+          scrub: 2,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+
+          onEnter: () => gsap.to(ring, { '--glow': 0.2, duration: 0.6, ease: 'power2.out' }),
+          onLeave: () => gsap.to(ring, { '--glow': 0.3, duration: 0.6, ease: 'power2.out' }),
+          onEnterBack: () => gsap.to(ring, { '--glow': 0.4, duration: 0.6, ease: 'power2.out' }),
+          onLeaveBack: () => gsap.to(ring, { '--glow': 0.5, duration: 0.6, ease: 'power2.out' }),
+
+          onUpdate: self => {
+            const p = self.progress;
+
+            strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+            strokeTween.invalidate().restart();
+
+            const dots = document.querySelectorAll('.dot');
+            const thresholds = [
+              [0, 0.01],
+              [1, 0.01],
+              [2, 0.25],
+              [3, 0.5],
+              [4, 0.75]
+            ];
+
+            thresholds.forEach(([index, threshold]) => {
+              if (p >= threshold) dots[index]?.classList.add('active');
+              else dots[index]?.classList.remove('active');
+            });
+
+            if (p >= 0.75) showText("text3");
+            else if (p >= 0.5) showText("text2");
+            else if (p >= 0.25) showText("text1");
+            else if (p >= 0.01) showText("text0");
+            else showText(null);
+
+            document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
+          }
+        });
+      }
+    });
+
+    // ✅ One final refresh after video/fonts settle (reduces early pin on mobile)
+    window.addEventListener("load", () => {
+      ScrollTrigger.refresh();
+    });
+  </script>
 
 
 

@@ -379,13 +379,57 @@
 
   <!-- Before -->
 <section class="intro">
+  <div class="services-video-bg">
+    <video autoplay muted loop playsinline>
+      <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
+    </video>
+  </div>
   <div class="intro-content">
-    <h1><span class="glow">Everything</span> for building your digital product.</h1>
-    <p>MCVDesign specializes in delivering cutting-edge solutions spanning
-product design, website and e-commerce site development,
-mobile and desktop app development, and brand visual identity.</p>
+    <h1><span class="glow">A complete</span> digital product lifecycle.</h1>
+    <p>We take products from draft to design, from build to launch; delivering branding, UX/UI, websites, e-commerce, and custom web apps every step of the way.</p>
   </div>
 </section>
+
+<style>
+      .services-video-bg {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Behind all dropdown content */
+  overflow: hidden;
+}
+
+.services-video-bg video {
+  width: 100%;
+  height: 100%;
+  margin-left: 50vw;
+  scale: 1;
+  object-fit: cover;
+  opacity: 1; /* Optional: make it subtle */
+  pointer-events: none;
+  z-index: -1;
+}
+@media (max-width: 768px) {
+  .services-video-bg {
+    height: 60vh;              /* ⬅️ limit visual height */
+    bottom: auto;
+    top: 0;
+  }
+
+  .services-video-bg video {
+    width: 100%;
+    height: 100%;
+    margin-left: 0;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.65;             /* ⬅️ feels smaller instantly */
+    scale: 1.5;    /* ⬅️ subtle shrink */
+    transform:translateY(-30%);
+  }
+}
+</style>
 
 <script>
   gsap.from(".intro-content h1", {

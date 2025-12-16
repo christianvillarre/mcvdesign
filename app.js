@@ -1,3 +1,5 @@
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const isMobile = window.innerWidth <= 768;
   gsap.registerPlugin(ScrollTrigger);

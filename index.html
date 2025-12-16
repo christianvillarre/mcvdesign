@@ -375,6 +375,13 @@
     <div class="scroll-text-wrapper">
       <div class="scroll-text" id="scrollText">
         Design is not just what it looks like and feels like. Design is how it works.
+        
+        <span class="gif-pill">
+          <img
+            src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMm9xMDFqajdtMXZhMHZ1enc3ZWhxcGx3bmxsajY2bTFsZWp5djZlNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2kjs7pzA92AH8HboXB/giphy.gif"
+            alt="Animated accent"
+          />
+        </span>
       </div>
     </div>
   </div>
@@ -420,7 +427,25 @@
   padding-left: 5vw;
   padding-right: 5vw;
 }
+.gif-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 1em;                /* ✅ MATCHES TEXT HEIGHT */
+  aspect-ratio: 1 / 1;        /* keeps it square */
+  border-radius: 0.35em;
+  overflow: hidden;
+  border: 2px solid white;
+  background: black;
+  flex-shrink: 0;
+}
 
+/* GIF itself */
+.gif-pill img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
 /* Spacer Styles */
 section.spacer {
   height: 1vh;

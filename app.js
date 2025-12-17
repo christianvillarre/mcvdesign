@@ -317,32 +317,23 @@ if (mobileMenuToggle && leftMenu && rightMenu) {
   });
 }
 
-  // Navigation dropdown
-  function lockScroll() {
-  document.body.style.overflow = "hidden";
-  document.body.style.height = "100vh";
-}
-
-function unlockScroll() {
-  document.body.style.overflow = "";
-  document.body.style.height = "";
-}
+    // Navigation dropdown
 const contactBtn = document.querySelector('.navbar__contact');
 const dropdownMenu = document.getElementById('navDropdown');
 const closeMenu = document.getElementById('closeMenu');
 
 contactBtn?.addEventListener('click', () => {
-  dropdownMenu.offsetHeight; // force reflow
+  // Trigger layout read to force a reflow
+  dropdownMenu.offsetHeight;
 
+  // Force repaint via requestAnimationFrame
   requestAnimationFrame(() => {
     dropdownMenu?.classList.add('open');
-    lockScroll(); // 🔒 STOP SCROLL
   });
 });
 
 closeMenu?.addEventListener('click', () => {
   dropdownMenu?.classList.remove('open');
-  unlockScroll(); // 🔓 RESTORE SCROLL
 });
 
   // Navbar link underline animation
@@ -362,6 +353,7 @@ closeMenu?.addEventListener('click', () => {
     });
   });
 });
+
 
 
 

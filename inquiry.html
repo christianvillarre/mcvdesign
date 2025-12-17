@@ -150,39 +150,59 @@
 
     <div class="input-group">
       <label for="projectTitle" class="input-name">Project Title</label>
-      <input type="text" id="projectTitle" name="projectTitle" placeholder="e.g. Website Redesign" required>
+      <input type="text" id="projectTitle" name="projectTitle" placeholder="e.g. Website Redesign">
     </div>
 
     <div class="input-group">
-      <label for="projectDescription" class="input-name">Short description</label>
-      <input type="text" id="projectDescription" name="projectDescription" placeholder="I need a custom website for my business.." required>
-    </div>
+  <label for="projectDescription" class="input-name">Short description</label>
+  <textarea id="projectDescription"
+            name="projectDescription"
+            placeholder="I need a custom website for my business.."
+            rows="1"
+            required></textarea>
+</div>
 
     <label class="input-name">Project Scope (design + development)</label>
     <div class="radio-group project-scope-group">
       <label class="radio-option">
-        <input type="checkbox" name="projectScope[]" value="Website Design">
-        Website Design
+        <input type="checkbox" name="projectScope[]" value="Website Design & Development">
+        Website Design & Development
       </label>
       <label class="radio-option">
-        <input type="checkbox" name="projectScope[]" value="Branding">
-        Ecommerce
+        <input type="checkbox" name="projectScope[]" value="SEO/GEO & Website Growth">
+        SEO/GEO & Website Growth
       </label>
       <label class="radio-option">
-        <input type="checkbox" name="projectScope[]" value="SEO/Google">
-        SEO/Google
+        <input type="checkbox" name="projectScope[]" value="Branding & Visual Identity">
+        Branding & Visual Identity
       </label>
       <label class="radio-option">
-        <input type="checkbox" name="projectScope[]" value="Videography">
-        Custom App
+        <input type="checkbox" name="projectScope[]" value="Business IT & Digital Infrastructure">
+        Business IT & Digital Infrastructure
       </label>
     </div>
 
     <label for="additional" class="input-name" style="margin-top: 3rem;">Additional (optional)</label>
     <div class="radio-group">
       <label class="radio-option">
-        <input type="checkbox" name="additional[]" value="Ecommerce">
-        Branding
+        <input type="checkbox" name="additional[]" value="Advanced Animation & Interactive Experiences">
+        Advanced Animation & Interactive Experiences
+      </label>
+      <label class="radio-option">
+        <input type="checkbox" name="additional[]" value="Custom Web Apps & Portals">
+        Custom Web Apps & Portals
+      </label>
+      <label class="radio-option">
+        <input type="checkbox" name="additional[]" value="E-Commerce">
+        E-Commerce
+      </label>
+       <label class="radio-option">
+        <input type="checkbox" name="additional[]" value="Ongoing Website Care & Hosting">
+        Ongoing Website Care & Hosting
+      </label>
+       <label class="radio-option">
+        <input type="checkbox" name="additional[]" value="Marketing & Ads Support">
+        Marketing & Ads Support
       </label>
     </div>
 
@@ -221,6 +241,28 @@
   </div>
 </div>
 <style>
+  .navbar {
+  pointer-events: none; /* navbar can't block anything */
+}
+
+.navbar__email,
+.navbar__contact,
+.dropdown-menu,
+.close-menu,
+.dropdown-links a,
+.bottom-btn {
+  pointer-events: auto; /* but these remain clickable */
+}
+/* Chrome, Safari, Edge */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: none;
+}
 /* Neutral baseline */
 input {
   border-bottom: 1px solid #52605a;
@@ -272,7 +314,56 @@ input:focus {
 .project-scope-group.user-touched.invalid input[type="checkbox"]:checked {
   border-color: #54f3a4;
 }
+/* ✅ Textarea styled to match your inputs exactly */
+textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #52605a;
+  padding: 0.5rem 0 2rem;   /* same as input */
+  font-size: 1rem;
+  color: white;
+  width: 100%;
+  outline: none;
+
+  font-family: inherit;
+  line-height: 1.4;
+
+  resize: none;        /* no drag handle */
+  overflow: hidden;    /* no scrollbar */
+  min-height: 48px;    /* keeps it looking like a single-line input */
+}
+
+/* Keep focus behavior consistent */
+textarea:focus {
+  border-bottom-color: #52605a;
+}
+textarea.user-touched:invalid {
+  border-bottom-color: #ff4d4d;
+}
+
+textarea.user-touched:invalid:focus {
+  animation: shake 0.2s ease-in-out 2;
+}
 </style>
+<script>
+  // Auto expand textarea
+  const textarea = document.getElementById("projectDescription");
+
+  const autoGrow = (el) => {
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  };
+
+  autoGrow(textarea); // in case it has prefilled text
+  textarea.addEventListener("input", () => autoGrow(textarea));
+
+  // Add user-touched on blur (inputs + textarea)
+  document.querySelectorAll("input[required], textarea[required]").forEach(el => {
+    el.addEventListener("blur", () => {
+      el.classList.add("user-touched");
+    });
+  });
+</script>
 <script>
   document.querySelectorAll('input[required]').forEach(input => {
     input.addEventListener('blur', () => {
@@ -339,7 +430,63 @@ document.addEventListener("scroll", () => {
 
 
     </script>
-<script src="app.js"></script>
 
+<div class="scroll-indicator" id="scrollIndicator">
+  Scroll down ↓
+</div>
+<style>
+.scroll-indicator {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #aaa;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 999;
+
+  transition: opacity 0.3s ease;
+}
+
+.scroll-indicator.hidden {
+  opacity: 0;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.scroll-indicator {
+  animation: scrollPulse 2s infinite;
+}
+</style>
+<script>
+  const indicator = document.getElementById("scrollIndicator");
+  const scrollContainer = document.querySelector(".inquiry-right");
+
+  const MAX_MOVE = 120;   // px it can drift down
+  const FADE_AT  = 80;    // px when fade starts
+
+  scrollContainer.addEventListener("scroll", () => {
+    const scrollY = scrollContainer.scrollTop;
+
+    // Move down progressively
+    const moveY = Math.min(scrollY * 0.6, MAX_MOVE);
+    indicator.style.transform = `translateY(${moveY}px)`;
+
+    // Fade out after threshold
+    if (scrollY > FADE_AT) {
+      indicator.classList.add("hidden");
+    } else {
+      indicator.classList.remove("hidden");
+    }
+  });
+</script>
+
+
+
+<script src="app.js"></script>
 </body>
 </html>

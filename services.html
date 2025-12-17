@@ -517,7 +517,190 @@
   </section>
 
   <!-- ✅ FIXED GSAP / ScrollTrigger -->
-  
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ✅ Mobile stability: stop address-bar resize refresh loops
+  ScrollTrigger.config({
+    ignoreMobileResize: true,
+    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
+  });
+
+  // ✅ Optional but often helps iOS momentum + pin
+  ScrollTrigger.normalizeScroll(true);
+
+  const ring = document.querySelector(".progress-ring");
+  if (!ring) return;
+
+  const radius = ring.r.baseVal.value;
+  const circumference = 2 * Math.PI * radius;
+  ring.style.strokeDasharray = circumference;
+  ring.style.strokeDashoffset = circumference;
+
+  const circleEl = document.querySelector(".circle2");
+  const dots = Array.from(document.querySelectorAll(".dot"));
+
+  // --- text helpers ---
+  let currentText = null;
+  function showText(id) {
+    if (currentText === id) return;
+
+    gsap.killTweensOf(".text-layer");
+    gsap.killTweensOf(".paragraph");
+
+    gsap.set(".text-layer", { autoAlpha: 0 });
+    gsap.set(".paragraph", { autoAlpha: 0 });
+
+    if (id) {
+      gsap.fromTo(`#${id}`,
+        { autoAlpha: 0, scale: 0.9, filter: "blur(4px)" },
+        { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" }
+      );
+      const para = id.replace("text", "para");
+      gsap.to(`#${para}`, { autoAlpha: 1, duration: 1, ease: "power2.out" });
+    }
+
+    currentText = id;
+  }
+
+  // --- dot placement (driven by ONE trigger) ---
+  let baseRadius = 0, cx = 0, cy = 0;
+  const targetAngles = [0, 0, 90, 180, 270];
+
+  function measureCircle() {
+    if (!circleEl) return;
+    const r = circleEl.offsetWidth / 2;
+    baseRadius = r;
+    cx = r;
+    cy = r;
+  }
+
+  function placeDot(dot, deg) {
+    if (!baseRadius) return;
+    const rad = (deg - 90) * Math.PI / 180;
+    let rr = baseRadius - 20;
+    if (deg === 0 || deg === 270) rr = baseRadius - 18;
+
+    const x = cx + rr * Math.cos(rad);
+    const y = cy + rr * Math.sin(rad);
+    dot.style.left = `${x}px`;
+    dot.style.top  = `${y}px`;
+  }
+
+  // Ensure we measure before first refresh and on refresh
+  ScrollTrigger.addEventListener("refreshInit", () => {
+    measureCircle();
+    // set initial dot positions (12 o'clock)
+    dots.forEach(dot => placeDot(dot, 0));
+  });
+
+  measureCircle();
+  dots.forEach(dot => placeDot(dot, 0));
+
+  // --- ring tween container ---
+  const strokeTween = gsap.to(ring, {
+    strokeDashoffset: circumference,
+    ease: "power2.out",
+    duration: 0.25,
+    paused: true
+  });
+
+  // --- create ONE pinned trigger (matchMedia for pinType) ---
+  ScrollTrigger.matchMedia({
+
+    "(max-width: 768px)": function () {
+      ScrollTrigger.create({
+        trigger: ".circle-section",
+        start: "top+=1 top",
+        end: "+=4000",
+        scrub: 2,
+        pin: true,
+        pinType: "fixed",          // ✅ important on mobile
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+
+        onUpdate: self => {
+          const p = self.progress;
+
+          // ring progress
+          strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+          strokeTween.invalidate().restart();
+
+          // dots move (same progress)
+          dots.forEach((dot, i) => placeDot(dot, targetAngles[i] * p));
+
+          // dot activation
+          const thresholds = [
+            [0, 0.01],
+            [1, 0.01],
+            [2, 0.25],
+            [3, 0.5],
+            [4, 0.75]
+          ];
+          thresholds.forEach(([index, threshold]) => {
+            if (p >= threshold) dots[index]?.classList.add("active");
+            else dots[index]?.classList.remove("active");
+          });
+
+          // text
+          if (p >= 0.75) showText("text3");
+          else if (p >= 0.5) showText("text2");
+          else if (p >= 0.25) showText("text1");
+          else if (p >= 0.01) showText("text0");
+          else showText(null);
+
+          document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
+        }
+      });
+    },
+
+    "(min-width: 769px)": function () {
+      ScrollTrigger.create({
+        trigger: ".circle-section",
+        start: "top top",
+        end: "+=4000",
+        scrub: 2,
+        pin: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+
+        onUpdate: self => {
+          const p = self.progress;
+
+          strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+          strokeTween.invalidate().restart();
+
+          dots.forEach((dot, i) => placeDot(dot, targetAngles[i] * p));
+
+          const thresholds = [
+            [0, 0.01],
+            [1, 0.01],
+            [2, 0.25],
+            [3, 0.5],
+            [4, 0.75]
+          ];
+          thresholds.forEach(([index, threshold]) => {
+            if (p >= threshold) dots[index]?.classList.add("active");
+            else dots[index]?.classList.remove("active");
+          });
+
+          if (p >= 0.75) showText("text3");
+          else if (p >= 0.5) showText("text2");
+          else if (p >= 0.25) showText("text1");
+          else if (p >= 0.01) showText("text0");
+          else showText(null);
+
+          document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
+        }
+      });
+    }
+  });
+
+  // Final refresh once everything (video/fonts) has settled
+  window.addEventListener("load", () => ScrollTrigger.refresh());
+});
+</script>
 
 
 

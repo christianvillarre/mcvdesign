@@ -283,7 +283,7 @@ input {
 }
 
 /* Checked visual */
-.radio-option input[type="checkbox"]:checked::after {
+.radio-option input[type="checkbox"]::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -292,7 +292,27 @@ input {
   height: 25px;
   background-color: #54f3a4;
   border-radius: 5px;
+
+  opacity: 0;
+  transform: scale(0.25);
+  transform-origin: center;
+
+  transition:
+    transform 260ms cubic-bezier(.22, 1.3, .36, 1),
+    opacity 160ms ease;
 }
+
+/* Checked state */
+.radio-option input[type="checkbox"]:checked::after {
+  opacity: 1;
+  transform: scale(1.1); /* gentle overshoot */
+}
+
+/* Settle back */
+.radio-option input[type="checkbox"]:checked:not(:active)::after {
+  transform: scale(1);
+}
+
 .get-in-touch-btn2 {
   position: absolute;
   background: transparent;

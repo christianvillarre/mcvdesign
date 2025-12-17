@@ -603,7 +603,7 @@
       window.__dotST = ScrollTrigger.create({
         trigger: ".circle-section",
         start: "top top",
-        end: "+=4000",          // ✅ match pin distance
+        end: "+=1000",          // ✅ match pin distance
         scrub: true,
         invalidateOnRefresh: true,
         onUpdate: self => {
@@ -679,7 +679,7 @@
         ScrollTrigger.create({
           trigger: ".circle-section",
           start: "top top",
-          end: "+=1000",
+          end: "+=4000",
           scrub: 2,
           pin: true,
           anticipatePin: 1,

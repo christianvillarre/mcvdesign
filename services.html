@@ -517,244 +517,210 @@
   </section>
 
   <!-- ✅ FIXED GSAP / ScrollTrigger -->
-  <script>
-  gsap.registerPlugin(ScrollTrigger);
+<script>
+  window.addEventListener("load", () => {
+    gsap.registerPlugin(ScrollTrigger);
 
-  /* ✅ MOBILE FIXES (minimal changes to your original) */
-  ScrollTrigger.config({
-    ignoreMobileResize: true,
-    // ✅ Prevent auto-refresh on mobile "resize" (address bar show/hide)
-    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
-  });
+    // ✅ prevent mobile URL bar resize refresh loops
+    ScrollTrigger.config({
+      ignoreMobileResize: true,
+      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
+    });
 
-  // ✅ Helps iOS momentum scrolling/pin behavior
-  ScrollTrigger.normalizeScroll(true);
+    // ✅ If this script ever runs twice, kill ONLY circle-section triggers first.
+    ScrollTrigger.getAll().forEach(t => {
+      if (t.vars && t.vars.trigger === ".circle-section") t.kill();
+    });
+    if (window.__dotST) { window.__dotST.kill(); window.__dotST = null; }
 
-  const ring = document.querySelector('.progress-ring');
-  const radius = ring.r.baseVal.value;
-  const circumference = 2 * Math.PI * radius;
+    const ring = document.querySelector(".progress-ring");
+    if (!ring) return;
 
-  ring.style.strokeDasharray = circumference;
-  ring.style.strokeDashoffset = circumference;
+    const radius = ring.r.baseVal.value;
+    const circumference = 2 * Math.PI * radius;
+    ring.style.strokeDasharray = circumference;
+    ring.style.strokeDashoffset = circumference;
 
-  let currentText = null;
+    let currentText = null;
+    function showText(id) {
+      if (currentText === id) return;
 
-  function showText(id) {
-    if (currentText === id) return;
+      gsap.killTweensOf(".text-layer");
+      gsap.killTweensOf(".paragraph");
+      gsap.set(".text-layer", { autoAlpha: 0 });
+      gsap.set(".paragraph", { autoAlpha: 0 });
 
-    gsap.killTweensOf('.text-layer');
-    gsap.killTweensOf('.paragraph');
+      if (id) {
+        gsap.fromTo(`#${id}`,
+          { autoAlpha: 0, scale: 0.9, filter: "blur(4px)" },
+          { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" }
+        );
+        gsap.to(`#${id.replace("text","para")}`, { autoAlpha: 1, duration: 1, ease: "power2.out" });
+      }
 
-    gsap.set('.text-layer', { autoAlpha: 0 });
-    gsap.set('.paragraph', { autoAlpha: 0 });
-
-    if (id) {
-      gsap.fromTo(`#${id}`,
-        { autoAlpha: 0, scale: 0.9, filter: "blur(4px)" },
-        { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" }
-      );
-
-      const para = id.replace("text", "para");
-      gsap.to(`#${para}`, { autoAlpha: 1, duration: 1, ease: "power2.out" });
+      currentText = id;
     }
 
-    currentText = id;
-  }
+    const strokeTween = gsap.to(ring, {
+      strokeDashoffset: circumference,
+      ease: "power2.out",
+      duration: 0.3,
+      paused: true
+    });
 
-  const strokeTween = gsap.to(ring, {
-    strokeDashoffset: circumference,
-    ease: "power2.out",
-    duration: 0.3,
-    paused: true
-  });
+    // -----------------------------
+    // DOTS (keep your existing behavior)
+    // -----------------------------
+    const circleEl = document.querySelector(".circle2");
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    const targetAngles = [0, 0, 90, 180, 270];
 
-  // -----------------------------
-  // Dot motion trigger
-  // -----------------------------
-  (function initDots() {
-    window.addEventListener("load", () => {
-      const circleEl = document.querySelector(".circle2");
-      const dots = Array.from(document.querySelectorAll(".dot"));
+    function getBase() {
+      const r = circleEl.offsetWidth / 2;
+      return { baseRadius: r, cx: r, cy: r };
+    }
+
+    function placeDot(dot, deg, baseRadius, cx, cy) {
+      const rad = (deg - 90) * Math.PI / 180;
+      let rr = baseRadius - 20;
+      if (deg === 0 || deg === 270) rr = baseRadius - 18;
+      const x = cx + rr * Math.cos(rad);
+      const y = cy + rr * Math.sin(rad);
+      dot.style.left = `${x}px`;
+      dot.style.top  = `${y}px`;
+    }
+
+    function initDotST() {
       if (!circleEl || !dots.length) return;
 
-      function getBase() {
-        const r = circleEl.offsetWidth / 2;
-        return { baseRadius: r, cx: r, cy: r };
+      const { baseRadius, cx, cy } = getBase();
+      if (baseRadius <= 0) return;
+
+      dots.forEach(dot => placeDot(dot, 0, baseRadius, cx, cy));
+
+      if (window.__dotST) window.__dotST.kill();
+
+      window.__dotST = ScrollTrigger.create({
+        trigger: ".circle-section",
+        start: "top top",
+        end: "+=4000",          // ✅ match pin distance
+        scrub: true,
+        invalidateOnRefresh: true,
+        onUpdate: self => {
+          const p = self.progress;
+          dots.forEach((dot, i) => placeDot(dot, targetAngles[i] * p, baseRadius, cx, cy));
+        }
+      });
+    }
+
+    initDotST();
+
+    // ✅ Fade in container at pin start (fine)
+    gsap.fromTo(".circle-container", { opacity: 0 }, {
+      opacity: 1,
+      duration: 0.5,
+      ease: "power2.out",
+      immediateRender: false,
+      scrollTrigger: {
+        trigger: ".circle-section",
+        start: "top top",
+        end: "top top",
+        toggleActions: "play none none reverse"
       }
+    });
 
-      function placeDot(dot, deg, baseRadius, cx, cy) {
-        const rad = (deg - 90) * Math.PI / 180;
-        let radius = baseRadius - 20;
-        if (deg === 0 || deg === 270) radius = baseRadius - 18;
-        const x = cx + radius * Math.cos(rad);
-        const y = cy + radius * Math.sin(rad);
-        dot.style.left = `${x}px`;
-        dot.style.top  = `${y}px`;
-      }
+    // -----------------------------
+    // ✅ PIN (the actual scroll lock)
+    // Key changes:
+    // - remove anticipatePin (it can “pre-grab” on mobile)
+    // - pinType fixed on mobile
+    // - pinReparent helps iOS sometimes
+    // -----------------------------
+    ScrollTrigger.matchMedia({
 
-      const targetAngles = [0, 0, 90, 180, 270];
-
-      function initDotST() {
-        const { baseRadius, cx, cy } = getBase();
-        if (baseRadius <= 0) return;
-
-        // Place all dots at 12 o'clock first
-        dots.forEach(dot => placeDot(dot, 0, baseRadius, cx, cy));
-
-        if (window.__dotST) window.__dotST.kill();
-
-        // ✅ Match the same scroll distance as the pinned trigger
-        window.__dotST = ScrollTrigger.create({
+      "(max-width: 768px)": () => {
+        ScrollTrigger.create({
           trigger: ".circle-section",
-          start: "top top",
-          end: "+=4000",           // ✅ was 1000
-          scrub: true,
+          start: "top top",      // ✅ remove seam offset for consistency
+          end: "+=4000",
+          scrub: 2,
+          pin: true,
+          pinType: "fixed",
+          pinReparent: true,
+          anticipatePin: 0,      // ✅ IMPORTANT: stop pre-grab
           invalidateOnRefresh: true,
+
           onUpdate: self => {
             const p = self.progress;
-            dots.forEach((dot, i) => {
-              const ang = targetAngles[i] * p;
-              placeDot(dot, ang, baseRadius, cx, cy);
+
+            strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+            strokeTween.invalidate().restart();
+
+            const thresholds = [
+              [0, 0.01],[1, 0.01],[2, 0.25],[3, 0.5],[4, 0.75]
+            ];
+            thresholds.forEach(([i, t]) => {
+              if (p >= t) dots[i]?.classList.add("active");
+              else dots[i]?.classList.remove("active");
             });
+
+            if (p >= 0.75) showText("text3");
+            else if (p >= 0.5) showText("text2");
+            else if (p >= 0.25) showText("text1");
+            else if (p >= 0.01) showText("text0");
+            else showText(null);
+
+            document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
+          }
+        });
+      },
+
+      "(min-width: 769px)": () => {
+        ScrollTrigger.create({
+          trigger: ".circle-section",
+          start: "top top",
+          end: "+=4000",
+          scrub: 2,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+
+          onUpdate: self => {
+            const p = self.progress;
+
+            strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+            strokeTween.invalidate().restart();
+
+            const thresholds = [
+              [0, 0.01],[1, 0.01],[2, 0.25],[3, 0.5],[4, 0.75]
+            ];
+            thresholds.forEach(([i, t]) => {
+              if (p >= t) dots[i]?.classList.add("active");
+              else dots[i]?.classList.remove("active");
+            });
+
+            if (p >= 0.75) showText("text3");
+            else if (p >= 0.5) showText("text2");
+            else if (p >= 0.25) showText("text1");
+            else if (p >= 0.01) showText("text0");
+            else showText(null);
+
+            document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
           }
         });
       }
-
-      initDotST();
-
-      // Fade circle-container in at pin start
-      gsap.fromTo(".circle-container", { opacity: 0 }, {
-        opacity: 1,
-        duration: 0.5,
-        ease: "power2.out",
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: ".circle-section",
-          start: "top top",
-          end: "top top",
-          toggleActions: "play none none reverse",
-          invalidateOnRefresh: true
-        }
-      });
-
-      // ✅ Recompute dot positions on resize WITHOUT mobile refresh loops
-      window.addEventListener("resize", () => {
-        clearTimeout(window.__dotResizeTO2);
-        window.__dotResizeTO2 = setTimeout(() => {
-          if (window.__dotST) window.__dotST.kill();
-          initDotST();
-
-          // ✅ Only refresh on desktop/tablet. Mobile "resize" happens constantly (address bar).
-          if (window.innerWidth > 768) ScrollTrigger.refresh();
-        }, 150);
-      });
     });
-  })();
 
-  // -----------------------------
-  // Pinned circle trigger
-  // -----------------------------
-  ScrollTrigger.matchMedia({
-
-    "(max-width: 768px)": function () {
-      ScrollTrigger.create({
-        trigger: ".circle-section",
-        start: "top+=1 top",
-        end: "+=4000",
-        scrub: 2,
-        pin: true,
-        pinType: "fixed",           // ✅ IMPORTANT on mobile
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-
-        onEnter: () => gsap.to(ring, { '--glow': 0.2, duration: 0.6, ease: 'power2.out' }),
-        onLeave: () => gsap.to(ring, { '--glow': 0.3, duration: 0.6, ease: 'power2.out' }),
-        onEnterBack: () => gsap.to(ring, { '--glow': 0.4, duration: 0.6, ease: 'power2.out' }),
-        onLeaveBack: () => gsap.to(ring, { '--glow': 0.5, duration: 0.6, ease: 'power2.out' }),
-
-        onUpdate: self => {
-          const p = self.progress;
-
-          strokeTween.vars.strokeDashoffset = circumference * (1 - p);
-          strokeTween.invalidate().restart();
-
-          // Dot activation logic
-          const dots = document.querySelectorAll('.dot');
-          const thresholds = [
-            [0, 0.01],
-            [1, 0.01],
-            [2, 0.25],
-            [3, 0.5],
-            [4, 0.75]
-          ];
-
-          thresholds.forEach(([index, threshold]) => {
-            if (p >= threshold) dots[index]?.classList.add('active');
-            else dots[index]?.classList.remove('active');
-          });
-
-          // Text logic
-          if (p >= 0.75) showText("text3");
-          else if (p >= 0.5) showText("text2");
-          else if (p >= 0.25) showText("text1");
-          else if (p >= 0.01) showText("text0");
-          else showText(null);
-
-          document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
-        }
-      });
-    },
-
-    "(min-width: 769px)": function () {
-      ScrollTrigger.create({
-        trigger: ".circle-section",
-        start: "top top",
-        end: "+=4000",
-        scrub: 2,
-        pin: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-
-        onEnter: () => gsap.to(ring, { '--glow': 0.2, duration: 0.6, ease: 'power2.out' }),
-        onLeave: () => gsap.to(ring, { '--glow': 0.3, duration: 0.6, ease: 'power2.out' }),
-        onEnterBack: () => gsap.to(ring, { '--glow': 0.4, duration: 0.6, ease: 'power2.out' }),
-        onLeaveBack: () => gsap.to(ring, { '--glow': 0.5, duration: 0.6, ease: 'power2.out' }),
-
-        onUpdate: self => {
-          const p = self.progress;
-
-          strokeTween.vars.strokeDashoffset = circumference * (1 - p);
-          strokeTween.invalidate().restart();
-
-          const dots = document.querySelectorAll('.dot');
-          const thresholds = [
-            [0, 0.01],
-            [1, 0.01],
-            [2, 0.25],
-            [3, 0.5],
-            [4, 0.75]
-          ];
-
-          thresholds.forEach(([index, threshold]) => {
-            if (p >= threshold) dots[index]?.classList.add('active');
-            else dots[index]?.classList.remove('active');
-          });
-
-          if (p >= 0.75) showText("text3");
-          else if (p >= 0.5) showText("text2");
-          else if (p >= 0.25) showText("text1");
-          else if (p >= 0.01) showText("text0");
-          else showText(null);
-
-          document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
-        }
-      });
-    }
-  });
-
-  // ✅ One final refresh after load (no resize auto-refresh now)
-  window.addEventListener("load", () => {
+    // ✅ refresh once after everything is laid out
     ScrollTrigger.refresh();
+
+    // ✅ only rebuild on true orientation changes (not address bar)
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => {
+        initDotST();
+        ScrollTrigger.refresh();
+      }, 400);
+    });
   });
 </script>
 

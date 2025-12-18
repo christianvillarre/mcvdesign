@@ -265,7 +265,7 @@ input {
   display: grid;
   grid-template-columns: 45px 1fr; /* match checkbox width */
   column-gap: 2rem;               /* replaces gap */
-  align-items: start;             /* prevents vertical jumping */
+  align-items: center;             /* prevents vertical jumping */
   font-size: 1.3rem;
   color: white;
   cursor: pointer;

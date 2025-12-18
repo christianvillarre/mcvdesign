@@ -48,7 +48,9 @@
       overflow: visible;
       z-index:1;
     }
-
+    .navbar {
+      z-index: 9999;
+    }
     .intro::before {
       content: "";
       position: absolute;
@@ -72,8 +74,16 @@
       position: relative;
       z-index: 1;
     }
-
     .intro-content h1 {
+      font-size: clamp(1.5rem, 2vw, 1.9rem);
+      margin: 0;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 0;
+      color:#a6a6a6;
+    }
+
+    .intro-content h2 {
       font-size: clamp(4rem, 8vw, 11rem);
       margin: 0;
       font-weight: 400;
@@ -224,6 +234,15 @@
       .intro { min-height: 100svh; height: auto; }
 
       .intro-content h1 {
+      font-size: clamp(1.2rem, 1vw, 1.5rem);
+      margin: 0;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 0;
+      color:#a6a6a6;
+    }
+
+      .intro-content h2 {
         font-size: clamp(3.5rem, 7vw, 6rem);
         margin: 0;
         font-weight: 400;
@@ -361,8 +380,9 @@
       </video>
     </div>
     <div class="intro-content">
-      <h1><span class="glow">A complete</span> digital product lifecycle.</h1>
-      <p>We take products from draft to design, from build to launch; delivering branding, UX/UI, websites, e-commerce, and custom web apps every step of the way.</p>
+      <h1>Houston Web Design Services</h1>
+      <h2><span class="glow">A complete</span> digital product lifecycle.</h2>
+      <p>Houston web design and graphic design services from concept to launch — including branding, UX/UI, websites, and custom web apps.</p>
     </div>
   </section>
 
@@ -410,7 +430,7 @@
   </style>
 
   <script>
-    gsap.from(".intro-content h1", {
+    gsap.from(".intro-content h2", {
       y: 50,
       opacity: 0,
       duration: 1,
@@ -741,27 +761,24 @@
 
     <!-- LEFT -->
     <div class="design-left">
-      <h2 class="design-title">Design</h2>
-      <p class="design-sub">
-        Design is how your product communicates trust — through clarity, consistency, and details that feel intentional.
-      </p>
-
-      <!-- Image placeholder (replace with <img> later) -->
+      <div class="inline-heading">
+  <h3>
+    <span class="design-title-color">Design</span> — Design is how your product communicates trust through clarity, consistency, and details that feel intentional.
+  </h3>
+</div>
       <div class="design-image">
-        <div class="design-image">
-          <img src="/images/stock5.jpg" alt="Design work example" loading="lazy">
-        </div>
+        <img src="/images/stock5.jpg" alt="Design work example" loading="lazy">
       </div>
     </div>
 
     <!-- RIGHT -->
     <div class="design-right">
-      <div class="design-accordion" id="designAccordion">
+      <div class="design-accordion">
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Logos</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
             <p>Simple, memorable marks built to work everywhere — web, print, signage, and small sizes.</p>
@@ -771,7 +788,7 @@
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Branding</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
             <p>Color, typography, voice, and layout systems that keep your brand consistent across every touchpoint.</p>
@@ -781,40 +798,30 @@
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Websites</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Modern, fast sites that are easy to navigate — built for conversions, SEO, and smooth UX.</p>
+            <p>Modern, fast sites built for conversions, SEO, and smooth UX.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>UX / UI</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Wireframes to polished interfaces — focused on usability, hierarchy, and flow that feels effortless.</p>
+            <p>Wireframes to polished interfaces focused on usability, hierarchy, and flow.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Motion</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Micro-interactions and animated storytelling that make your brand feel alive without being distracting.</p>
-          </div>
-        </button>
-
-        <button class="acc-item" type="button" aria-expanded="false">
-          <div class="acc-head">
-            <h3>Development</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
-          </div>
-          <div class="acc-body">
-            <p>Clean, scalable builds — from landing pages to custom components that perform on every device.</p>
+            <p>Micro-interactions and animation that bring your brand to life without distraction.</p>
           </div>
         </button>
 
@@ -824,32 +831,29 @@
   </div>
 </section>
 
-<section class="design-section" id="design">
+<section class="design-section" id="development">
   <div class="design-wrap">
 
     <!-- LEFT -->
     <div class="design-left">
-      <h2 class="design-title">Development</h2>
-      <p class="design-sub">
-         Clean, scalable builds that load fast, feel premium, and stay easy to maintain as you grow.
-      </p>
-
-      <!-- Image placeholder (replace with <img> later) -->
-      <div class="design-image">
-         <div class="design-image">
-          <img src="/images/stock4.jpg" alt="Design work example" loading="lazy">
+      <div class="inline-heading">
+        <h3>
+          <span class="design-title-color">Development</span> — Clean, scalable builds that load fast, feel premium, and stay easy to maintain.
+        </h3>
         </div>
+      <div class="design-image">
+        <img src="/images/stock4.jpg" alt="Web development example" loading="lazy">
       </div>
     </div>
 
     <!-- RIGHT -->
     <div class="design-right">
-      <div class="design-accordion" id="designAccordion">
+      <div class="design-accordion">
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Frontend</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
             <p>Pixel-perfect UI with smooth interactions, responsiveness, and accessibility baked in.</p>
@@ -859,50 +863,40 @@
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Backend</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>APIs, databases, and logic that stay reliable under real traffic and real business needs.</p>
+            <p>APIs, databases, and logic that stay reliable under real traffic and business needs.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Performance</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Speed audits + optimization so your site feels instant and scores better on Core Web Vitals.</p>
+            <p>Speed audits and optimization to improve Core Web Vitals and load times.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>CMS / Headless</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Structured content that’s easy for your team to edit without breaking layouts.</p>
+            <p>Structured content systems that are easy for your team to manage.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Integrations</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Payments, booking, CRM, email, analytics — connected cleanly and securely.</p>
-          </div>
-        </button>
-
-        <button class="acc-item" type="button" aria-expanded="false">
-          <div class="acc-head">
-            <h3>Launch & QA</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
-          </div>
-          <div class="acc-body">
-            <p>Cross-device testing, SEO checks, tracking, and deployment without surprises.</p>
+            <p>Payments, booking, CRM, analytics, and third-party services connected cleanly.</p>
           </div>
         </button>
 
@@ -913,85 +907,74 @@
 </section>
 
 
-<section class="design-section" id="design">
+<section class="design-section" id="growth">
   <div class="design-wrap">
 
     <!-- LEFT -->
     <div class="design-left">
-      <h2 class="design-title">Growth</h2>
-      <p class="design-sub">
-        Turn a good site into a lead engine with SEO, conversion strategy, and consistent iteration.
-      </p>
-
-      <!-- Image placeholder (replace with <img> later) -->
-      <div class="design-image">
-        <div class="design-image">
-          <img src="/images/stock3.jpg" alt="Growth strategy example" loading="lazy">
+      
+      <div class="inline-heading">
+       <h3>
+          <span class="design-title-color">Growth</span> —  Turn a good site into a lead engine with SEO, conversion strategy, and iteration.
+        </h3>
         </div>
+
+      <div class="design-image">
+        <img src="/images/stock3.jpg" alt="Growth strategy example" loading="lazy">
       </div>
     </div>
 
     <!-- RIGHT -->
     <div class="design-right">
-      <div class="design-accordion" id="designAccordion">
+      <div class="design-accordion">
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>SEO</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Technical + on-page + content strategy that improves rankings and drives qualified traffic.</p>
+            <p>Technical and on-page SEO that improves rankings and drives qualified traffic.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Conversion</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Stronger CTAs, layout hierarchy, and trust signals that increase inquiries and bookings.</p>
+            <p>Layout, CTA, and trust optimization that increases inquiries and leads.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Analytics</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>GA4 + events + funnels so you know what’s working (and what to improve next).</p>
+            <p>GA4, event tracking, and funnels to guide data-driven decisions.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Content</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Landing pages and service content that match real search intent and answer buyer questions.</p>
+            <p>Landing pages and service content aligned with real search intent.</p>
           </div>
         </button>
 
         <button class="acc-item" type="button" aria-expanded="false">
           <div class="acc-head">
             <h3>Paid Media</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
+            <span class="acc-plus"></span>
           </div>
           <div class="acc-body">
-            <p>Targeted campaigns that complement SEO — focused on quality leads, not vanity clicks.</p>
-          </div>
-        </button>
-
-        <button class="acc-item" type="button" aria-expanded="false">
-          <div class="acc-head">
-            <h3>Iteration</h3>
-            <span class="acc-plus" aria-hidden="true"></span>
-          </div>
-          <div class="acc-body">
-            <p>Monthly improvements based on data: copy, offers, speed, UX, and conversion paths.</p>
+            <p>Targeted campaigns that support SEO and generate high-quality leads.</p>
           </div>
         </button>
 
@@ -1010,30 +993,31 @@
   align-items:flex-start;   /* ✅ was center */
   justify-content:center;
   padding: 8rem 4rem;
-  
+  z-index:0;
 }
 
 .design-wrap{
-  width: 100vw;
-  display:grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: 6rem;
-  align-items:start;
-  z-index: 999;
+}
+.design-left{ min-width: 0; } /* KEY */
+.inline-heading{
+  display: block;
 }
 
-.design-title{
-  font-size: clamp(3rem, 6vw, 6rem);
-  font-weight: 400;
-  margin: 0 0 1rem 0;
+.inline-heading h3{
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  font-weight: 100;
+  margin-bottom: 2rem;
 }
 
-.design-sub{
-  font-size: clamp(1.2rem, 2vw, 1.8rem);
-  line-height: 1.6;
-  color:#e6e6e6;
-  max-width: 52ch;
-  margin: 0 0 2.5rem 0;
+.inline-heading .design-title-color{
+  color: #10ffa3; /* title color */
+  font-weight: 800;
 }
 
 .design-image{
@@ -1162,82 +1146,79 @@
 }
 </style>
 <script>
-  // no need to registerPlugin() for basic tweens
-  const items = document.querySelectorAll("#designAccordion .acc-item");
+  // Works for ALL accordions on the page
+  document.querySelectorAll(".design-accordion").forEach((accordion) => {
+    const items = accordion.querySelectorAll(".acc-item");
+    let activeItem = null;
 
-  let activeItem = null;
+    // close all bodies first
+    items.forEach((item) => {
+      const body = item.querySelector(".acc-body");
+      gsap.set(body, { height: 0, opacity: 0, overflow: "hidden" });
+      item.classList.remove("is-open");
+      item.setAttribute("aria-expanded", "false");
+    });
 
-  // ---- setup: close all bodies first ----
-  items.forEach((item) => {
-    const body = item.querySelector(".acc-body");
-    gsap.set(body, { height: 0, opacity: 0, overflow: "hidden" });
-    item.classList.remove("is-open");
-    item.setAttribute("aria-expanded", "false");
+    function openItem(item, { instant = false } = {}) {
+      const body = item.querySelector(".acc-body");
+
+      item.classList.add("is-open");
+      item.setAttribute("aria-expanded", "true");
+
+      gsap.killTweensOf(body);
+
+      gsap.to(body, {
+        height: "auto",
+        opacity: 1,
+        duration: instant ? 0 : 0.6,
+        ease: "power4.out"
+      });
+    }
+
+    function closeItem(item) {
+      const body = item.querySelector(".acc-body");
+
+      item.classList.remove("is-open");
+      item.setAttribute("aria-expanded", "false");
+
+      gsap.killTweensOf(body);
+
+      gsap.to(body, {
+        height: 0,
+        opacity: 0,
+        duration: 0.45,
+        ease: "power4.inOut"
+      });
+    }
+
+    // click behavior: open + close simultaneously (within this accordion)
+    items.forEach((item) => {
+      item.addEventListener("click", () => {
+        if (item === activeItem) {
+          closeItem(item);
+          activeItem = null;
+          return;
+        }
+
+        openItem(item);
+        if (activeItem) closeItem(activeItem);
+
+        activeItem = item;
+      });
+    });
+
+    // first open by default (instant, no animation on load)
+    /*
+    if (items.length) {
+      activeItem = items[0];
+      openItem(activeItem, { instant: true });
+
+      const body = activeItem.querySelector(".acc-body");
+      const h = body.scrollHeight;
+      gsap.set(body, { height: h, opacity: 1 });
+      requestAnimationFrame(() => gsap.set(body, { height: "auto" }));
+    }*/
   });
-
-  // ---- helpers ----
-  function openItem(item, { instant = false } = {}) {
-    const body = item.querySelector(".acc-body");
-
-    item.classList.add("is-open");
-    item.setAttribute("aria-expanded", "true");
-
-    gsap.killTweensOf(body);
-
-    // smoother feel: slightly longer + softer ease
-    gsap.to(body, {
-      height: "auto",
-      opacity: 1,
-      duration: instant ? 0 : 0.6,
-      ease: "power4.out"
-    });
-  }
-
-  function closeItem(item) {
-    const body = item.querySelector(".acc-body");
-
-    item.classList.remove("is-open");
-    item.setAttribute("aria-expanded", "false");
-
-    gsap.killTweensOf(body);
-
-    gsap.to(body, {
-      height: 0,
-      opacity: 0,
-      duration: 0.45,
-      ease: "power4.inOut"
-    });
-  }
-
-  // ---- click behavior: open + close at the same time ----
-  items.forEach((item) => {
-    item.addEventListener("click", () => {
-      if (item === activeItem) {
-        closeItem(item);
-        activeItem = null;
-        return;
-      }
-
-      // open new + close old simultaneously
-      openItem(item);
-      if (activeItem) closeItem(activeItem);
-
-      activeItem = item;
-    });
-  });
-
-  // ---- first open by default (instant, no animation on load) ----
-  if (items.length) {
-    activeItem = items[0];
-    openItem(activeItem, { instant: true });
-
-    // lock it to the correct auto height (prevents any tiny jump)
-    const body = activeItem.querySelector(".acc-body");
-    const h = body.scrollHeight;
-    gsap.set(body, { height: h, opacity: 1 });
-    // then allow future opens to animate to auto
-    requestAnimationFrame(() => gsap.set(body, { height: "auto" }));
-  }
 </script>
 
   <!-- Products Placeholder -->

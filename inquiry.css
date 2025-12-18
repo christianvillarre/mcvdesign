@@ -260,16 +260,20 @@ input {
   margin-bottom: 2rem;
 }
 
-.radio-option {
+.radio-option{
   flex: 1 1 45%;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 45px 1fr; /* match checkbox width */
+  column-gap: 2rem;               /* replaces gap */
+  align-items: start;             /* prevents vertical jumping */
   font-size: 1.3rem;
   color: white;
-  gap: 2rem;
   cursor: pointer;
 }
 
+.radio-option span{
+  min-width: 0;                   /* KEY: wrap without pushing layout */
+}
 /* Custom checkbox base */
 .radio-option input[type="checkbox"] {
   appearance: none;
@@ -280,6 +284,7 @@ input {
   background: transparent;
   cursor: pointer;
   position: relative;
+  margin-top: 2px; /* optional, helps line up with first text line */
 }
 
 /* Checked visual */

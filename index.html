@@ -129,7 +129,7 @@
   <!-- Hero Section -->
   <div class="main">
     <div class="ball" id="draggableBall">
-      <video class="ball-video" autoplay muted loop playsinline>
+      <video class="ball-video" autoplay muted loop playsinline webkit-playsinline>
         <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut%20short%20x.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -266,6 +266,22 @@
 .video-mobile {
   pointer-events: none;
 }
+/* Hide iOS Safari video UI overlays */
+video::-webkit-media-controls {
+  display: none !important;
+}
+
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-enclosure {
+  display: none !important;
+  -webkit-appearance: none;
+}
   </style>
 
   <!-- Services Section 
@@ -282,7 +298,7 @@
     <div class="image-track">
       <!-- 💡 Repeating image-card structure -->
       <div class="image-card">
-        <video class="ot-video" autoplay muted loop playsinline>
+        <video class="ot-video" autoplay muted loop playsinline webkit-playsinline>
           <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/Card%20Videos/shandys_web2.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -300,7 +316,7 @@
       </div>
 
       <div class="image-card">
-        <video class="ot-video" autoplay muted loop playsinline>
+        <video class="ot-video" autoplay muted loop playsinline webkit-playsinline>
           <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/Card%20Videos/ot_web_1.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -318,7 +334,7 @@
       </div>
 
       <div class="image-card">
-        <video class="ot-video" autoplay muted loop playsinline>
+        <video class="ot-video" autoplay muted loop playsinline webkit-playsinline>
           <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/Card%20Videos/magnaflow_web.mp4" type="video/mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -335,7 +351,7 @@
       </div>
 
       <div class="image-card">
-        <video class="ot-video" autoplay muted loop playsinline>
+        <video class="ot-video" autoplay muted loop playsinline webkit-playsinline>
           <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/Card%20Videos/unico_web.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -353,7 +369,7 @@
       </div>
 
       <div class="image-card">
-        <video class="ot-video" autoplay muted loop playsinline>
+        <video class="ot-video" autoplay muted loop playsinline webkit-playsinline>
           <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/Card%20Videos/royalty_web.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>

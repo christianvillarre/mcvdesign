@@ -1,13 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  document.querySelectorAll("video[autoplay]").forEach(video => {
-    video.muted = true;
-    video.playsInline = true;
+  document.querySelectorAll("video").forEach(v => {
+    v.controls = false;
+    v.muted = true;
+    v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
 
-    const p = video.play();
-    if (p !== undefined) {
-      p.catch(() => {}); // suppress autoplay warnings
-    }
+    // prevent extra Safari UI features
+    v.setAttribute("controlsList", "nodownload noplaybackrate noremoteplayback");
+    v.disablePictureInPicture = true;
+
+    // kick playback
+    const p = v.play();
+    if (p?.catch) p.catch(() => {});
   });
 
   const isMobile = window.innerWidth <= 768;

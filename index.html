@@ -282,6 +282,35 @@ video::-webkit-media-controls-enclosure {
   display: none !important;
   -webkit-appearance: none;
 }
+/* HARD hide iOS Safari overlays */
+video {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* iOS Safari media UI */
+video::-webkit-media-controls,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-enclosure,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display,
+video::-webkit-media-controls-mute-button,
+video::-webkit-media-controls-volume-slider,
+video::-webkit-media-controls-airplay-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  opacity: 0 !important;
+}
+
+video {
+  pointer-events: none; /* prevents tap -> overlay */
+}
   </style>
 
   <!-- Services Section 
@@ -299,7 +328,7 @@ video::-webkit-media-controls-enclosure {
       <!-- 💡 Repeating image-card structure -->
       <div class="image-card">
         <video class="ot-video" autoplay muted loop playsinline webkit-playsinline>
-          <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/Card%20Videos/shandys_web2.mp4" type="video/mp4" />
+          <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/Card%20Videos/shandys_web2%20(1).mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 

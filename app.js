@@ -1,4 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  document.querySelectorAll("video[autoplay]").forEach(video => {
+    video.muted = true;
+    video.playsInline = true;
+
+    const p = video.play();
+    if (p !== undefined) {
+      p.catch(() => {}); // suppress autoplay warnings
+    }
+  });
+
   const isMobile = window.innerWidth <= 768;
   gsap.registerPlugin(ScrollTrigger);
 

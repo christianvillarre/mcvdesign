@@ -1026,10 +1026,10 @@ a {
       font-size: 1.5rem;
     }
 /* VIDEO BG (put this near the bottom of your CSS) */
+/* VIDEO BG */
 .dropdown-video-bg{
-  position: absolute;
-  left: 0;
-  bottom: 0;
+  position: fixed;           /* ✅ anchor to viewport, not a random parent */
+  inset: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
@@ -1037,11 +1037,32 @@ a {
   pointer-events: none;
 }
 
+/* ensure it truly fills the viewport on mobile */
+#navDropdown,
+#navDropdown .dropdown-container,
+#navDropdown .dropdown-inner { /* include whatever wrapper you have */
+  min-height: 100svh;        /* mobile-safe viewport height */
+}
+
+/* video should cover, not shrink */
 .dropdown-video-bg video{
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  /* FORCE full coverage */
+  min-width: 100%;
+  min-height: 100%;
+
+  width: auto;
+  height: auto;
+
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  object-position: center;
+
   opacity: 1;
-  transform-origin: 50% 50%;
+  display: block;
 }
   
   @media screen and (max-width: 480px) {

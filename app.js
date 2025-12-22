@@ -107,14 +107,15 @@ mmBall.add(
       const activationDistance = 300;
       const pushStrength = 5;
 
-      gsap.from(ball, {
-        scale: 0,
-        opacity: 0,
-        duration: 1.4,
-        delay: 0.5,
-        ease: "power3.out",
-        overwrite: "auto"
-      });
+      if (window.scrollY < 50) {
+        gsap.from(ball, {
+          scale: 0,
+          duration: 1.4,
+          delay: 0.5,
+          ease: "power3.out",
+          overwrite: "auto"
+        });
+      }
 
       // Spin (independent)
       const spin = gsap.to(ball, {
@@ -280,26 +281,42 @@ mmBall.add(
       });
 
       // Ball fade on horizontal scroll progress
+      // ================================
+      // BALL FADE (refresh-safe)
+      // ================================
       ScrollTrigger.create({
         id: "hs-ballfade",
         trigger: "#image-scroll",
         start: "top top",
         end: "+=" + (trackWidth + window.innerWidth),
         scrub: true,
-        onUpdate: (self) => {
-          const progress = self.progress;
+
+        onUpdate(self) {
           const fadeOutStart = 0.8;
+          const progress = self.progress;
 
           const opacity =
-            progress < fadeOutStart
+            progress <= fadeOutStart
               ? 1
               : 1 - (progress - fadeOutStart) / (1 - fadeOutStart);
 
-          gsap.killTweensOf("#draggableBall", "opacity");
-          gsap.to("#draggableBall", {
-            opacity,
-            duration: 0.2,
-            overwrite: "auto"
+          // instant, no tween, no flash
+          gsap.set("#draggableBall", {
+            opacity: Math.max(0, Math.min(1, opacity))
+          });
+        },
+
+        onRefresh(self) {
+          const fadeOutStart = 0.8;
+          const progress = self.progress;
+
+          const opacity =
+            progress <= fadeOutStart
+              ? 1
+              : 1 - (progress - fadeOutStart) / (1 - fadeOutStart);
+
+          gsap.set("#draggableBall", {
+            opacity: Math.max(0, Math.min(1, opacity))
           });
         }
       });
@@ -428,4 +445,45 @@ setTimeout(() => {
   }, 3600);
 
 }, 2400);
+
+const contactBtn = document.querySelector(".navbar__contact");
+const closeBtn = document.getElementById("closeMenu");
+
+// initial state
+gsap.set(".dropdown-link", { y: "-120%", opacity: 0 });
+
+contactBtn?.addEventListener("click", () => {
+  const links = gsap.utils.toArray(".dropdown-link");
+  if (!links.length) return;
+
+  gsap.killTweensOf(links);
+
+  // reset for clean replay
+  gsap.set(links, { y: "-120%", opacity: 0 });
+
+  gsap.to(links, {
+    y: 0,
+    opacity: 1,
+    duration: 0.32,        // 🔥 fast
+    ease: "power3.out",
+    stagger: 0.2,
+    delay: 0.5
+  });
+});
+
+closeBtn?.addEventListener("click", () => {
+  gsap.set(".dropdown-link", { y: "120%", opacity: 0 });
+});
+
+
+
+
+gsap.to(".dropdown-video-bg video", {
+  rotation: 360,
+  duration: 30,
+  repeat: -1,
+  ease: "none",
+  transformOrigin: "50% 50%"
+});
+
 

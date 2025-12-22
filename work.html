@@ -75,13 +75,21 @@
   </div>
 
   <div class="dropdown-content">
-  <button class="close-menu" id="closeMenu">×</button>
-  <ul class="dropdown-links">
-    <li><a href="/index.html">Home</a></li>
-    <li><a href="/services.html">Services</a></li>
-    <li><a href="/work.html">Work</a></li>
-    <li><a href="/inquiry.html">Contact</a></li>
-  </ul>
+      <button class="close-menu" id="closeMenu">×</button>
+        <ul class="dropdown-links">
+          <li class="dropdown-mask">
+            <a href="/index.html" class="dropdown-link">Home</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/services.html" class="dropdown-link">Services</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/work.html" class="dropdown-link">Work</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/inquiry.html" class="dropdown-link">Contact</a>
+          </li>
+        </ul>
 
 
 
@@ -777,18 +785,6 @@ tl
 
  <script>
 
-//NAVIGATION SCREEN
-const contactBtn = document.querySelector('.navbar__contact');
-const dropdownMenu = document.getElementById('navDropdown');
-const closeMenu = document.getElementById('closeMenu');
-
-contactBtn.addEventListener('click', () => {
-  dropdownMenu.classList.add('open');
-});
-
-closeMenu.addEventListener('click', () => {
-  dropdownMenu.classList.remove('open');
-});
 
 //SOCIAL CONTAINER BUTTONS FADE ON SCROLL
 document.addEventListener("scroll", () => {

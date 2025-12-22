@@ -103,11 +103,19 @@
   <div class="dropdown-content">
   <button class="close-menu" id="closeMenu">×</button>
   <ul class="dropdown-links">
-    <li><a href="/index.html">Home</a></li>
-    <li><a href="/services.html">Services</a></li>
-    <li><a href="/work.html">Work</a></li>
-    <li><a href="/inquiry.html">Contact</a></li>
-  </ul>
+  <li class="dropdown-mask">
+    <a href="/index.html" class="dropdown-link">Home</a>
+  </li>
+  <li class="dropdown-mask">
+    <a href="/services.html" class="dropdown-link">Services</a>
+  </li>
+  <li class="dropdown-mask">
+    <a href="/work.html" class="dropdown-link">Work</a>
+  </li>
+  <li class="dropdown-mask">
+    <a href="/inquiry.html" class="dropdown-link">Contact</a>
+  </li>
+</ul>
 
 
   <div class="dropdown-email">
@@ -196,6 +204,7 @@
   </div>
 
   <style>
+
 .mcv-mask {
   overflow: hidden;
   display: inline-block;
@@ -259,58 +268,8 @@
   -webkit-text-stroke: 1px #54f3a4;
 
 }
-
-}
-.ball-video,
-.ot-video,
-.video-mobile {
-  pointer-events: none;
-}
-/* Hide iOS Safari video UI overlays */
-video::-webkit-media-controls {
-  display: none !important;
 }
 
-video::-webkit-media-controls-start-playback-button {
-  display: none !important;
-  -webkit-appearance: none;
-}
-
-video::-webkit-media-controls-play-button,
-video::-webkit-media-controls-panel,
-video::-webkit-media-controls-enclosure {
-  display: none !important;
-  -webkit-appearance: none;
-}
-/* HARD hide iOS Safari overlays */
-video {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* iOS Safari media UI */
-video::-webkit-media-controls,
-video::-webkit-media-controls-panel,
-video::-webkit-media-controls-start-playback-button,
-video::-webkit-media-controls-play-button,
-video::-webkit-media-controls-enclosure,
-video::-webkit-media-controls-overlay-play-button,
-video::-webkit-media-controls-fullscreen-button,
-video::-webkit-media-controls-timeline,
-video::-webkit-media-controls-current-time-display,
-video::-webkit-media-controls-time-remaining-display,
-video::-webkit-media-controls-mute-button,
-video::-webkit-media-controls-volume-slider,
-video::-webkit-media-controls-airplay-button {
-  display: none !important;
-  -webkit-appearance: none !important;
-  opacity: 0 !important;
-}
-
-video {
-  pointer-events: none; /* prevents tap -> overlay */
-}
   </style>
 
   <!-- Services Section 
@@ -684,6 +643,10 @@ function initScrollTrack() {
     }
   });
 }
+
+
+
+
 </script>
 
   <div class="large-text-container">

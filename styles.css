@@ -305,11 +305,11 @@ a {
   background-color: white;
 }
 
-.navbar__inquiry:hover .arrow-icon {
+.navbar__inquiry:hover .arrow-icon,
+.button-design:hover .arrow-icon {
   color: black;
   transform: translate(2px, -2px);
 }
-
   
   /* ✅ The span inside */
   .link-text {
@@ -428,37 +428,116 @@ a {
   transform: translateY(0);
 }
 
-.dropdown-links {
-  padding-bottom: 1rem;   /* or 0.75rem for tighter */
+/* =========================
+   DROPDOWN LIST
+========================= */
+.dropdown-links{
+  list-style: none;
   margin: 0;
-  line-height: 0.5;
+  padding: 0;
+  margin-top: 1.25rem;        /* closer to top */
+  padding-bottom: 0.5rem;
 }
 
-.dropdown-links li {
-  margin: 0rem 0;
-  font-size: clamp(4rem, 6vw, 9rem);
-  padding-top: 4rem;
-}
-@media screen and (max-width: 960px){
-.dropdown-links li {
-  margin: 0rem 0;
-  font-size: clamp(4rem, 6vw, 9rem);
-  padding-top: 4rem;
-  line-height: 0.1;
+/* each item acts as a mask for the slide-in */
+.dropdown-links .dropdown-mask{
+  overflow: hidden;
+  margin: 0.18rem 0;          /* tight vertical rhythm */
+  padding-bottom: 0.18em;     /* room for descenders (g/y/p/j) */
+  line-height: 1;
 }
 
+/* remove old spacing rules from li */
+.dropdown-links li{
+  margin: 0;
+  padding: 0;
 }
 
-.dropdown-links a {
+/* =========================
+   LINK STYLES + ANIMATION START
+========================= */
+.dropdown-link{
+  display: inline-block;
+  position: relative;
+
+  font-size: clamp(3.2rem, 6vw, 7rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+
+  color: #fff;
   text-decoration: none;
-  color: white;
-  transition: color 0.3s ease;
+
+  transform: translateY(-120%);
+  opacity: 0;
+
+  transition: color 0.25s ease;
 }
 
-.dropdown-links a:hover {
+/* underline reveal */
+.dropdown-link::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.10em;
+
+  width: 100%;
+  height: 0.14em;           /* 🔥 thicker line */
+
+  background: #54f3a4;
+
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s ease;
+}
+
+.dropdown-link:hover{
   color: #54f3a4;
 }
+.dropdown-link:hover::after{
+  transform: scaleX(1);
+}
 
+/* =========================
+   MOBILE TIGHTENING
+========================= */
+@media (max-width: 960px){
+  .dropdown-links{
+    margin-top: 2rem;      /* ✅ closer to top on mobile */
+  }
+
+  .dropdown-links .dropdown-mask{
+    margin: 0.10rem 0;        /* tighter */
+    padding-bottom: 0.14em;
+  }
+
+  .dropdown-link{
+    font-size: clamp(3.6rem, 9vw, 4.6rem);
+    line-height: 1.02;        /* ✅ readable but tight */
+  }
+}
+/*
+
+.dropdown-link{
+  position: relative;
+  color: transparent; 
+  background-image: linear-gradient(
+    to right,
+    #54f3a4 50%,
+    white 50%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: background-position 0.35s ease;
+  text-decoration: none;
+}
+
+.dropdown-link:hover{
+  background-position: 0 0; 
+}
+
+*/
 .close-menu {
   position: absolute;
   top: 2rem;
@@ -491,29 +570,7 @@ a {
   opacity: 1; /* Ensure this is present */
 }
 
-.dropdown-video-bg {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 80%;
-  height: 80%;
-  z-index: 0; /* Behind all dropdown content */
-  overflow: hidden;
-}
 
-.dropdown-video-bg video {
-  width: 100%;
-  height: 200%;
-  object-fit: cover;
-  opacity: 1; /* Optional: make it subtle */
-  pointer-events: none;
-  z-index: -1;
-}
-
-.dropdown-video-bg,
-.dropdown-video-bg video {
-  pointer-events: none;
-}
 
 .dropdown-content {
   position: relative;
@@ -968,25 +1025,24 @@ a {
       margin-top: 1rem;
       font-size: 1.5rem;
     }
-    .dropdown-video-bg {
+/* VIDEO BG (put this near the bottom of your CSS) */
+.dropdown-video-bg{
   position: absolute;
+  left: 0;
   bottom: 0;
-  right: 0;
   width: 100%;
   height: 100%;
-  z-index: 0; /* Behind all dropdown content */
+  z-index: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 
-.dropdown-video-bg video {
+.dropdown-video-bg video{
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  opacity: 1; /* Optional: make it subtle */
-  pointer-events: none;
-  z-index: -1;
+  opacity: 1;
+  transform-origin: 50% 50%;
 }
-  
   
   @media screen and (max-width: 480px) {
     .main__content h1 {

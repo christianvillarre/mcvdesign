@@ -34,6 +34,138 @@
 <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
 </head>
 <body>
+  <div id="bgGrid" aria-hidden="true"></div>
+  <style>
+    /* Background grid overlay (safe: doesn't change your layout) */
+#bgGrid{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;                 /* ✅ always behind */
+  background: #fff;            /* ✅ keep white background */
+  overflow: hidden;
+}
+
+/* the grid itself */
+#bgGrid .grid{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  gap: 6px;                    /* grid spacing */
+  padding: 10px;
+}
+
+/* each square */
+#bgGrid .cell{
+  width: 18px;                 /* ✅ grid feel */
+  height: 18px;
+  background: transparent;     /* keep clean */
+  border: 1px solid rgba(0,0,0,0.08);
+  
+  transform: translateZ(0);
+  transition: background 220ms ease, transform 220ms ease, border-color 220ms ease;
+  will-change: background, transform;
+}
+
+/* flipped state */
+#bgGrid .cell.on{
+  background: #54f3a4;         /* ✅ your green */
+  border-color: rgba(0,0,0,0.04);
+  transform: rotateY(180deg);
+}
+
+/* optional: disable on touch */
+@media (hover: none){
+  #bgGrid{ display:none; }
+}
+  </style>
+  <script>
+(() => {
+  const root = document.getElementById("bgGrid");
+  if (!root) return;
+
+  const GREEN_CLASS = "on";
+
+  // ✅ tweak knobs
+  const CELL_SIZE = 18;        // must match CSS .cell width/height
+  const GAP = 6;               // must match CSS grid gap
+  const PAD = 10;              // must match CSS grid padding
+  const SPARKS_PER_MOVE = 6;   // ✅ minimal amount of squares
+  const RADIUS_PX = 55;        // ✅ small random area around cursor
+  const LINGER_MS = 400;       // how long it stays green
+
+  let gridEl, cells = [];
+  let cols = 0, rows = 0;
+  let raf = null, mx = -9999, my = -9999;
+
+  function build(){
+    root.innerHTML = "";
+    gridEl = document.createElement("div");
+    gridEl.className = "grid";
+    root.appendChild(gridEl);
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    cols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+    rows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+
+    gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL_SIZE}px)`;
+
+    const total = cols * rows;
+    cells = new Array(total);
+
+    for (let i = 0; i < total; i++){
+      const c = document.createElement("div");
+      c.className = "cell";
+      gridEl.appendChild(c);
+      cells[i] = c;
+    }
+  }
+
+  function idxFromXY(x, y){
+    const gx = (x - PAD) / (CELL_SIZE + GAP);
+    const gy = (y - PAD) / (CELL_SIZE + GAP);
+    const cx = Math.floor(gx);
+    const cy = Math.floor(gy);
+    if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return -1;
+    return cy * cols + cx;
+  }
+
+  function spark(x, y){
+    // choose a few random points near cursor
+    for (let i = 0; i < SPARKS_PER_MOVE; i++){
+      const a = Math.random() * Math.PI * 2;
+      const r = Math.random() * RADIUS_PX;
+      const px = x + Math.cos(a) * r;
+      const py = y + Math.sin(a) * r;
+
+      const idx = idxFromXY(px, py);
+      if (idx < 0) continue;
+
+      const el = cells[idx];
+      if (!el) continue;
+
+      el.classList.add(GREEN_CLASS);
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove(GREEN_CLASS), LINGER_MS);
+    }
+  }
+
+  function onMove(e){
+    mx = e.clientX; my = e.clientY;
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      spark(mx, my);
+      raf = null;
+    });
+  }
+
+  build();
+  window.addEventListener("resize", build, { passive: true });
+  window.addEventListener("pointermove", onMove, { passive: true });
+})();
+</script>
  <nav class="navbar">
     <div class="navbar__container">
       <div class="navbar__left">
@@ -104,13 +236,13 @@
     </div>
 </div> 
 
-
+<!--
 <div class="ball2" id="draggableBall">
       <video class="ball-video" autoplay muted loop playsinline>
         <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos//spherewhite.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-    </div>
+    </div>-->
 
 
 <div class="first-section">
@@ -190,77 +322,545 @@
 </div>
 -->
 
-<div class="card1">
-  <div class="card1-content">
-    <div class="card1-img">
-      <img src="images/Artboard 6.jpg" alt="Image" />
-    </div>
-    <div class="card1-txt">
-      <h2>Event Branding</h2>
-      <!--<p>This is your supporting text. It will now align under the image.</p>-->
-    </div>
-  </div>
-</div>
+<section class="case-stack" id="caseStack">
+  <div class="case-stack__inner">
 
-<div class="card1">
-  <div class="card1-content">
-    <div class="card1-img">
-      <img src="images/Artboard 8.jpg" alt="Image" />
-    </div>
-    <div class="card1-txt">
-      <h2>Menus & Brochures</h2>
-      <!--<p>This is your supporting text. It will now align under the image.</p>-->
-    </div>
-  </div>
-</div>
+    <!-- LEFT: window + inner scroller -->
+    <div class="case-stack__left">
+      <div class="case-stack__left-inner">
+        <article class="case-panel">
+          <div class="eyebrow">
+            <span>Case Study: Website and Branding Design</span>
+            <span class="line"></span>
+          </div>
+          <h2>Shandy's</h2>
+          <p class="lead">A focused digital experience designed to communicate clarity, personality, and trust.</p>
+          <ul class="bullets">
+            <li>Custom website design</li>
+            <li>Responsive development</li>
+            <li>Brand-aligned visuals</li>
+            <li>Performance optimization</li>
+          </ul>
 
-<div class="card1">
-  <div class="card1-content">
-    <div class="card1-img">
-      <img src="images/Artboard 7.jpg" alt="Image" />
-    </div>
-    <div class="card1-txt">
-      <h2>Advertising & Marketing</h2>
-      <!--<p>This is your supporting text. It will now align under the image.</p>-->
-    </div>
-  </div>
-</div>
+          <!-- mobile-only image (place inside each case-panel) -->
+          <div class="case-panel__media">
+            <img src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/sign/images/Shandys%20webpage.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yYmE0NWUwNS02NWNiLTRmNWUtYTY2YS0zYTY2ODA1NDBmN2MiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvU2hhbmR5cyB3ZWJwYWdlLnBuZyIsImlhdCI6MTc2NjUxMDg5NSwiZXhwIjoxNzk4MDQ2ODk1fQ.GmK259_89a73uQT9VdychoKJovgKNuFgQRh_WdwVIcE" alt="Case preview" loading="lazy" decoding="async">
+          </div>
+        </article>
 
-<div class="card1">
-  <div class="card1-content">
-    <div class="card1-img">
-      <img src="images/Artboard 15.jpg" alt="Image" />
-    </div>
-    <div class="card1-txt">
-      <h2>Product Branding & Packaging</h2>
-      <!--<p>This is your supporting text. It will now align under the image.</p>-->
-    </div>
-  </div>
-</div>
+        <article class="case-panel">
+          <div class="eyebrow">
+            <span>Case Study: SEO + Lead Generation</span>
+            <span class="line"></span>
+          </div>
+          <h2>Magna-Flow</h2>
+          <p class="lead">A tailored web experience built to elevate the brand and convert attention into action.</p>
+          <ul class="bullets">
+            <li>Visual identity integration</li>
+            <li>UX-driven layout</li>
+            <li>Custom interactions</li>
+            <li>Scalable architecture</li>
+          </ul>
 
-<div class="card1">
-  <div class="card1-content">
-    <div class="card1-img">
-      <img src="images/Artboard 9.jpg" alt="Image" />
-    </div>
-    <div class="card1-txt">
-      <h2>Design on Cans & Cannisters</h2>
-      <!--<p>This is your supporting text. It will now align under the image.</p>-->
-    </div>
-  </div>
-</div>
+          <div class="case-panel__media">
+            <img src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/sign/images/Magna-Flow%20webpage.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yYmE0NWUwNS02NWNiLTRmNWUtYTY2YS0zYTY2ODA1NDBmN2MiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvTWFnbmEtRmxvdyB3ZWJwYWdlLnBuZyIsImlhdCI6MTc2NjUyNDAzNSwiZXhwIjoxNzk4MDYwMDM1fQ.9yJ_QzlRjdOi5LdKEZ_b0193WMyB_56nle8CAb8X_Dg" alt="Case preview" loading="lazy" decoding="async">
+          </div>
+        </article>
 
-<div class="card1">
-  <div class="card1-content">
-    <div class="card1-img">
-      <img src="images/Artboard 12.jpg" alt="Image" />
+        <article class="case-panel">
+          <div class="eyebrow">
+            <span>Case Study: Visual Identity</span>
+            <span class="line"></span>
+          </div>
+          <h2>Unico</h2>
+          <p class="lead">A complete redesign focused on clarity, usability, and brand expression.</p>
+          <ul class="bullets">
+            <li>Design & development</li>
+            <li>UX strategy</li>
+            <li>Visual consistency</li>
+            <li>Mobile-first execution</li>
+          </ul>
+
+          <div class="case-panel__media">
+            <img src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/sign/images/UNICO%20webpage.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yYmE0NWUwNS02NWNiLTRmNWUtYTY2YS0zYTY2ODA1NDBmN2MiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvVU5JQ08gd2VicGFnZS5wbmciLCJpYXQiOjE3NjY1MTA5NDMsImV4cCI6MTc5ODA0Njk0M30.xm_OGaclkFwgNxbyxOjgCqVIgcvO5hvC1kz0Y3QWzi0" alt="Case preview" loading="lazy" decoding="async">
+          </div>
+        </article>
+      </div>
     </div>
-    <div class="card1-txt">
-      <h2>Logos & Photography</h2>
-      <!--<p>This is your supporting text. It will now align under the image.</p>-->
+
+    <!-- RIGHT: masked image stage -->
+    <div class="case-stack__right">
+      <div class="case-stage">
+        <div class="case-stage__mask">
+          <img class="case-img" src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/sign/images/Shandys%20webpage.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yYmE0NWUwNS02NWNiLTRmNWUtYTY2YS0zYTY2ODA1NDBmN2MiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvU2hhbmR5cyB3ZWJwYWdlLnBuZyIsImlhdCI6MTc2NjUxMDg5NSwiZXhwIjoxNzk4MDQ2ODk1fQ.GmK259_89a73uQT9VdychoKJovgKNuFgQRh_WdwVIcE" alt="Shandy's preview" />
+          <img class="case-img" src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/sign/images/Magna-Flow%20webpage.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yYmE0NWUwNS02NWNiLTRmNWUtYTY2YS0zYTY2ODA1NDBmN2MiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvTWFnbmEtRmxvdyB3ZWJwYWdlLnBuZyIsImlhdCI6MTc2NjUyNDAzNSwiZXhwIjoxNzk4MDYwMDM1fQ.9yJ_QzlRjdOi5LdKEZ_b0193WMyB_56nle8CAb8X_Dg" alt="Magna-Flow preview" />
+          <img class="case-img" src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/sign/images/UNICO%20webpage.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yYmE0NWUwNS02NWNiLTRmNWUtYTY2YS0zYTY2ODA1NDBmN2MiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvVU5JQ08gd2VicGFnZS5wbmciLCJpYXQiOjE3NjY1MTA5NDMsImV4cCI6MTc5ODA0Njk0M30.xm_OGaclkFwgNxbyxOjgCqVIgcvO5hvC1kz0Y3QWzi0" alt="Oleumfield preview" />
+        </div>
+      </div>
     </div>
+
   </div>
-</div>
+</section>
+
+<style>
+/* component container */
+.case-stack{
+  position: relative;
+  background: transparent;
+  color: #000;
+}
+
+/* pinned “screen” layout */
+.case-stack__inner{
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: center;
+
+  width: min(1200px, 92vw);   /* ✅ caps on large screens */
+  margin-inline: auto;
+}
+
+/* LEFT: masked text window */
+.case-stack__left{
+  position: relative;
+  overflow: hidden;                 /* ✅ window */
+  height: 100vh;             /* ✅ was 70vh */
+}
+
+/* LEFT inner mover (this is what we animate) */
+.case-stack__left-inner{
+  will-change: transform;
+}
+
+/* each panel fills the window */
+.case-panel{
+  height: 100vh;             /* ✅ was 70vh */
+  display: grid;
+  align-content: center;
+  padding-right: clamp(0rem, 1vw, 1rem);
+}
+
+/* eyebrow line fills remaining space */
+.eyebrow{
+  display:flex;
+  align-items:center;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: .12em;
+  color: #7a7a7a;
+}
+.eyebrow .line{
+  height: 1px;
+  background: #cfcfcf;
+  flex: 1;
+}
+
+/* typography helpers (optional) */
+.case-panel h2{
+  font-size: clamp(2.6rem, 3.4vw, 4.2rem);
+  margin: 0 0 1rem;
+  font-weight: 650;
+}
+.lead{
+  max-width: 40ch;
+  color: #666;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  margin: 0 0 1rem;
+}
+.bullets{
+  margin: 0;
+  padding-left: 1.05rem;
+  color: #555;
+  line-height: 1.7;
+  font-size: 0.92rem;
+}
+.bullets li{ margin: .25rem 0; }
+
+/* right column stage */
+.case-stage{
+  position: relative;
+}
+
+/* this is the “window” */
+.case-stage__mask{
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  aspect-ratio: 1 / 1;       /* ✅ 4:4 */
+}
+/* stack all images */
+.case-stage__mask .case-img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+  transform: translate3d(0,0,0);
+}
+
+.case-panel__media{ display:none; }
+/* MOBILE: simple stacked sections (no pin, no scroll effects) */
+@media (max-width: 900px){
+  .case-stack__right{ display:none; }      /* ✅ remove the masked stage */
+
+  .case-stack__inner{
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 2.25rem 1.25rem;
+    gap: 1.75rem;
+  }
+
+  .case-stack__left{
+    height: auto;
+    overflow: visible;
+  }
+
+  .case-panel{
+    height: auto;
+    padding: 1.25rem 0;
+  }
+
+  .case-panel__media{
+    display:block;                          /* ✅ show under panel */
+    margin-top: 1rem;
+    border-radius: 16px;
+    overflow:hidden;
+    aspect-ratio: 16 / 10;
+    background:#f2f2f2;
+  }
+
+  .case-panel__media img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+}
+
+.case-stage__mask { transform: translateZ(0); }
+.case-stage__mask .case-img { backface-visibility: hidden; }
+</style>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+const mm = gsap.matchMedia();
+
+mm.add("(min-width: 901px)", () => {
+  const stack     = document.querySelector("#caseStack");
+  const panels    = gsap.utils.toArray("#caseStack .case-panel");
+  const images    = gsap.utils.toArray("#caseStack .case-img");
+  const leftCol   = document.querySelector("#caseStack .case-stack__left");
+  const leftInner = document.querySelector("#caseStack .case-stack__left-inner");
+
+  if (!stack || !leftCol || !leftInner || panels.length === 0 || images.length === 0) return;
+
+  const steps = Math.min(panels.length, images.length);
+  const stepCount = steps - 1;
+
+  // kill triggers for this section (hot reload safety)
+  ScrollTrigger.getAll().forEach(st => {
+    if (st.trigger === stack) st.kill();
+  });
+
+  const getPanelH = () => leftCol.clientHeight;
+  const getTotalY = () => -(getPanelH() * stepCount);
+
+  // knobs
+  const IMAGE_OFFSET = 0.85; // bigger = earlier swap
+  const SWAP_DUR = 0.55;     // faster = snappier swap
+
+  // initial image states: only first visible
+  gsap.set(images, { yPercent: 100, autoAlpha: 0, zIndex: 0 });
+  gsap.set(images[0], { yPercent: 0, autoAlpha: 1, zIndex: 1 });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: stack,
+      start: "top top",
+      end: () => "+=" + (window.innerHeight * stepCount),
+      scrub: true,
+      pin: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true
+    }
+  });
+
+  // TEXT: each step = 1 timeline unit
+  tl.to(leftInner, {
+    y: () => getTotalY(),
+    duration: stepCount,
+    ease: "none"
+  }, 0);
+
+for (let i = 1; i < steps; i++) {
+  const t = i - IMAGE_OFFSET;
+
+  // incoming image starts below, on top of stack
+  tl.set(images[i], {
+    zIndex: i + 2,
+    autoAlpha: 1,
+    yPercent: 100
+  }, t);
+
+  // slide incoming image UP (only thing that moves)
+  tl.to(images[i], {
+    yPercent: 0,
+    duration: SWAP_DUR,
+    ease: "power2.out",
+    immediateRender: false
+  }, t);
+
+  // after incoming locks, hide ALL older images instantly
+  tl.set(images.slice(0, i), {
+    autoAlpha: 0,
+    yPercent: 0
+  }, t + SWAP_DUR + 0.001);
+}
+
+  // final safety: keep only last visible at end
+  tl.set(images, { autoAlpha: 0 }, stepCount - 0.0001);
+  tl.set(images[steps - 1], { autoAlpha: 1, yPercent: 0 }, stepCount - 0.0001);
+
+  const refresh = () => ScrollTrigger.refresh();
+  if (document.fonts?.ready) document.fonts.ready.then(refresh);
+  window.addEventListener("load", refresh);
+});
+
+mm.add("(max-width: 900px)", () => {
+  // mobile stays simple
+});
+</script>
+
+
+
+
+
+
+
+<div class="section-spacer"></div>
+
+<section class="pin-gallery" id="pin-gallery">
+  <div class="pin-gallery__wrap">
+
+    <header class="pin-gallery__head">
+      <h2 class="pin-gallery__title">Brand Identity & Digital Design</h2>
+      <p class="pin-gallery__desc">
+        From visual identity to digital execution, we create considered design systems that feel intentional, consistent, and built to scale; designed to perform seamlessly across digital platforms and evolving needs.
+      </p>
+    </header>
+
+    <div class="pin-gallery__stage">
+      <div class="pin-gallery__stack">
+
+        <!-- 👈 visual lead space -->
+        <div class="pin-gallery__spacer"></div>
+
+        <img class="pin-img" src="images/Artboard 6.jpg">
+        <img class="pin-img" src="images/Artboard 7.jpg">
+        <img class="pin-img" src="images/Artboard 8.jpg">
+        <img class="pin-img" src="images/Artboard 9.jpg">
+        <img class="pin-img" src="images/Artboard 12.jpg">
+
+        <!-- 👉 visual tail space -->
+        <div class="pin-gallery__spacer"></div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<style>
+  .section-spacer {
+  width: 100%;
+  height: 160px; /* adjust for stronger/weaker transition */
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  pointer-events: none;
+}
+  .pin-gallery{
+  background:#fff;
+  color:#111;
+  padding: clamp(4rem, 8vh, 7rem) 6vw;
+}
+
+.pin-gallery__wrap{
+  max-width: 1200px;
+  margin: 2rem auto;
+}
+
+/* heading */
+.pin-gallery__head{
+  display:grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  margin-bottom: 3rem;
+}
+
+.pin-gallery__title{
+  margin:0;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+}
+
+.pin-gallery__desc{
+  margin:0;
+  opacity:.75;
+  max-width:70ch;
+  line-height: 1.5;
+}
+
+/* full-bleed stage */
+.pin-gallery__stage{
+  position: relative;
+  height: min(60vh, 640px);
+  /*background:#f4f4f5;*/
+  overflow:hidden;
+  border-radius:18px;
+
+  width:100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  
+}
+
+/* horizontal track */
+.pin-gallery__stack{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  gap: clamp(18px, 2vw, 28px);
+  padding: 0 clamp(24px, 4vw, 64px);
+  will-change: transform;
+}
+
+/* 🔑 real visual space */
+.pin-gallery__spacer{
+  flex: 0 0 clamp(10vw, 40vw, 50vw);
+}
+
+/* images */
+.pin-img{
+  flex: 0 0 auto;
+  width: clamp(40vw, 50vw, 50vw);
+  height: clamp(50vh, 40vh, 40vh);
+  object-fit: cover;
+  border-radius:2px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.18);
+}
+@media (max-width: 768px){
+  .pin-gallery{
+    padding: 3rem 6vw;              /* slightly tighter */
+  }
+
+  .pin-gallery__head{
+    grid-template-columns: 1fr;      /* ✅ stack */
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .pin-gallery__title{
+    font-size: clamp(1.8rem, 7vw, 2.4rem);
+    line-height: 1.1;
+  }
+
+  .pin-gallery__desc{
+    max-width: 100%;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+}
+@media (max-width: 768px){
+  .pin-gallery__stage{
+    height: 52vh;                   /* less huge */
+    border-radius: 14px;
+  }
+
+  .pin-img{
+    width: 78vw;                    /* more “card” sized */
+    height: 42vh;
+  }
+
+  .pin-gallery__spacer{
+    flex: 0 0 12vw;                 /* less dead space */
+  }
+}
+</style>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+const section = document.querySelector("#pin-gallery");
+const stage   = section.querySelector(".pin-gallery__stage");
+const track   = section.querySelector(".pin-gallery__stack");
+
+function build() {
+  // kill triggers created for this section
+  ScrollTrigger.getAll().forEach(st => {
+    if (st.trigger === section) st.kill();
+  });
+  gsap.killTweensOf(track);
+
+  const spacers = track.querySelectorAll(".pin-gallery__spacer");
+  const tailSpacer = spacers[spacers.length - 1];
+
+  // reset
+  gsap.set(track, { x: 0 });
+
+  // Measure how far we need to move so the tail spacer becomes visible at the end.
+  // We want: tailSpacer's right edge == stage's right edge (at end)
+  const stageRect = stage.getBoundingClientRect();
+  const tailRect  = tailSpacer.getBoundingClientRect();
+
+  // How far from track-start (x=0) is the tail spacer's right edge?
+  const tailRightFromTrackStart = (tailRect.right - stageRect.left);
+
+  // End x should shift the track left so that tailRightFromTrackStart lands on stage width
+  const endX = -(tailRightFromTrackStart - stage.clientWidth);
+
+  // Make sure we don't accidentally go the wrong direction
+  const finalX = Math.min(0, endX);
+
+  // Total scroll distance (match how far we move, add a touch for comfort)
+  const scrollDistance = Math.abs(finalX);
+
+  gsap.to(track, {
+    x: finalX,
+    ease: "none",
+    scrollTrigger: {
+      trigger: section,
+      start: "top top",
+      end: () => "+=" + scrollDistance,
+      pin: true,
+      scrub: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true
+      // markers: true
+    }
+  });
+
+  ScrollTrigger.refresh();
+}
+
+window.addEventListener("load", build);
+window.addEventListener("resize", () => {
+  clearTimeout(window.__pgTO);
+  window.__pgTO = setTimeout(build, 150);
+});
+</script>
+
 
 
 
@@ -800,7 +1400,86 @@ document.addEventListener("scroll", () => {
 });
 
 
-    </script>
+</script>
+
+
+<footer class="site-footer">
+  <div class="footer-inner">
+
+    <!-- Top row: big CTA + short blurb -->
+    <div class="footer-top">
+      <div class="footer-top-left">
+        <h2 class="footer-cta">
+          <a href="/inquiry.html" class="footer-cta-link">Let’s chat. →</a>
+        </h2>
+        <p class="footer-sub">
+          Branding, websites, and digital design built for growth.
+        </p>
+      </div>
+
+      <div class="footer-top-right">
+        <a href="/" class="footer-logo">
+          <img src="/images/logo4.png" alt="MCVDesign logo">
+        </a>
+      </div>
+    </div>
+
+    <!-- Columns -->
+    <div class="footer-grid">
+
+      <!-- Column 1: Contact -->
+      <div class="footer-col">
+        <h3 class="footer-title">Contact</h3>
+        <a class="footer-link" href="mailto:christian@mcvdesign.com">christian@mcvdesign.com</a>
+        <a class="footer-link" href="tel:+1XXXXXXXXXX">+1 (713) 822-4653</a>
+        <p class="footer-text">Houston, TX</p>
+      </div>
+
+      <!-- Column 2: Pages -->
+      <div class="footer-col">
+        <h3 class="footer-title">Pages</h3>
+        <a class="footer-link" href="/index.html">Home</a>
+        <a class="footer-link" href="/services.html">Services</a>
+        <a class="footer-link" href="/work.html">Work</a>
+        <a class="footer-link" href="/inquiry.html">Inquiry</a>
+      </div>
+
+      <!-- Column 3: Social -->
+      <div class="footer-col">
+        <h3 class="footer-title">Social</h3>
+        <a class="footer-link" href="https://www.facebook.com/profile.php?id=61582116278117" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">Behance</a>
+        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+
+      <!-- Column 4: Quick note / availability -->
+      <div class="footer-col footer-col-wide">
+        <h3 class="footer-title">Start a project</h3>
+        <p class="footer-text">
+          Tell us what you’re building and we’ll reply with next steps + a rough timeline.
+        </p>
+
+        <a href="/inquiry.html" class="footer-pill">
+          Send Inquiry
+          <span class="footer-arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Bottom row -->
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 MCVDesign. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a class="footer-link small" href="/privacy.html">Privacy</a>
+        <a class="footer-link small" href="/terms.html">Terms</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
 <script src="app.js"></script>
 </body>
 </html>

@@ -193,37 +193,9 @@
       z-index: 15;
     }
 
-    .scroll-text-section {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      overflow: hidden;
-      cursor: grab;
-      position: relative;
-      width: 100vw;
-    }
+   
 
-    .scroll-text-section:active { cursor: grabbing; }
-
-    .scroll-track {
-      display: inline-block;
-      will-change: transform;
-      white-space: nowrap;
-      min-width: max-content;
-      margin: 0;
-      padding: 0;
-    }
-
-    .scroll-text {
-      white-space: nowrap;
-      font-size: clamp(2rem, 10vw, 20rem);
-      font-weight: 500;
-      color: #54f3a4;
-      filter: drop-shadow(0 0 10px #54f3a4);
-      padding-left: 0;
-      display: inline-block;
-    }
+   
   </style>
 
   <style>
@@ -762,9 +734,270 @@
 </script>
 
 
+<section class="spacer spacer-top"></section>
+<section class="scroll-text-section" id="scrollContainer">
+  <div class="scroll-track" id="scrollTrack">
+    <div class="scroll-text-wrapper">
+      <div class="scroll-text" id="scrollText">
+        Our Services
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="spacer spacer-bottom"></section>
+<style>
+/* BALL CAUSING SCROLLBAR ON MOBILE */
+html,
+body{
+  width: 100%;
+  overflow-x: clip;
+}
+
+[data-scroll-container],
+.main,
+#smooth-wrapper,
+#smooth-content{
+  width: 100%;
+  overflow-x: clip;
+}
+/* BALL CAUSING SCROLLBAR ON MOBILE */
 
 
+/* ---- SCROLL TEXT ---- */
+.scroll-text-section{
+  /* override your global section{min-height:100vh} */
+  min-height: 0 !important;
 
+  display: flex;
+  align-items: center;
+  justify-content: flex-start !important;
+  overflow: hidden;
+
+  width: 100%;
+  padding: 0;
+  cursor: grab;
+}
+
+.scroll-text-section:active{ cursor: grabbing; }
+
+.scroll-track{
+  display: inline-block;
+  white-space: nowrap;
+  min-width: max-content;
+  transform: translateX(0);
+}
+
+.scroll-text-wrapper{
+  position: relative;
+  display: inline-block;
+}
+.scroll-text{
+  font-size: clamp(1.8rem, 6vw, 7rem);
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  padding: 0 1rem;
+  position: relative;
+}
+.scroll-text::after{
+  content: "•";
+  color: #54f3a4;          /* blue dot */
+  margin-left: 2rem;      /* space between text & dot */
+  margin-right: 2rem;     /* space before next text */
+  display: inline-block;
+  font-size: 0.8em;       /* slightly smaller than text */
+  vertical-align: middle;
+}
+/* ---- GIF PILL ---- */
+.gif-pill{
+  display: inline-flex;
+  align-items: center;
+  height: 1em;
+  aspect-ratio: 1 / 1;
+  border-radius: 0.35em;
+  overflow: hidden;
+  border: 2px solid #fff;
+  background: #000;
+  flex-shrink: 0;
+}
+
+.gif-pill img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* ---- SPACERS ---- */
+section.spacer{
+  min-height: 0 !important;  /* cancels global section min-height */
+  height: 0;
+  display: block;
+  background: transparent;
+}
+
+section.spacer-top{
+  border-bottom: 2px solid #fff;
+  margin: 1.25rem 0 5.75rem;
+}
+
+section.spacer-bottom{
+  border-top: 2px solid #fff;
+  margin: 6.75rem 0 2.25rem;
+}
+
+
+/* ---- MOBILE ---- */
+@media (max-width: 768px){
+
+  .scroll-text-section{
+    height: 10vh;
+    min-height: 72px;              /* prevents tiny height */
+    display: flex;
+    align-items: center;            /* true vertical center */
+    justify-content: flex-start;
+    padding-top: 0;                 /* remove baseline drift */
+    padding-bottom: 0;
+  }
+
+  .scroll-track{
+    display: flex;                  /* better centering than inline-block */
+    align-items: center;
+    will-change: transform;
+  }
+
+  .scroll-text{
+    line-height: 1;                 /* stops “sitting low” */
+    padding: 0 0.75rem;             /* slightly closer */
+    font-size: 3rem;
+  }
+
+  .scroll-text::after{
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+    section.spacer-top{
+    border-bottom-color: #646464;
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  section.spacer-bottom{
+    border-top-color: #646464;
+    margin: 1.25rem 0 0.75rem;
+  }
+}
+</style>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+const track = document.getElementById("scrollTrack");
+
+let direction = -1; // -1 = left, +1 = right
+let speedDesktop = 120;
+let speedMobile  = 55;     // ✅ slower on mobile
+let speed = speedDesktop;
+
+let x = 0;
+let lastTime = performance.now();
+let loopWidth = 0;
+
+// ✅ build: group A + group B (B is exact clone of A)
+// then we wrap by loopWidth (width of A) -> perfect seamless
+function buildLoop() {
+  // pick the first element as the "seed" (your .scroll-text-wrapper)
+  const seed = track.children[0];
+  if (!seed) return;
+
+  // keep a clean copy of the seed's HTML (including your ::after dot, etc.)
+  const seedHTML = seed.outerHTML;
+
+  // clear track and rebuild two identical groups
+  track.innerHTML = "";
+
+  const groupA = document.createElement("div");
+  groupA.className = "scroll-group";
+  groupA.style.display = "inline-flex";
+  groupA.style.whiteSpace = "nowrap";
+  groupA.style.alignItems = "center";
+
+  // keep appending until groupA fills past viewport width
+  track.appendChild(groupA);
+
+  // add first item
+  groupA.insertAdjacentHTML("beforeend", seedHTML);
+
+  // keep adding until wide enough (2x viewport is safe)
+  // NOTE: groupA.scrollWidth updates live
+  while (groupA.scrollWidth < window.innerWidth * 1.5) {
+    groupA.insertAdjacentHTML("beforeend", seedHTML);
+  }
+
+  // clone groupA -> groupB
+  const groupB = groupA.cloneNode(true);
+
+  // append both
+  track.appendChild(groupA);
+  track.appendChild(groupB);
+
+  // ✅ exact wrap distance (width of one group)
+  loopWidth = groupA.scrollWidth;
+
+  // ✅ reset x into valid range so no snap after rebuild
+  x = gsap.utils.wrap(-loopWidth, 0, x);
+
+  // set immediately
+  gsap.set(track, { x });
+
+  // ✅ update speed based on viewport
+  speed = window.matchMedia("(max-width: 768px)").matches ? speedMobile : speedDesktop;
+}
+
+function animate(now) {
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+
+  // if not ready yet, keep trying
+  if (!loopWidth) {
+    requestAnimationFrame(animate);
+    return;
+  }
+
+  x += direction * speed * dt;
+
+  // ✅ perfect seamless wrap
+  x = gsap.utils.wrap(-loopWidth, 0, x);
+
+  gsap.set(track, { x });
+  requestAnimationFrame(animate);
+}
+
+// ---- CHANGE DIRECTION ON SCROLL (with small deadzone to avoid flicker) ----
+let lastScrollY = window.scrollY;
+
+window.addEventListener("scroll", () => {
+  const y = window.scrollY;
+  const dy = y - lastScrollY;
+
+  if (Math.abs(dy) > 2) {
+    direction = dy > 0 ? +1 : -1;
+    lastScrollY = y;
+  }
+}, { passive: true });
+
+// ---- INIT ----
+window.addEventListener("load", () => {
+  buildLoop();
+  requestAnimationFrame(animate);
+});
+
+window.addEventListener("resize", () => {
+  // wait a tick so mobile browser settles layout
+  clearTimeout(window.__loopResizeTimer);
+  window.__loopResizeTimer = setTimeout(buildLoop, 150);
+});
+</script>
 <section class="design-section" id="design">
   <div class="design-wrap">
 

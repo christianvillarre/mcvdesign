@@ -797,58 +797,40 @@ mm.add("(max-width: 900px)", () => {
   }
 }
 @media (max-width: 900px){
-
-  /* full width stage (no full-bleed calc issues) */
+  /* Make the stage a native horizontal scroller */
   .pin-gallery__stage{
     width: 100%;
     margin-left: 0;
     margin-right: 0;
-
-    height: 54vh;           /* tweak */
-    height: 54svh;          /* ✅ iOS stable viewport */
-
+    height: auto;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-
-    /* swipe + snap feel */
     scroll-snap-type: x mandatory;
     scroll-padding: 6vw;
-
-    /* “draggable” cursor on devices w/ cursor */
-    cursor: grab;
     touch-action: pan-x;
   }
-  .pin-gallery__stage:active{ cursor: grabbing; }
 
-  /* put the track into normal flow so it scrolls */
+  /* Track becomes normal flow */
   .pin-gallery__stack{
     position: relative;
     inset: auto;
     display: flex;
-    align-items: center;
-
     gap: 18px;
     padding: 0 6vw;
-
-    width: max-content;     /* ✅ makes horizontal width real */
-    transform: none !important;  /* ensure any gsap x isn't applied */
+    width: max-content;     /* ✅ gives real scroll width */
   }
 
-  /* remove spacers on mobile */
-  .pin-gallery__spacer{ display:none; }
-
-  /* cards */
+  /* Snap each image */
   .pin-img{
     flex: 0 0 auto;
-    width: 84vw;            /* big card */
-    height: 44vh;
-    height: 44svh;
-    object-fit: cover;
-
+    width: 82vw;
+    height: 42vh;
     scroll-snap-align: center;
-    border-radius: 10px;
   }
+
+  /* Spacers not needed on mobile */
+  .pin-gallery__spacer{ display:none; }
 }
 </style>
 
@@ -911,42 +893,7 @@ gsap.registerPlugin(ScrollTrigger);
 })();
 </script>
 
-<script>
-  //mobile only click drag
-(() => {
-  const isMobile = window.matchMedia("(max-width: 900px)").matches;
-  if (!isMobile) return;
 
-  const stage = document.querySelector("#pin-gallery .pin-gallery__stage");
-  if (!stage) return;
-
-  let isDown = false, startX = 0, startLeft = 0;
-
-  stage.addEventListener("pointerdown", (e) => {
-    isDown = true;
-    stage.setPointerCapture(e.pointerId);
-    startX = e.clientX;
-    startLeft = stage.scrollLeft;
-    stage.style.cursor = "grabbing";
-  }, { passive: true });
-
-  stage.addEventListener("pointermove", (e) => {
-    if (!isDown) return;
-    const dx = e.clientX - startX;
-    stage.scrollLeft = startLeft - dx;
-  }, { passive: true });
-
-  stage.addEventListener("pointerup", () => {
-    isDown = false;
-    stage.style.cursor = "grab";
-  }, { passive: true });
-
-  stage.addEventListener("pointercancel", () => {
-    isDown = false;
-    stage.style.cursor = "grab";
-  }, { passive: true });
-})();
-</script>
 
 
 <style>

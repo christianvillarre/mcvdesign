@@ -1068,18 +1068,18 @@ a {
 }
 @media (max-width: 768px){
   .dropdown-video-bg{
-    height: 70vh;
-    inset: auto 0 auto 0;  /* clear your current inset */
-    top: 80px;             /* ✅ move down (match your navbar height) */
+    position: fixed;
+    top: 80px;        /* below navbar */
     left: 0;
     right: 0;
+    height: 70vh;
+    z-index: 0;
   }
 
   .dropdown-video-bg video{
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: none;
   }
 }
   @media screen and (max-width: 480px) {

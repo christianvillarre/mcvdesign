@@ -796,8 +796,125 @@ mm.add("(max-width: 900px)", () => {
     flex: 0 0 12vw;                 /* less dead space */
   }
 }
+@media (max-width: 900px){
+  /* horizontal swipe gallery */
+  .pin-gallery__stage{
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    height: auto;                    /* let content define */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 6vw;
+    cursor: grab;
+    touch-action: pan-x;             /* ✅ allow horizontal swipe */
+  }
+  .pin-gallery__stage:active{ cursor: grabbing; }
+
+  /* track becomes normal flow */
+  .pin-gallery__stack{
+    position: relative;
+    inset: auto;
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 4vw, 24px);
+    padding: 0 6vw;
+    width: max-content;              /* ✅ makes scroll width real */
+    will-change: auto;
+  }
+
+  /* snap each image */
+  .pin-img{
+    scroll-snap-align: center;
+    flex: 0 0 auto;
+    width: 78vw;
+    height: 42vh;
+  }
+
+  /* spacers are unnecessary on mobile */
+  .pin-gallery__spacer{ display:none; }
+}
 </style>
 
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+(() => {
+  const section = document.querySelector("#pin-gallery");
+  if (!section) return;
+
+  const stage = section.querySelector(".pin-gallery__stage");
+  const track = section.querySelector(".pin-gallery__stack");
+
+  let desktopTrigger = null;
+
+  function killDesktopPin(){
+    if (desktopTrigger) {
+      desktopTrigger.kill(true);
+      desktopTrigger = null;
+    }
+    gsap.killTweensOf(track);
+    gsap.set(track, { x: 0 });
+  }
+
+  function buildDesktopPin() {
+    killDesktopPin();
+
+    const spacers = track.querySelectorAll(".pin-gallery__spacer");
+    const tailSpacer = spacers[spacers.length - 1];
+    if (!tailSpacer) return;
+
+    gsap.set(track, { x: 0 });
+
+    const stageRect = stage.getBoundingClientRect();
+    const tailRect  = tailSpacer.getBoundingClientRect();
+
+    const tailRightFromTrackStart = (tailRect.right - stageRect.left);
+    const endX = -(tailRightFromTrackStart - stage.clientWidth);
+    const finalX = Math.min(0, endX);
+    const scrollDistance = Math.abs(finalX);
+
+    const tween = gsap.to(track, {
+      x: finalX,
+      ease: "none"
+    });
+
+    desktopTrigger = ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: () => "+=" + scrollDistance,
+      pin: true,
+      scrub: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      animation: tween
+    });
+
+    ScrollTrigger.refresh();
+  }
+
+  // ✅ switch behavior based on screen
+  ScrollTrigger.matchMedia({
+    "(min-width: 901px)": () => {
+      window.addEventListener("load", buildDesktopPin, { passive: true });
+      window.addEventListener("resize", () => {
+        clearTimeout(window.__pgTO);
+        window.__pgTO = setTimeout(buildDesktopPin, 150);
+      }, { passive: true });
+
+      return () => killDesktopPin();
+    },
+
+    "(max-width: 900px)": () => {
+      // mobile: no pin, no ScrollTrigger for this section
+      killDesktopPin();
+      return () => {};
+    }
+  });
+})();
+</script>
 
 
 

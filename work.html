@@ -795,10 +795,11 @@ mm.add("(max-width: 900px)", () => {
 }
 @media (max-width: 768px){
   .pin-gallery__stage{
+    touch-action: pan-y;
     overflow: hidden;
   }
   .pin-gallery__stack{
-    cursor: grab;
+    will-change: transform;
   }
 }
 </style>

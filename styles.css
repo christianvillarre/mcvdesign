@@ -1066,7 +1066,22 @@ a {
   opacity: 1;
   display: block;
 }
-  
+@media (max-width: 768px){
+  .dropdown-video-bg{
+    height: 70vh;
+    inset: auto 0 auto 0;  /* clear your current inset */
+    top: 80px;             /* ✅ move down (match your navbar height) */
+    left: 0;
+    right: 0;
+  }
+
+  .dropdown-video-bg video{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: none;
+  }
+}
   @media screen and (max-width: 480px) {
     .main__content h1 {
       font-size: 2rem;

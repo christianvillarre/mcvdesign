@@ -801,63 +801,137 @@ mm.add("(max-width: 900px)", () => {
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
-const section = document.querySelector("#pin-gallery");
-const stage   = section.querySelector(".pin-gallery__stage");
-const track   = section.querySelector(".pin-gallery__stack");
+// optional but helps iOS address bar resize jank
+ScrollTrigger.config({ ignoreMobileResize: true });
 
-function build() {
-  // kill triggers created for this section
-  ScrollTrigger.getAll().forEach(st => {
-    if (st.trigger === section) st.kill();
-  });
-  gsap.killTweensOf(track);
+(() => {
+  const section = document.querySelector("#pin-gallery");
+  if (!section) return;
 
-  const spacers = track.querySelectorAll(".pin-gallery__spacer");
-  const tailSpacer = spacers[spacers.length - 1];
+  const stage = section.querySelector(".pin-gallery__stage");
+  const track = section.querySelector(".pin-gallery__stack");
+  if (!stage || !track) return;
 
-  // reset
-  gsap.set(track, { x: 0 });
+  // keep refs so we can cleanly kill
+  let tween = null;
+  let trigger = null;
 
-  // Measure how far we need to move so the tail spacer becomes visible at the end.
-  // We want: tailSpacer's right edge == stage's right edge (at end)
-  const stageRect = stage.getBoundingClientRect();
-  const tailRect  = tailSpacer.getBoundingClientRect();
+  function killThisSection() {
+    if (trigger) { trigger.kill(); trigger = null; }
+    if (tween) { tween.kill(); tween = null; }
+    gsap.killTweensOf(track);
+    gsap.set(track, { x: 0 });
+  }
 
-  // How far from track-start (x=0) is the tail spacer's right edge?
-  const tailRightFromTrackStart = (tailRect.right - stageRect.left);
+  // -------------------------
+  // DESKTOP: EXACTLY YOUR CODE
+  // -------------------------
+  function buildDesktop() {
+    // kill triggers created for this section
+    ScrollTrigger.getAll().forEach(st => {
+      if (st.trigger === section) st.kill();
+    });
+    gsap.killTweensOf(track);
 
-  // End x should shift the track left so that tailRightFromTrackStart lands on stage width
-  const endX = -(tailRightFromTrackStart - stage.clientWidth);
+    const spacers = track.querySelectorAll(".pin-gallery__spacer");
+    const tailSpacer = spacers[spacers.length - 1];
 
-  // Make sure we don't accidentally go the wrong direction
-  const finalX = Math.min(0, endX);
+    // reset
+    gsap.set(track, { x: 0 });
 
-  // Total scroll distance (match how far we move, add a touch for comfort)
-  const scrollDistance = Math.abs(finalX);
+    // Measure how far we need to move so the tail spacer becomes visible at the end.
+    const stageRect = stage.getBoundingClientRect();
+    const tailRect  = tailSpacer.getBoundingClientRect();
 
-  gsap.to(track, {
-    x: finalX,
-    ease: "none",
-    scrollTrigger: {
+    const tailRightFromTrackStart = (tailRect.right - stageRect.left);
+    const endX = -(tailRightFromTrackStart - stage.clientWidth);
+
+    const finalX = Math.min(0, endX);
+    const scrollDistance = Math.abs(finalX);
+
+    tween = gsap.to(track, {
+      x: finalX,
+      ease: "none"
+    });
+
+    trigger = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: () => "+=" + scrollDistance,
       pin: true,
       scrub: true,
       anticipatePin: 1,
-      invalidateOnRefresh: true
+      invalidateOnRefresh: true,
+      animation: tween
       // markers: true
+    });
+
+    ScrollTrigger.refresh();
+  }
+
+  // --------------------------------------
+  // MOBILE: SAME EFFECT, iOS-FRIENDLY MATH
+  // --------------------------------------
+  function buildMobile() {
+    killThisSection();
+
+    // stable distance on iOS
+    const maxX = Math.max(0, track.scrollWidth - stage.clientWidth);
+    if (maxX === 0) return;
+
+    tween = gsap.to(track, { x: -maxX, ease: "none" });
+
+    trigger = ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: "+=" + maxX,
+      pin: true,
+      pinType: "fixed",     // ✅ iOS stability
+      scrub: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      animation: tween
+    });
+
+    // ✅ refresh AFTER creating trigger, next frame (prevents “stop”)
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
+
+  // -------------------------
+  // MEDIA SPLIT
+  // -------------------------
+  ScrollTrigger.matchMedia({
+    "(min-width: 901px)": () => {
+      const onResize = () => {
+        clearTimeout(window.__pgTO);
+        window.__pgTO = setTimeout(buildDesktop, 150);
+      };
+
+      window.addEventListener("load", buildDesktop, { passive: true });
+      window.addEventListener("resize", onResize, { passive: true });
+
+      return () => {
+        window.removeEventListener("resize", onResize);
+        killThisSection();
+      };
+    },
+
+    "(max-width: 900px)": () => {
+      const onResize = () => {
+        clearTimeout(window.__pgTOm);
+        window.__pgTOm = setTimeout(buildMobile, 200);
+      };
+
+      window.addEventListener("load", buildMobile, { passive: true });
+      window.addEventListener("resize", onResize, { passive: true });
+
+      return () => {
+        window.removeEventListener("resize", onResize);
+        killThisSection();
+      };
     }
   });
-
-  ScrollTrigger.refresh();
-}
-
-window.addEventListener("load", build);
-window.addEventListener("resize", () => {
-  clearTimeout(window.__pgTO);
-  window.__pgTO = setTimeout(build, 150);
-});
+})();
 </script>
 
 

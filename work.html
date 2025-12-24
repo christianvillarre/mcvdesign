@@ -796,7 +796,14 @@ mm.add("(max-width: 900px)", () => {
     flex: 0 0 12vw;                 /* less dead space */
   }
 }
-
+@media (max-width: 768px){
+  .pin-gallery__stage{
+    overflow: hidden;
+  }
+  .pin-gallery__stack{
+    cursor: grab;
+  }
+}
 </style>
 
 <script>
@@ -862,7 +869,6 @@ gsap.registerPlugin(ScrollTrigger);
 gsap.registerPlugin(Draggable);
 
 (() => {
-  // ✅ mobile only
   const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
   if (!isMobile) return;
 
@@ -871,60 +877,88 @@ gsap.registerPlugin(Draggable);
   const track   = section?.querySelector(".pin-gallery__stack");
   if (!section || !stage || !track) return;
 
-  // iOS-friendly: allow horizontal dragging without the page stealing the gesture
-  stage.style.touchAction = "pan-y";      // allow vertical scroll, but not horizontal default
+  // iOS: allow vertical scroll, but don't let the browser handle horizontal panning
+  stage.style.touchAction = "pan-y";
   track.style.touchAction = "pan-y";
-  track.style.willChange  = "transform";
 
-  let dragInstance;
+  let drag;
 
-  function buildMobileDrag() {
-    // kill old instance on resize/orientation
-    if (dragInstance) {
-      dragInstance.kill();
-      dragInstance = null;
-    }
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+  function build() {
+    // kill previous
+    if (drag) { drag.kill(); drag = null; }
     gsap.killTweensOf(track);
-
-    // reset
     gsap.set(track, { x: 0 });
 
-    // compute bounds (how far it can drag left)
+    const imgs = Array.from(track.querySelectorAll(".pin-img"));
+    if (!imgs.length) return;
+
+    // bounds
     const maxX = 0;
     const minX = Math.min(0, stage.clientWidth - track.scrollWidth);
-
-    // if content doesn't overflow, don't enable drag
     if (track.scrollWidth <= stage.clientWidth + 2) return;
 
-    dragInstance = Draggable.create(track, {
+    // precompute snap points (center each image in the stage)
+    const stageCenter = stage.clientWidth / 2;
+
+    const snapPoints = imgs.map(img => {
+      const imgCenterInTrack = img.offsetLeft + (img.offsetWidth / 2);
+      const x = stageCenter - imgCenterInTrack;      // where track x should be
+      return clamp(x, minX, maxX);
+    });
+
+    // helper: find nearest snap point for a given x
+    function nearestSnap(x) {
+      let closest = snapPoints[0];
+      let dist = Math.abs(x - closest);
+      for (let i = 1; i < snapPoints.length; i++) {
+        const d = Math.abs(x - snapPoints[i]);
+        if (d < dist) { dist = d; closest = snapPoints[i]; }
+      }
+      return closest;
+    }
+
+    drag = Draggable.create(track, {
       type: "x",
       bounds: { minX, maxX },
-      inertia: true,                 // momentum (requires InertiaPlugin if you want true inertia;
-                                     // if you don't have it, Draggable still works without momentum)
+
+      // ✅ Snap while dragging AND on release/throw
+      snap: {
+        x: (value) => nearestSnap(value)
+      },
+
+      // optional (remove if you don't have InertiaPlugin)
+      // inertia: true,
+
       edgeResistance: 0.85,
-      dragResistance: 0.08,
+      dragResistance: 0.06,
       allowContextMenu: true,
+
       onPress() {
         gsap.killTweensOf(track);
+      },
+
+      // ✅ extra “hard snap” on release so it always lands clean
+      onRelease() {
+        const target = nearestSnap(this.x);
+        gsap.to(track, {
+          x: target,
+          duration: 0.35,
+          ease: "power3.out",
+          onUpdate: () => this.update()
+        });
       }
     })[0];
+
+    // small swipe hint
+    gsap.fromTo(track, { x: 0 }, { x: clamp(-50, minX, maxX), yoyo: true, repeat: 1, duration: 0.35, ease: "power2.inOut" });
   }
 
-  // ✅ optional: little “swipe” hint on first view
-  function swipeHint() {
-    // only if it overflows
-    if (track.scrollWidth <= stage.clientWidth + 2) return;
-    gsap.fromTo(track, { x: 0 }, { x: -40, yoyo: true, repeat: 1, duration: 0.45, ease: "power2.inOut" });
-  }
-
-  window.addEventListener("load", () => {
-    buildMobileDrag();
-    swipeHint();
-  }, { passive: true });
-
+  window.addEventListener("load", build, { passive: true });
   window.addEventListener("resize", () => {
-    clearTimeout(window.__pgMobileDragTO);
-    window.__pgMobileDragTO = setTimeout(buildMobileDrag, 150);
+    clearTimeout(window.__pgSnapTO);
+    window.__pgSnapTO = setTimeout(build, 150);
   }, { passive: true });
 
 })();

@@ -1453,7 +1453,7 @@ window.addEventListener("resize", () => {
     });
 
     // first open by default (instant, no animation on load)
-    /*
+    
     if (items.length) {
       activeItem = items[0];
       openItem(activeItem, { instant: true });
@@ -1462,21 +1462,96 @@ window.addEventListener("resize", () => {
       const h = body.scrollHeight;
       gsap.set(body, { height: h, opacity: 1 });
       requestAnimationFrame(() => gsap.set(body, { height: "auto" }));
-    }*/
+    }
   });
 </script>
 
-  <!-- Products Placeholder -->
-<div class="footer">
-  <div class="footer-container">
-    <div class="footer-header">
-      <h2 class="chat-link"><a href="/inquiry.html" class="footer-link">Let's chat. →</a></h2>
-      <p>Branding and website creation.</p>
-      <p>Copyright © 2025</p>
-    </div>
-  </div>
-</div>
 
+
+
+
+<footer class="site-footer">
+  <div class="footer-inner">
+
+    <!-- Top row: big CTA + short blurb -->
+    <div class="footer-top">
+      <div class="footer-top-left">
+        <h2 class="footer-cta">
+          <a href="/inquiry.html" class="footer-cta-link">Let’s chat. →</a>
+        </h2>
+        <p class="footer-sub">
+          Branding, websites, and digital design built for growth.
+        </p>
+      </div>
+
+      <div class="footer-top-right">
+        <a href="/" class="footer-logo">
+          <img src="/images/logo4.png" alt="MCVDesign logo">
+        </a>
+      </div>
+    </div>
+
+    <!-- Columns -->
+    <div class="footer-grid">
+
+      <!-- Column 1: Contact -->
+      <div class="footer-col">
+        <h3 class="footer-title">Contact</h3>
+        <a class="footer-link" href="mailto:christian@mcvdesign.com">christian@mcvdesign.com</a>
+        <a class="footer-link" href="tel:+1XXXXXXXXXX">+1 (713) 822-4653</a>
+        <p class="footer-text">Houston, TX</p>
+      </div>
+
+      <!-- Column 2: Pages -->
+      <div class="footer-col">
+        <h3 class="footer-title">Pages</h3>
+        <a class="footer-link" href="/index.html">Home</a>
+        <a class="footer-link" href="/services.html">Services</a>
+        <a class="footer-link" href="/work.html">Work</a>
+        <a class="footer-link" href="/inquiry.html">Inquiry</a>
+      </div>
+
+      <!-- Column 3: Social -->
+      <div class="footer-col">
+        <h3 class="footer-title">Social</h3>
+        <a class="footer-link" href="https://www.facebook.com/profile.php?id=61582116278117" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">Behance</a>
+        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+
+      <!-- Column 4: Quick note / availability -->
+      <div class="footer-col footer-col-wide">
+        <h3 class="footer-title">Start a project</h3>
+        <p class="footer-text">
+          Tell us what you’re building and we’ll reply with next steps + a rough timeline.
+        </p>
+
+        <a href="/inquiry.html" class="footer-pill">
+          Send Inquiry
+          <span class="footer-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+              <path d="M7 17L17 7" />
+              <path d="M7 7h10v10" />
+            </svg>
+          </span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Bottom row -->
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 MCVDesign. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a class="footer-link small" href="/privacy.html">Privacy</a>
+        <a class="footer-link small" href="/terms.html">Terms</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
 
 
 

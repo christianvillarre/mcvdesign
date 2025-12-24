@@ -453,6 +453,8 @@ a {
   padding: 0;
 }
 
+
+
 /* =========================
    LINK STYLES + ANIMATION START
 ========================= */
@@ -1892,7 +1894,7 @@ a {
   .footer-logo img{
     display: block;          /* ✅ THIS is the key */
     margin-top: 0;
-    margin-right: 2rem;
+    margin-right: 1rem;
   }
 
   /* Ensure text block has no top offset */

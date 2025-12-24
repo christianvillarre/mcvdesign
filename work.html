@@ -31,7 +31,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
-<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
 </head>
 <body>
   <div id="bgGrid" aria-hidden="true"></div>
@@ -799,67 +798,6 @@ mm.add("(max-width: 900px)", () => {
 }
 </style>
 
-<script>
-gsap.registerPlugin(ScrollTrigger);
-
-const section = document.querySelector("#pin-gallery");
-const stage   = section.querySelector(".pin-gallery__stage");
-const track   = section.querySelector(".pin-gallery__stack");
-
-function build() {
-  // kill triggers created for this section
-  ScrollTrigger.getAll().forEach(st => {
-    if (st.trigger === section) st.kill();
-  });
-  gsap.killTweensOf(track);
-
-  const spacers = track.querySelectorAll(".pin-gallery__spacer");
-  const tailSpacer = spacers[spacers.length - 1];
-
-  // reset
-  gsap.set(track, { x: 0 });
-
-  // Measure how far we need to move so the tail spacer becomes visible at the end.
-  // We want: tailSpacer's right edge == stage's right edge (at end)
-  const stageRect = stage.getBoundingClientRect();
-  const tailRect  = tailSpacer.getBoundingClientRect();
-
-  // How far from track-start (x=0) is the tail spacer's right edge?
-  const tailRightFromTrackStart = (tailRect.right - stageRect.left);
-
-  // End x should shift the track left so that tailRightFromTrackStart lands on stage width
-  const endX = -(tailRightFromTrackStart - stage.clientWidth);
-
-  // Make sure we don't accidentally go the wrong direction
-  const finalX = Math.min(0, endX);
-
-  // Total scroll distance (match how far we move, add a touch for comfort)
-  const scrollDistance = Math.abs(finalX);
-
-  gsap.to(track, {
-    x: finalX,
-    ease: "none",
-    scrollTrigger: {
-      trigger: section,
-      start: "top top",
-      end: () => "+=" + scrollDistance,
-      pin: true,
-      scrub: true,
-      anticipatePin: 1,
-      invalidateOnRefresh: true
-      // markers: true
-    }
-  });
-
-  ScrollTrigger.refresh();
-}
-
-window.addEventListener("load", build);
-window.addEventListener("resize", () => {
-  clearTimeout(window.__pgTO);
-  window.__pgTO = setTimeout(build, 150);
-});
-</script>
 
 
 

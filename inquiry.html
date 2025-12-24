@@ -229,7 +229,7 @@
     <!-- reCAPTCHA appears here -->
     <div data-netlify-recaptcha="true" style="margin-top: 2rem;"></div>
 
-    <button type="submit" class="navbar__inquiry">
+    <button type="submit" class="inquiry-submit">
       Send Inquiry
       <span class="inquiry-arrow">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -249,6 +249,70 @@
   </div>
 </div>
 <style>
+  /* ✅ same exact styling, but safe for the inquiry form */
+.inquiry-submit{
+  width: 250px;
+  height: 65px;
+  padding: 0 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  border: 1px solid white;
+  border-radius: 999px;
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0rem;
+  margin-right: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* keep the “fade” capability if you want it (optional) */
+.inquiry-submit{
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.inquiry-submit::before{
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 100px;
+  top: 50%;
+  left: 50%;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(var(--circle-scale, 0));
+  z-index: -1;
+  transition: transform 0.7s ease;
+}
+
+/* reuse your existing arrow styles */
+.inquiry-submit:hover .inquiry-arrow{
+  background-color: white;
+}
+.inquiry-submit:hover .arrow-icon{
+  color: black;
+  transform: translate(2px, -2px);
+}
+
+/* ✅ mobile: make it responsive + guaranteed visible */
+@media (max-width: 768px){
+  .inquiry-submit{
+    width: 100%;
+    max-width: 520px;
+    margin-right: 0;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
   .navbar {
   pointer-events: none; /* navbar can't block anything */
 }

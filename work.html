@@ -796,42 +796,7 @@ mm.add("(max-width: 900px)", () => {
     flex: 0 0 12vw;                 /* less dead space */
   }
 }
-@media (max-width: 900px){
-  /* Make the stage a native horizontal scroller */
-  .pin-gallery__stage{
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    height: auto;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 6vw;
-    touch-action: pan-x;
-  }
 
-  /* Track becomes normal flow */
-  .pin-gallery__stack{
-    position: relative;
-    inset: auto;
-    display: flex;
-    gap: 18px;
-    padding: 0 6vw;
-    width: max-content;     /* ✅ gives real scroll width */
-  }
-
-  /* Snap each image */
-  .pin-img{
-    flex: 0 0 auto;
-    width: 82vw;
-    height: 42vh;
-    scroll-snap-align: center;
-  }
-
-  /* Spacers not needed on mobile */
-  .pin-gallery__spacer{ display:none; }
-}
 </style>
 
 <script>

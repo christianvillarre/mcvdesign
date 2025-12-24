@@ -1227,26 +1227,11 @@ body {
   color: #727376
 }
 @media screen and (max-width: 768px) {
- /* ✅ START SOONER (less space before logos) */
-  .scroll-section{
-    padding-top: 0rem;     /* was 10vh */
-    padding-bottom: 3rem;  /* optional */
-    gap: 1rem;             /* was 6rem (this is the main one) */
-  }
-
-  /* ✅ TIGHTER LOGO GRID */
-  .logo-container{
-    grid-template-columns: repeat(3, 1fr); /* 3 per row */
-    gap: .75rem;                           /* row + column gap */
-    max-width: 100%;
-  }
-
-  .logo-container img{
-    max-width: 140px;    /* smaller helps reduce row height */
-    width: 100%;
-    height: auto;
-    margin: 0 auto;
-    display: block;
+.logo-container {
+    grid-template-columns: repeat(6, 1fr); /* virtual grid */
+    row-gap: 0rem;
+    column-gap: 0rem;
+    
   }
 
   /* Top row (3 logos) */
@@ -1268,6 +1253,9 @@ body {
     grid-column: 4 / 6;
   }
 
+  .logo-container img {
+    max-width: 140px;
+  }
 
 .card1 {
   min-height: auto;

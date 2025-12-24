@@ -867,34 +867,37 @@ gsap.registerPlugin(ScrollTrigger);
   if (!isMobile) return;
 
   const section = document.querySelector("#pin-gallery");
-  const stage   = section?.querySelector(".pin-gallery__stage");
   const track   = section?.querySelector(".pin-gallery__stack");
-  if (!section || !stage || !track) return;
+  if (!section || !track) return;
 
   function buildMobile() {
-    // kill any existing triggers for safety
+    // kill triggers tied to this section (safe rebuild)
     ScrollTrigger.getAll().forEach(st => {
       if (st.trigger === section) st.kill();
     });
     gsap.killTweensOf(track);
 
-    // reset transforms
-    gsap.set(track, { x: 0, y: 0 });
+    // reset
+    gsap.set(track, { clearProps: "transform,opacity" });
 
-    // 👉 MOBILE BEHAVIOR OPTION 1 (recommended)
-    // Natural vertical scroll with subtle reveal motion
+    // ✅ Animate while section is in view:
+    // start: when top enters bottom of viewport
+    // end:   when bottom hits top of viewport
     gsap.fromTo(
       track,
-      { y: 40, opacity: 0 },
+      { y: 80, opacity: 0.9 },
       {
-        y: 0,
+        y: -80,
         opacity: 1,
-        ease: "power2.out",
+        ease: "none",
         scrollTrigger: {
           trigger: section,
-          start: "top 80%",
-          end: "top 30%",
+          start: "top bottom",
+          end: "bottom top",
           scrub: true,
+          invalidateOnRefresh: true
+          // If you scroll a container instead of window, set scroller here:
+          // scroller: ".inquiry-right"
         }
       }
     );

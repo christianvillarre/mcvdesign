@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // White circle hover effect
-  const inquiryBtns = document.querySelectorAll('.navbar__inquiry, .navbar__email, .button-design');
+  const inquiryBtns = document.querySelectorAll('.navbar__inquiry, .navbar__email, .button-design, .inquiry-submit');
 
   inquiryBtns.forEach(btn => {
     const toBlack = () => {

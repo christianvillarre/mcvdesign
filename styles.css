@@ -555,7 +555,7 @@ a {
 .dropdown-copyright {
    position: absolute;
   bottom: 2.5rem;
-  left: 2rem;
+  left: 0rem;
   display: flex;
   gap: 0.5rem;
   z-index: 1000;
@@ -805,11 +805,9 @@ a {
   z-index: 1000;
   opacity: 1; /* Ensure this is present */
 }
-@media screen and (max-width: 960px) {
-    .social-button-container{
-      visibility: hidden;
-    }
-  }
+
+
+
 .bottom-btn {
   background-color: rgb(39, 39, 39);
   color: #ffffff;
@@ -828,7 +826,18 @@ a {
 }
 
 
+@media (max-width: 960px){
+  .social-button-container{
+    left: 0rem;
+    bottom: 5.5rem;
+    right: auto;
+  }
 
+  .bottom-btn{
+    font-size: 0.8rem;     /* ✅ change visible on mobile */
+    padding: 0.6rem 1.1rem;/* ✅ change visible on mobile */
+  }
+}
 
 
 

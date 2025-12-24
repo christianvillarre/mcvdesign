@@ -859,7 +859,7 @@ gsap.registerPlugin(ScrollTrigger);
 </script>
 
 <script>
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(Draggable);
 
 (() => {
   // ✅ mobile only
@@ -867,49 +867,66 @@ gsap.registerPlugin(ScrollTrigger);
   if (!isMobile) return;
 
   const section = document.querySelector("#pin-gallery");
+  const stage   = section?.querySelector(".pin-gallery__stage");
   const track   = section?.querySelector(".pin-gallery__stack");
-  if (!section || !track) return;
+  if (!section || !stage || !track) return;
 
-  function buildMobile() {
-    // kill triggers tied to this section (safe rebuild)
-    ScrollTrigger.getAll().forEach(st => {
-      if (st.trigger === section) st.kill();
-    });
+  // iOS-friendly: allow horizontal dragging without the page stealing the gesture
+  stage.style.touchAction = "pan-y";      // allow vertical scroll, but not horizontal default
+  track.style.touchAction = "pan-y";
+  track.style.willChange  = "transform";
+
+  let dragInstance;
+
+  function buildMobileDrag() {
+    // kill old instance on resize/orientation
+    if (dragInstance) {
+      dragInstance.kill();
+      dragInstance = null;
+    }
     gsap.killTweensOf(track);
 
     // reset
-    gsap.set(track, { clearProps: "transform,opacity" });
+    gsap.set(track, { x: 0 });
 
-    // ✅ Animate while section is in view:
-    // start: when top enters bottom of viewport
-    // end:   when bottom hits top of viewport
-    gsap.fromTo(
-      track,
-      { y: 80, opacity: 0.9 },
-      {
-        y: -80,
-        opacity: 1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true,
-          invalidateOnRefresh: true
-          // If you scroll a container instead of window, set scroller here:
-          // scroller: ".inquiry-right"
-        }
+    // compute bounds (how far it can drag left)
+    const maxX = 0;
+    const minX = Math.min(0, stage.clientWidth - track.scrollWidth);
+
+    // if content doesn't overflow, don't enable drag
+    if (track.scrollWidth <= stage.clientWidth + 2) return;
+
+    dragInstance = Draggable.create(track, {
+      type: "x",
+      bounds: { minX, maxX },
+      inertia: true,                 // momentum (requires InertiaPlugin if you want true inertia;
+                                     // if you don't have it, Draggable still works without momentum)
+      edgeResistance: 0.85,
+      dragResistance: 0.08,
+      allowContextMenu: true,
+      onPress() {
+        gsap.killTweensOf(track);
       }
-    );
-
-    ScrollTrigger.refresh();
+    })[0];
   }
 
-  window.addEventListener("load", buildMobile, { passive: true });
-  window.addEventListener("resize", () => {
-    clearTimeout(window.__pgMobileTO);
-    window.__pgMobileTO = setTimeout(buildMobile, 150);
+  // ✅ optional: little “swipe” hint on first view
+  function swipeHint() {
+    // only if it overflows
+    if (track.scrollWidth <= stage.clientWidth + 2) return;
+    gsap.fromTo(track, { x: 0 }, { x: -40, yoyo: true, repeat: 1, duration: 0.45, ease: "power2.inOut" });
+  }
+
+  window.addEventListener("load", () => {
+    buildMobileDrag();
+    swipeHint();
   }, { passive: true });
+
+  window.addEventListener("resize", () => {
+    clearTimeout(window.__pgMobileDragTO);
+    window.__pgMobileDragTO = setTimeout(buildMobileDrag, 150);
+  }, { passive: true });
+
 })();
 </script>
 

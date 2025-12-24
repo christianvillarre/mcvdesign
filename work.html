@@ -874,38 +874,29 @@ gsap.registerPlugin(Draggable);
   const track   = section?.querySelector(".pin-gallery__stack");
   if (!section || !stage || !track) return;
 
-  // iOS: allow vertical scroll, but don't let the browser handle horizontal panning
-  stage.style.touchAction = "pan-y";
-  track.style.touchAction = "pan-y";
-
-  let drag;
+  let drag = null;
 
   function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
-  function build() {
-    // kill previous
-    if (drag) { drag.kill(); drag = null; }
-    gsap.killTweensOf(track);
+  function buildSnapPoints() {
+    // reset transform before measuring
     gsap.set(track, { x: 0 });
 
     const imgs = Array.from(track.querySelectorAll(".pin-img"));
-    if (!imgs.length) return;
+    if (!imgs.length) return null;
 
-    // bounds
     const maxX = 0;
     const minX = Math.min(0, stage.clientWidth - track.scrollWidth);
-    if (track.scrollWidth <= stage.clientWidth + 2) return;
+    if (track.scrollWidth <= stage.clientWidth + 2) return null;
 
-    // precompute snap points (center each image in the stage)
     const stageCenter = stage.clientWidth / 2;
 
     const snapPoints = imgs.map(img => {
       const imgCenterInTrack = img.offsetLeft + (img.offsetWidth / 2);
-      const x = stageCenter - imgCenterInTrack;      // where track x should be
+      const x = stageCenter - imgCenterInTrack;
       return clamp(x, minX, maxX);
     });
 
-    // helper: find nearest snap point for a given x
     function nearestSnap(x) {
       let closest = snapPoints[0];
       let dist = Math.abs(x - closest);
@@ -916,27 +907,33 @@ gsap.registerPlugin(Draggable);
       return closest;
     }
 
+    return { minX, maxX, nearestSnap };
+  }
+
+  function enableDrag() {
+    if (drag) return; // already enabled
+
+    const data = buildSnapPoints();
+    if (!data) return;
+
+    const { minX, maxX, nearestSnap } = data;
+
     drag = Draggable.create(track, {
       type: "x",
       bounds: { minX, maxX },
 
-      // ✅ Snap while dragging AND on release/throw
-      snap: {
-        x: (value) => nearestSnap(value)
-      },
+      // ✅ THIS is the key: let the page scroll vertically without fighting Draggable
+      allowNativeTouchScrolling: true,
 
-      // optional (remove if you don't have InertiaPlugin)
-      // inertia: true,
+      // ✅ smoother feel
+      edgeResistance: 0.9,
+      dragResistance: 0.08,
 
-      edgeResistance: 0.85,
-      dragResistance: 0.06,
-      allowContextMenu: true,
-
+      // ✅ DO NOT snap during drag (reduces jitter). Snap only when releasing.
       onPress() {
         gsap.killTweensOf(track);
       },
 
-      // ✅ extra “hard snap” on release so it always lands clean
       onRelease() {
         const target = nearestSnap(this.x);
         gsap.to(track, {
@@ -947,15 +944,21 @@ gsap.registerPlugin(Draggable);
         });
       }
     })[0];
-
-    // small swipe hint
-    gsap.fromTo(track, { x: 0 }, { x: clamp(-50, minX, maxX), yoyo: true, repeat: 1, duration: 0.35, ease: "power2.inOut" });
   }
 
-  window.addEventListener("load", build, { passive: true });
+  function killDrag() {
+    if (!drag) return;
+    drag.kill();
+    drag = null;
+  }
+
+  // ✅ only enable when the user interacts with the gallery
+  stage.addEventListener("touchstart", enableDrag, { passive: true });
+  stage.addEventListener("pointerdown", enableDrag, { passive: true });
+
+  // rebuild on resize/orientation
   window.addEventListener("resize", () => {
-    clearTimeout(window.__pgSnapTO);
-    window.__pgSnapTO = setTimeout(build, 150);
+    killDrag(); // will re-enable on next touch
   }, { passive: true });
 
 })();

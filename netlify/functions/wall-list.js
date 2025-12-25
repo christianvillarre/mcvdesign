@@ -5,7 +5,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-exports.handler = async (event, context) => {
+module.exports.handler = async function (event, context) {
   try {
     const { data, error } = await supabase
       .from("public_wall")

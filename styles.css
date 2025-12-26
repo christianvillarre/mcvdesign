@@ -2189,3 +2189,6 @@ a {
     transform: none !important;
   }
 }
+
+/* Make the status pill clickable WITHOUT changing its look */
+

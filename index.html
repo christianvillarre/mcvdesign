@@ -762,10 +762,12 @@ function initScrollTrack() {
       <div class="footer-col footer-availability">
         <div class="footer-availability-top">
           <h3 class="footer-title">Availability</h3>
-          <div class="footer-status">
-            <span class="status-dot" aria-hidden="true"></span>
-            <span class="status-text"><strong>2 spots available</strong> this month</span>
-          </div>
+          <button type="button"
+                class="footer-status footer-status-trigger"
+                data-open-spot>
+          <span class="status-dot" aria-hidden="true"></span>
+          <span class="status-text"><strong>2 spots available</strong> this month</span>
+        </button>
         </div>
 
         <label class="footer-form-label" for="openSpotModal">
@@ -773,7 +775,7 @@ function initScrollTrack() {
           <span class="footer-form-sub">We’ll reply with next steps + a quick timeline.</span>
         </label>
 
-        <button type="button" class="footer-submit-btn" id="openSpotModal">
+        <button type="button" class="footer-submit-btn footer-status-trigger" data-open-spot id="openSpotModal">
           Request a spot
           <span class="footer-arrow" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
@@ -891,14 +893,17 @@ function initScrollTrack() {
 
 <script>
 (() => {
-  const openBtn  = document.getElementById("openSpotModal");
   const modal    = document.getElementById("spotModal");
   const panel    = modal?.querySelector(".spot-modal__panel");
   const email    = document.getElementById("spotEmail");
   const closeEls = modal?.querySelectorAll("[data-close]");
   const backdrop = modal?.querySelector(".spot-modal__backdrop");
 
-  if (!openBtn || !modal || !panel) return;
+  // ✅ allow multiple open triggers (button + status pill + label)
+  const openBtns = document.querySelectorAll("[data-open-spot]");
+
+  // ❗ don't require a specific button id anymore
+  if (!modal || !panel || !openBtns.length) return;
 
   function openModal(){
     modal.classList.add("is-open");
@@ -911,10 +916,12 @@ function initScrollTrack() {
     modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
     document.documentElement.style.overflow = "";
-    openBtn.focus();
   }
 
-  openBtn.addEventListener("click", openModal);
+  // bind open to ALL triggers
+  openBtns.forEach(btn => btn.addEventListener("click", openModal));
+
+  // bind close
   closeEls?.forEach(el => el.addEventListener("click", closeModal));
   backdrop?.addEventListener("click", closeModal);
 
@@ -922,12 +929,6 @@ function initScrollTrack() {
     if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
   });
 })();
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const pageField = document.querySelector('input[name="page"]');
-    if (pageField) pageField.value = window.location.pathname;
-  });
 </script>
   <!-- App Scripts -->
   <script src="app.js"></script>

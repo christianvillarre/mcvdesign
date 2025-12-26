@@ -2163,3 +2163,29 @@ a {
     justify-content: center;
   }
 }
+
+/* iOS/Safari: make selects full-width + stop weird inset/shrink */
+.spot-select{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  -webkit-appearance: none;
+  appearance: none;
+  background-clip: padding-box;
+
+  min-height: 52px;           /* consistent tap target */
+  padding: 0.95rem 1rem;      /* match your input */
+  padding-right: 2.75rem;     /* room for arrow */
+  font-size: 16px;            /* prevents iOS zoom + weird sizing */
+  line-height: 1.2;
+}
+
+
+
+@media (max-width: 520px){
+  .spot-modal__panel,
+  .spot-modal__form{
+    transform: none !important;
+  }
+}

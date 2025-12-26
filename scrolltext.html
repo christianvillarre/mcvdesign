@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Line-by-Line White Reveal (No Pin, Single P)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body{
+      background:#0e0e0e;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow-x:hidden;
+    }
+
+    .spacer{ height: 35vh; }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 10vh 2rem 18vh;
+    }
+
+    h1{
+      color:#fff;
+      font-size: clamp(3rem, 6vw, 6rem);
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 4rem;
+      letter-spacing: -0.02em;
+    }
+
+    /* ✅ ONE paragraph */
+    #copy{
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 500;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      max-width: 46ch;
+      color: #6b6b6b; /* gray base always visible */
+    }
+
+    .line{
+      display:block;
+      position: relative;
+      margin-bottom: 1.1rem;
+      white-space: pre-wrap;
+    }
+
+    .reveal{
+      position:absolute;
+      inset: 0;
+      color:#fff;
+      overflow:hidden;
+      width: 0%;
+      will-change: width;
+      pointer-events:none;
+    }
+
+    .reveal-inner{
+      display:block;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 700px){
+      #copy{ max-width: 34ch; }
+      .line{ margin-bottom: 0.95rem; }
+    }
+    .bigsection {
+      width: 100%;
+      height: 80vh;
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+<section class = "bigsection"></section>
+  <div class="spacer"></div>
+
+  <section class="wrap" id="wipeSection">
+    <h1>Design That Reveals Itself</h1>
+
+    <!-- ✅ ONLY ONE <p> in your HTML -->
+    <p id="copy">
+      Design is not decoration. It is communication. Every decision carries weight, intention, and consequence. Clarity is felt before it is understood. Consistency builds trust without ever announcing itself. Good systems disappear while guiding everything. Restraint is often louder than excess. Great experiences are shaped, not added. Momentum is created through cohesion. Design should feel inevitable. Nothing here is accidental. Everything exists for a reason. This is where intention becomes visible—line by line, choice by choice, until what was muted becomes undeniable.
+    </p>
+  </section>
+
+  <div class="spacer"></div>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const section = document.getElementById("wipeSection");
+    const p = document.getElementById("copy");
+
+    let st;
+
+    function buildLines() {
+      // kill previous trigger/tweens
+      if (st) { st.kill(); st = null; }
+      gsap.killTweensOf("*");
+
+      // normalize text
+      const raw = p.textContent.replace(/\s+/g, " ").trim();
+
+      // measure wrapping with breakable spaces
+      const words = raw.split(" ");
+      p.innerHTML = "";
+      words.forEach((w, i) => {
+        const span = document.createElement("span");
+        span.className = "w";
+        span.textContent = w;
+        p.appendChild(span);
+        if (i !== words.length - 1) p.appendChild(document.createTextNode(" "));
+      });
+
+      const wordEls = Array.from(p.querySelectorAll(".w"));
+      if (!wordEls.length) return;
+
+      // group into visual lines by offsetTop
+      const groups = [];
+      let current = [wordEls[0]];
+      let top = wordEls[0].offsetTop;
+
+      for (let i = 1; i < wordEls.length; i++) {
+        const w = wordEls[i];
+        if (Math.abs(w.offsetTop - top) > 1) {
+          groups.push(current);
+          current = [w];
+          top = w.offsetTop;
+        } else {
+          current.push(w);
+        }
+      }
+      if (current.length) groups.push(current);
+
+      // rebuild SAME <p> into line spans with overlay wipes
+      p.innerHTML = "";
+      const overlays = groups.map((g) => {
+        const text = g.map(el => el.textContent).join(" ").trim();
+
+        const lineEl = document.createElement("span");
+        lineEl.className = "line";
+        lineEl.textContent = text; // gray base
+
+        const overlay = document.createElement("span");
+        overlay.className = "reveal";
+
+        const overlayInner = document.createElement("span");
+        overlayInner.className = "reveal-inner";
+        overlayInner.textContent = text;
+
+        overlay.appendChild(overlayInner);
+        lineEl.appendChild(overlay);
+        p.appendChild(lineEl);
+
+        return overlay;
+      });
+
+      // ✅ one timeline controlling all lines
+      const tl = gsap.timeline({ defaults: { ease: "none" } });
+      overlays.forEach((ov) => tl.to(ov, { width: "100%" }, "+=0"));
+
+      // ✅ NO PIN: progress is mapped to scroll through the section
+      st = ScrollTrigger.create({
+        animation: tl,
+        trigger: section,
+        start: "top 25%",     // begin when section is approaching view
+        end: "bottom 25%",    // finish by the time you leave the section
+        scrub: true,
+        invalidateOnRefresh: true
+      });
+
+      ScrollTrigger.refresh();
+    }
+
+    window.addEventListener("load", buildLines);
+
+    let t;
+    window.addEventListener("resize", () => {
+      clearTimeout(t);
+      t = setTimeout(buildLines, 120);
+    });
+  </script>
+
+</body>
+</html>

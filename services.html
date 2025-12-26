@@ -274,7 +274,17 @@
 </head>
 
 <body>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
 
+  ScrollTrigger.config({
+    ignoreMobileResize: true,
+    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
+  });
+
+  // ✅ iOS “scroll locks” fix for pinned sections
+  ScrollTrigger.normalizeScroll(true);
+</script>
   <!-- Navbar -->
   <nav class="navbar">
     <div class="navbar__container">

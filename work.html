@@ -73,9 +73,17 @@
   transform: rotateY(180deg);
 }
 
-
+@media (hover: none) and (pointer: coarse){
+  #bgGrid .cell{
+    transition: background 180ms ease, border-color 180ms ease; /* no transform transition */
+    transform: none !important;
+  }
+  #bgGrid .cell.on{
+    transform: none !important; /* ✅ kills rotateY on mobile */
+  }
+}
   </style>
- <script>
+  <script>
 (() => {
   const root = document.getElementById("bgGrid");
   if (!root) return;
@@ -83,42 +91,24 @@
   const GREEN_CLASS = "on";
   const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // keep same visual density
+  // same look
   const CELL_SIZE = 18;
   const GAP       = 6;
   const PAD       = 10;
 
-  // feel knobs
-  const DESKTOP_SPARKS = 6;
-  const DESKTOP_RADIUS = 55;
-  const DESKTOP_LINGER = 400;
+  // effect
+  const DESKTOP_SPARKS = 6,  DESKTOP_RADIUS = 55, DESKTOP_LINGER = 400;
+  const TOUCH_START_SPARKS = 12, TOUCH_START_RADIUS = 90, TOUCH_START_LINGER = 420; // tap/press hit
+  const TOUCH_MOVE_SPARKS  = 4,  TOUCH_MOVE_RADIUS  = 55, TOUCH_MOVE_LINGER  = 260; // lighter trail
 
-  const TOUCH_SPARKS   = 10;   // bigger effect on touch
-  const TOUCH_RADIUS   = 80;
-  const TOUCH_LINGER   = 420;
-
-  // perf knobs
+  // perf
   const MOVE_INTERVAL_DESKTOP = 16;
-  const MOVE_INTERVAL_TOUCH   = 55;  // ✅ strong throttle to avoid jank
-  const MAX_ACTIVE_CELLS      = isCoarse ? 160 : 500; // ✅ cap active "on" cells
+  const MOVE_INTERVAL_TOUCH   = 80;     // ✅ stronger throttle = less hitch
+  const MAX_ACTIVE_CELLS      = isCoarse ? 120 : 600;
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
 
-  let raf = null;
-  let mx = -9999, my = -9999;
-
-  // --- scroll/momentum guard ---
-  let scrolling = false;
-  let scrollTO = null;
-
-  window.addEventListener("scroll", () => {
-    scrolling = true;
-    clearTimeout(scrollTO);
-    scrollTO = setTimeout(() => (scrolling = false), 140);
-  }, { passive: true });
-
-  // --- build grid ---
   function build(){
     root.innerHTML = "";
     gridEl = document.createElement("div");
@@ -153,7 +143,7 @@
     return cy * cols + cx;
   }
 
-  // ✅ One RAF cleanup loop (no per-cell setTimeout)
+  // ✅ one RAF cleanup loop (no setTimeout spam)
   const active = new Map(); // el -> expireTime
 
   function markOn(el, now, linger){
@@ -181,7 +171,6 @@
 
   function spark(x, y, sparks, radius, linger){
     const now = performance.now();
-
     for (let i = 0; i < sparks; i++){
       const a = Math.random() * Math.PI * 2;
       const r = Math.random() * radius;
@@ -198,79 +187,75 @@
     }
   }
 
-  // throttled queue
+  // throttle
   let lastDesktop = 0;
   let lastTouch   = 0;
 
-  function queueSpark(x, y, mode){
-    mx = x; my = y;
-
+  function sparkThrottled(x, y, mode, kind){
     const now = performance.now();
     const minInterval = mode === "touch" ? MOVE_INTERVAL_TOUCH : MOVE_INTERVAL_DESKTOP;
-    const lastRef = mode === "touch" ? lastTouch : lastDesktop;
-    if (now - lastRef < minInterval) return;
-
-    if (mode === "touch") lastTouch = now;
-    else lastDesktop = now;
-
-    if (raf) return;
-    raf = requestAnimationFrame(() => {
-      // ✅ never spark during momentum scroll
-      if (scrolling) { raf = null; return; }
+    const last = mode === "touch" ? lastTouch : lastDesktop;
+    if (kind === "start" || now - last >= minInterval) {
+      if (mode === "touch") lastTouch = now; else lastDesktop = now;
 
       if (mode === "touch") {
-        spark(mx, my, TOUCH_SPARKS, TOUCH_RADIUS, TOUCH_LINGER);
+        if (kind === "start") spark(x, y, TOUCH_START_SPARKS, TOUCH_START_RADIUS, TOUCH_START_LINGER);
+        else spark(x, y, TOUCH_MOVE_SPARKS, TOUCH_MOVE_RADIUS, TOUCH_MOVE_LINGER);
       } else {
-        spark(mx, my, DESKTOP_SPARKS, DESKTOP_RADIUS, DESKTOP_LINGER);
+        spark(x, y, DESKTOP_SPARKS, DESKTOP_RADIUS, DESKTOP_LINGER);
       }
-      raf = null;
-    });
+    }
   }
 
-  // desktop: hover trail + click
+  // desktop hover trail
   function onPointerMove(e){
     if (isCoarse) return;
-    queueSpark(e.clientX, e.clientY, "desktop");
+    sparkThrottled(e.clientX, e.clientY, "desktop", "move");
   }
   function onPointerDown(e){
-    queueSpark(e.clientX, e.clientY, isCoarse ? "touch" : "desktop");
+    sparkThrottled(e.clientX, e.clientY, isCoarse ? "touch" : "desktop", "start");
   }
 
-  // ✅ touchmove without scroll fighting:
-  // Only spark when horizontal intent is stronger than vertical intent.
-  let sx = 0, sy = 0;
-  let tracking = false;
+  // ✅ touchmove WITHOUT scroll lock:
+  // Once we detect vertical scrolling, we STOP sparking until touchend.
+  let startX = 0, startY = 0;
+  let allowTrail = true;
 
   function onTouchStart(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
-    tracking = true;
-    sx = t.clientX;
-    sy = t.clientY;
-    queueSpark(t.clientX, t.clientY, "touch"); // immediate hit on touchstart
+
+    startX = t.clientX;
+    startY = t.clientY;
+    allowTrail = true;
+
+    sparkThrottled(t.clientX, t.clientY, "touch", "start"); // strong first hit
   }
 
   function onTouchMove(e){
-    if (!tracking) return;
+    if (!allowTrail) return;
+
     const t = e.touches && e.touches[0];
     if (!t) return;
 
-    const dx = t.clientX - sx;
-    const dy = t.clientY - sy;
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
 
-    // ✅ if user is mostly scrolling vertically, DO NOT spark (prevents hitch)
-    if (Math.abs(dy) > Math.abs(dx) * 1.15 && Math.abs(dy) > 6) return;
+    // ✅ if it becomes a vertical scroll gesture, disable trail for remainder of this touch
+    if (Math.abs(dy) > Math.abs(dx) * 1.1 && Math.abs(dy) > 6) {
+      allowTrail = false;
+      return;
+    }
 
-    queueSpark(t.clientX, t.clientY, "touch");
+    sparkThrottled(t.clientX, t.clientY, "touch", "move");
   }
 
   function onTouchEnd(){
-    tracking = false;
+    allowTrail = true;
   }
 
   build();
 
-  // debounced rebuild
   let rTO;
   window.addEventListener("resize", () => {
     clearTimeout(rTO);

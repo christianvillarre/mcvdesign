@@ -1468,12 +1468,13 @@ window.addEventListener("resize", () => {
 
 
 
-
-
+<!-- =========================
+     FOOTER (FULL)
+     ========================= -->
 <footer class="site-footer">
   <div class="footer-inner">
 
-    <!-- Top row: big CTA + short blurb -->
+    <!-- Top row -->
     <div class="footer-top">
       <div class="footer-top-left">
         <h2 class="footer-cta">
@@ -1494,16 +1495,16 @@ window.addEventListener("resize", () => {
     <!-- Columns -->
     <div class="footer-grid">
 
-      <!-- Column 1: Contact -->
-      <div class="footer-col">
+      <!-- Contact -->
+      <div class="footer-col footer-contact">
         <h3 class="footer-title">Contact</h3>
         <a class="footer-link" href="mailto:christian@mcvdesign.com">christian@mcvdesign.com</a>
-        <a class="footer-link" href="tel:+1XXXXXXXXXX">+1 (713) 822-4653</a>
+        <a class="footer-link" href="tel:+17138224653">+1 (713) 822-4653</a>
         <p class="footer-text">Houston, TX</p>
       </div>
 
-      <!-- Column 2: Pages -->
-      <div class="footer-col">
+      <!-- Pages -->
+      <div class="footer-col footer-pages">
         <h3 class="footer-title">Pages</h3>
         <a class="footer-link" href="/index.html">Home</a>
         <a class="footer-link" href="/services.html">Services</a>
@@ -1511,37 +1512,39 @@ window.addEventListener("resize", () => {
         <a class="footer-link" href="/inquiry.html">Inquiry</a>
       </div>
 
-      <!-- Column 3: Social -->
-      <div class="footer-col">
-        <h3 class="footer-title">Social</h3>
-        <a class="footer-link" href="https://www.facebook.com/profile.php?id=61582116278117" target="_blank" rel="noopener noreferrer">Facebook</a>
-        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">Behance</a>
-        <a class="footer-link" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      </div>
+      <!-- Availability -->
+      <div class="footer-col footer-availability">
+        <div class="footer-availability-top">
+          <h3 class="footer-title">Availability</h3>
+          <div class="footer-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-text"><strong>2 spots available</strong> this month</span>
+          </div>
+        </div>
 
-      <!-- Column 4: Quick note / availability -->
-      <div class="footer-col footer-col-wide">
-        <h3 class="footer-title">Start a project</h3>
-        <p class="footer-text">
-          Tell us what you’re building and we’ll reply with next steps + a rough timeline.
-        </p>
+        <label class="footer-form-label" for="openSpotModal">
+          Lock in a slot for branding, web design, or development.
+          <span class="footer-form-sub">We’ll reply with next steps + a quick timeline.</span>
+        </label>
 
-        <a href="/inquiry.html" class="footer-pill">
-          Send Inquiry
+        <button type="button" class="footer-submit-btn" id="openSpotModal">
+          Request a spot
           <span class="footer-arrow" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                 stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
               <path d="M7 17L17 7" />
               <path d="M7 7h10v10" />
             </svg>
           </span>
-        </a>
+        </button>
       </div>
 
-    </div>
+      <!-- Mobile-only full-width divider (hidden on desktop) -->
+      <div class="footer-grid-divider" aria-hidden="true"></div>
 
-    <!-- Bottom row -->
+    </div><!-- /footer-grid -->
+
+    <!-- Bottom -->
     <div class="footer-bottom">
       <p class="footer-copy">© 2025 MCVDesign. All rights reserved.</p>
       <div class="footer-bottom-links">
@@ -1550,8 +1553,138 @@ window.addEventListener("resize", () => {
       </div>
     </div>
 
-  </div>
+  </div><!-- /footer-inner -->
 </footer>
+
+<!-- =========================
+     Availability Modal
+     Place ONCE near end of body
+     ========================= -->
+<div class="spot-modal" id="spotModal" aria-hidden="true">
+  <div class="spot-modal__backdrop" data-close></div>
+
+  <div class="spot-modal__panel" role="dialog" aria-modal="true" aria-labelledby="spotModalTitle">
+    <button class="spot-modal__close" type="button" aria-label="Close" data-close>✕</button>
+
+    <div class="spot-modal__head">
+      <h3 class="spot-modal__title" id="spotModalTitle">Request a spot</h3>
+      <div class="spot-modal__status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span class="status-text"><strong>2 spots available</strong> this month</span>
+      </div>
+    </div>
+
+    <form
+      class="spot-modal__form"
+      name="spot-request"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      action="/inquiry.html?from=footerSpot"
+    >
+      <!-- required for Netlify forms to work when not using Netlify’s build detection -->
+      <input type="hidden" name="form-name" value="spot-request" />
+
+      <!-- honeypot (spam trap) -->
+      <p style="display:none;">
+        <label>Don’t fill this out: <input name="bot-field" /></label>
+      </p>
+
+      <label class="spot-label" for="spotEmail">Email</label>
+      <input
+        class="spot-input"
+        id="spotEmail"
+        name="email"
+        type="email"
+        placeholder="you@company.com"
+        autocomplete="email"
+        required
+      />
+
+      <label class="spot-label" for="spotService">What are you looking for?</label>
+      <select class="spot-select" id="spotService" name="service" required>
+        <option value="" selected disabled>Select one…</option>
+        <option value="Website">Website</option>
+        <option value="Branding">Branding</option>
+        <option value="Development">Development</option>
+        <option value="Not sure yet">Not sure yet</option>
+      </select>
+
+      <label class="spot-label" for="spotTimeline">Ideal start timeline</label>
+      <select class="spot-select" id="spotTimeline" name="timeline" required>
+        <option value="" selected disabled>Select one…</option>
+        <option value="ASAP">ASAP</option>
+        <option value="2–4 weeks">2–4 weeks</option>
+        <option value="1–2 months">1–2 months</option>
+        <option value="Just exploring">Just exploring</option>
+      </select>
+
+      <!-- optional metadata -->
+      <input type="hidden" name="source" value="footer_availability" />
+      <input type="hidden" name="page" value="/(footer-modal)" />
+
+      <div class="spot-modal__actions">
+        <button class="spot-submit" type="submit">
+          Continue
+          <!--
+          <span class="footer-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 17L17 7" />
+              <path d="M7 7h10v10" />
+            </svg>
+          </span>
+        -->
+        </button>
+
+        <button class="spot-cancel" type="button" data-close>Cancel</button>
+      </div>
+
+      <p class="spot-note">No spam — just next steps + a quick timeline.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+(() => {
+  const openBtn  = document.getElementById("openSpotModal");
+  const modal    = document.getElementById("spotModal");
+  const panel    = modal?.querySelector(".spot-modal__panel");
+  const email    = document.getElementById("spotEmail");
+  const closeEls = modal?.querySelectorAll("[data-close]");
+  const backdrop = modal?.querySelector(".spot-modal__backdrop");
+
+  if (!openBtn || !modal || !panel) return;
+
+  function openModal(){
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    document.documentElement.style.overflow = "hidden";
+    setTimeout(() => email?.focus(), 0);
+  }
+
+  function closeModal(){
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    document.documentElement.style.overflow = "";
+    openBtn.focus();
+  }
+
+  openBtn.addEventListener("click", openModal);
+  closeEls?.forEach(el => el.addEventListener("click", closeModal));
+  backdrop?.addEventListener("click", closeModal);
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+  });
+})();
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const pageField = document.querySelector('input[name="page"]');
+    if (pageField) pageField.value = window.location.pathname;
+  });
+</script>
 
 
 

@@ -274,17 +274,7 @@
 </head>
 
 <body>
-<script>
-  gsap.registerPlugin(ScrollTrigger);
 
-  ScrollTrigger.config({
-    ignoreMobileResize: true,
-    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
-  });
-
-  // ✅ iOS “scroll locks” fix for pinned sections
-  ScrollTrigger.normalizeScroll(true);
-</script>
   <!-- Navbar -->
   <nav class="navbar">
     <div class="navbar__container">
@@ -1014,10 +1004,9 @@ window.addEventListener("resize", () => {
     <!-- LEFT -->
     <div class="design-left">
       <div class="inline-heading">
-  
-  <p class="wipe-copy">
-  Design is how your product communicates trust through clarity, consistency, and details that feel intentional.
-</p>
+  <h3>
+    <span class="design-title-color">Design</span> — Design is how your product communicates trust through clarity, consistency, and details that feel intentional.
+  </h3>
 </div>
       <div class="design-image">
         <img src="/images/stock5.jpg" alt="Design work example" loading="lazy">
@@ -1090,9 +1079,9 @@ window.addEventListener("resize", () => {
     <!-- LEFT -->
     <div class="design-left">
       <div class="inline-heading">
-        <p class="wipe-copy">
-  Clean, scalable builds that load fast, feel premium, and stay easy to maintain.
-</p>
+        <h3>
+          <span class="design-title-color">Development</span> — Clean, scalable builds that load fast, feel premium, and stay easy to maintain.
+        </h3>
         </div>
       <div class="design-image">
         <img src="/images/stock4.jpg" alt="Web development example" loading="lazy">
@@ -1167,9 +1156,9 @@ window.addEventListener("resize", () => {
     <div class="design-left">
       
       <div class="inline-heading">
-      <p class="wipe-copy">
-  Turn a good site into a lead engine with SEO, conversion strategy, and iteration.
-</p>
+       <h3>
+          <span class="design-title-color">Growth</span> —  Turn a good site into a lead engine with SEO, conversion strategy, and iteration.
+        </h3>
         </div>
 
       <div class="design-image">
@@ -1697,180 +1686,8 @@ window.addEventListener("resize", () => {
   });
 </script>
 
-<style>
-.wipe-copy{
-  font-size: clamp(1.8rem, 3vw, 3rem);
-  font-weight: 100;
-  line-height: 0.6;
-  letter-spacing: -0.02em;
-  max-width: 46ch;
-  color: #6b6b6b;
-}
 
-.wipe-copy .line{
-  display:block;
-  position: relative;
-  margin-bottom: 0.15rem;     /* tight */
-  padding-bottom: 0.5em;      /* ✅ protects descenders */
-  white-space: pre-wrap;
-}
 
-.wipe-copy .reveal{
-  position:absolute;
-  inset: 0;
-  color:#fff;
-  pointer-events:none;
-
-  /* ✅ true wipe */
-  -webkit-clip-path: inset(0 100% 0 0);
-  clip-path: inset(0 100% 0 0);
-
-  will-change: clip-path, -webkit-clip-path;
-}
-
-.wipe-copy .reveal-inner{
-  display:block;
-  padding-bottom: 0.5em;      /* ✅ match .line */
-  font: inherit;
-  letter-spacing: inherit;
-  white-space: pre-wrap;
-}
-</style>
-<script>
-  gsap.registerPlugin(ScrollTrigger);
-
-  // ✅ GLOBAL CONTROLS
-  const WIPE_END_DISTANCE = 900; // bigger = slower overall (more scroll distance)
-  const SCRUB_SMOOTHNESS  = 1.1; // bigger = smoother / more lag
-  const LINE_DURATION     = 1.0; // relative units per line (kept linear for scrub)
-  const OVERLAP           = 0.0; // 0 = next line starts AFTER previous finishes
-
-  function buildWipeFor(sectionEl) {
-    const p = sectionEl.querySelector(".wipe-copy");
-    if (!p) return;
-
-    // per-section state so we only kill our own triggers/timelines
-    const state = sectionEl.__wipeState || (sectionEl.__wipeState = { st: null, tl: null });
-
-    // ✅ kill ONLY our trigger/timeline for this section
-    if (state.st) { state.st.kill(); state.st = null; }
-    if (state.tl) { state.tl.kill(); state.tl = null; }
-
-    // ✅ kill ONLY tweens inside this paragraph
-    gsap.killTweensOf(p);
-    gsap.killTweensOf(p.querySelectorAll("*"));
-
-    // normalize source text
-    const raw = (p.__rawText || p.textContent).replace(/\s+/g, " ").trim();
-    if (!raw) return;
-
-    // store original once so rebuilds don't read already-split text
-    if (!p.__rawText) p.__rawText = raw;
-
-    // --- 1) TEMP word spans to measure wrapping ---
-    const words = raw.split(" ");
-    p.innerHTML = "";
-    words.forEach((w, i) => {
-      const span = document.createElement("span");
-      span.className = "w";
-      span.textContent = w;
-      p.appendChild(span);
-      if (i !== words.length - 1) p.appendChild(document.createTextNode(" "));
-    });
-
-    const wordEls = Array.from(p.querySelectorAll(".w"));
-    if (!wordEls.length) return;
-
-    // --- 2) GROUP into visual lines by offsetTop ---
-    const groups = [];
-    let current = [wordEls[0]];
-    let top = wordEls[0].offsetTop;
-
-    for (let i = 1; i < wordEls.length; i++) {
-      const w = wordEls[i];
-      if (Math.abs(w.offsetTop - top) > 1) {
-        groups.push(current);
-        current = [w];
-        top = w.offsetTop;
-      } else {
-        current.push(w);
-      }
-    }
-    if (current.length) groups.push(current);
-
-    // --- 3) REBUILD into line spans + overlay wipe ---
-    p.innerHTML = "";
-
-    const overlays = groups.map((g) => {
-      const text = g.map(el => el.textContent).join(" ").trim();
-
-      const lineEl = document.createElement("span");
-      lineEl.className = "line";
-      lineEl.textContent = text; // gray base visible
-
-      const overlay = document.createElement("span");
-      overlay.className = "reveal";
-
-      const overlayInner = document.createElement("span");
-      overlayInner.className = "reveal-inner";
-      overlayInner.textContent = text;
-
-      overlay.appendChild(overlayInner);
-      lineEl.appendChild(overlay);
-      p.appendChild(lineEl);
-
-      return overlay;
-    });
-
-    // ✅ IMPORTANT: clip-path wipe needs explicit start state
-    gsap.set(overlays, {
-      clipPath: "inset(0 100% 0 0)",
-      WebkitClipPath: "inset(0 100% 0 0)"
-    });
-
-    // --- 4) TIMELINE (linear for scrub; smooth comes from scrub smoothing) ---
-    const tl = gsap.timeline({ defaults: { ease: "none" } });
-
-    overlays.forEach((ov, i) => {
-      tl.to(ov, {
-        clipPath: "inset(0 0% 0 0)",
-        WebkitClipPath: "inset(0 0% 0 0)",
-        duration: LINE_DURATION
-      }, i === 0 ? 0 : `+=${OVERLAP}`);
-    });
-
-    // --- 5) SCROLLTRIGGER ---
-    const st = ScrollTrigger.create({
-      animation: tl,
-      trigger: sectionEl,
-      start: "top 75%",
-      end: `+=${WIPE_END_DISTANCE}`,
-      scrub: SCRUB_SMOOTHNESS,
-      invalidateOnRefresh: true
-    });
-
-    state.tl = tl;
-    state.st = st;
-  }
-
-  function buildAllWipes() {
-    document.querySelectorAll(".design-section").forEach(buildWipeFor);
-    ScrollTrigger.refresh();
-  }
-
-  // ✅ build after fonts/layout settle
-  window.addEventListener("load", buildAllWipes);
-
-  // ✅ rebuild on resize (debounced)
-  let rT;
-  window.addEventListener("resize", () => {
-    clearTimeout(rT);
-    rT = setTimeout(buildAllWipes, 150);
-  });
-
-  // ✅ optional: if you have dynamic content swaps, call this:
-  // window.rebuildWipes = buildAllWipes;
-</script>
 
 <script src="app.js"></script>
 </body>

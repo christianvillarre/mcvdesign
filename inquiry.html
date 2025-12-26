@@ -37,6 +37,14 @@
 
 </head>
 <body>
+  <div class="inquiry-notice" id="inquiryNotice" hidden>
+  <span class="notice-dot"></span>
+  <p>
+    <strong>We’ve received your info.</strong>
+    Add a few more details below for a faster, more accurate response.
+  </p>
+</div>
+
  <nav class="navbar">
     <div class="navbar__container">
       <div class="navbar__left">
@@ -570,7 +578,19 @@ document.addEventListener("scroll", () => {
     }
   });
 </script>
+<script>
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const notice = document.getElementById("inquiryNotice");
 
+  if (params.get("received") === "1" && notice) {
+    notice.hidden = false;
+
+    // Optional: scroll gently to the notice
+    notice.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+})();
+</script>
 
 
 <script src="app.js"></script>

@@ -75,45 +75,41 @@
 
 
   </style>
-<script>
+  <script>
 (() => {
   const root = document.getElementById("bgGrid");
   if (!root) return;
 
   const GREEN_CLASS = "on";
-
-  // detect coarse pointer = mobile/tablet
   const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // ✅ tweak knobs (mobile runs lighter)
-  const CELL_SIZE      = isCoarse ? 26 : 18;  // bigger cells = fewer DOM nodes
-  const GAP            = isCoarse ? 8  : 6;
-  const PAD            = 10;
+  // ✅ MATCH YOUR ORIGINAL LOOK (tight grid)
+  const CELL_SIZE = 18;  // must match CSS .cell width/height
+  const GAP       = 6;   // must match CSS grid gap
+  const PAD       = 10;  // must match CSS grid padding
 
-  const SPARKS_PER_HIT = isCoarse ? 3 : 6;
-  const RADIUS_PX      = isCoarse ? 40 : 55;
-  const LINGER_MS      = isCoarse ? 260 : 400;
-
-  // how often we allow sparks (ms). Mobile gets a stronger throttle.
-  const MIN_INTERVAL   = isCoarse ? 55 : 16;
+  // ✅ Performance knobs (mobile slightly lighter, but same spacing)
+  const SPARKS_PER_HIT = isCoarse ? 4 : 6;
+  const RADIUS_PX      = isCoarse ? 50 : 55;
+  const LINGER_MS      = isCoarse ? 280 : 400;
+  const MIN_INTERVAL   = isCoarse ? 45 : 16; // throttle sparks
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
 
   let raf = null;
   let mx = -9999, my = -9999;
+  let last = 0;
 
-  // --- scroll guard (don’t animate while user is actively scrolling) ---
+  // ✅ Do not animate during active scroll (prevents “scroll fight”)
   let scrolling = false;
   let scrollTO = null;
-
   window.addEventListener("scroll", () => {
     scrolling = true;
     clearTimeout(scrollTO);
     scrollTO = setTimeout(() => (scrolling = false), 140);
   }, { passive: true });
 
-  // --- build grid ---
   function build(){
     root.innerHTML = "";
     gridEl = document.createElement("div");
@@ -148,7 +144,7 @@
     return cy * cols + cx;
   }
 
-  // ✅ Replace per-cell setTimeout with ONE RAF cleanup loop
+  // ✅ One RAF cleanup loop (no per-cell setTimeout)
   const active = new Map(); // el -> expireTime
 
   function markOn(el, now){
@@ -186,8 +182,6 @@
     }
   }
 
-  // throttle sparks (especially mobile)
-  let last = 0;
   function queueSpark(x, y){
     mx = x; my = y;
 
@@ -197,24 +191,23 @@
 
     if (raf) return;
     raf = requestAnimationFrame(() => {
-      // ✅ do not animate during active scroll on mobile
       if (!scrolling) spark(mx, my);
       raf = null;
     });
   }
 
-  // Pointer events:
-  // - desktop: allow hover trail (pointermove)
-  // - mobile: ignore pointermove to avoid fighting scroll; allow pointerdown (tap)
+  // ✅ Desktop: hover trail
   function onPointerMove(e){
-    if (isCoarse) return;                // ✅ mobile: no move trail
+    if (isCoarse) return; // ✅ mobile: no move trail
     queueSpark(e.clientX, e.clientY);
   }
+
+  // ✅ Desktop click + Mobile tap sparks
   function onPointerDown(e){
     queueSpark(e.clientX, e.clientY);
   }
 
-  // Touch: tap only (no touchmove)
+  // ✅ Touch: TAP ONLY (no touchmove)
   function onTouchStart(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
@@ -223,7 +216,7 @@
 
   build();
 
-  // ✅ rebuild on resize (debounced)
+  // ✅ debounced rebuild
   let rTO;
   window.addEventListener("resize", () => {
     clearTimeout(rTO);
@@ -234,10 +227,9 @@
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
   window.addEventListener("touchstart", onTouchStart, { passive: true });
-  // ❌ removed touchmove on purpose (major jank source)
+  // ❌ no touchmove (tap sparks only)
 })();
 </script>
-
  <nav class="navbar">
     <div class="navbar__container">
       <div class="navbar__left">

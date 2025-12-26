@@ -1745,8 +1745,8 @@ const DESKTOP_END_DISTANCE = 900;
 const DESKTOP_SCRUB        = 1.1;
 
 // ✅ mobile tuning (still scrubbed)
-const MOBILE_SCRUB         = 0.8;          // slightly less “lag”
-const MOBILE_END_MODE      = "bottom 65%"; // end relative to viewport (more stable than +=900)
+const MOBILE_SCRUB    = 0.65;
+const MOBILE_END_MODE = "top 35%";   // ✅ finishes sooner while you're still in the section
 
 function isMobile() {
   return window.matchMedia("(max-width: 768px)").matches;

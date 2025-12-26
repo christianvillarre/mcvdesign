@@ -1004,9 +1004,9 @@ window.addEventListener("resize", () => {
     <!-- LEFT -->
     <div class="design-left">
       <div class="inline-heading">
-  <h3>
-    <span class="design-title-color">Design</span> — Design is how your product communicates trust through clarity, consistency, and details that feel intentional.
-  </h3>
+  
+     <p class="wipe-copy">Design is how your product communicates trust through clarity, consistency, and details that feel intentional.
+      </p>
 </div>
       <div class="design-image">
         <img src="/images/stock5.jpg" alt="Design work example" loading="lazy">
@@ -1079,9 +1079,9 @@ window.addEventListener("resize", () => {
     <!-- LEFT -->
     <div class="design-left">
       <div class="inline-heading">
-        <h3>
-          <span class="design-title-color">Development</span> — Clean, scalable builds that load fast, feel premium, and stay easy to maintain.
-        </h3>
+      
+           <p class="wipe-copy">Clean, scalable builds that load fast, feel premium, and stay easy to maintain.
+        </p>
         </div>
       <div class="design-image">
         <img src="/images/stock4.jpg" alt="Web development example" loading="lazy">
@@ -1156,9 +1156,9 @@ window.addEventListener("resize", () => {
     <div class="design-left">
       
       <div class="inline-heading">
-       <h3>
-          <span class="design-title-color">Growth</span> —  Turn a good site into a lead engine with SEO, conversion strategy, and iteration.
-        </h3>
+      
+           <p class="wipe-copy">Turn a good site into a lead engine with SEO, conversion strategy, and iteration.
+       </p>
         </div>
 
       <div class="design-image">
@@ -1686,7 +1686,217 @@ window.addEventListener("resize", () => {
   });
 </script>
 
+<style>
+.wipe-copy{
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 100;
+  line-height: 0.6;
+  letter-spacing: -0.02em;
+  max-width: 46ch;
+  color: #6b6b6b;
+}
 
+.wipe-copy .line{
+  display:block;
+  position: relative;
+  margin-bottom: 0.15rem;     /* tight */
+  padding-bottom: 0.5em;      /* ✅ protects descenders */
+  white-space: pre-wrap;
+}
+
+.wipe-copy .reveal{
+  position:absolute;
+  inset: 0;
+  color:#fff;
+  pointer-events:none;
+
+  /* ✅ true wipe */
+  -webkit-clip-path: inset(0 100% 0 0);
+  clip-path: inset(0 100% 0 0);
+
+  will-change: clip-path, -webkit-clip-path;
+}
+
+.wipe-copy .reveal-inner{
+  display:block;
+  padding-bottom: 0.5em;      /* ✅ match .line */
+  font: inherit;
+  letter-spacing: inherit;
+  white-space: pre-wrap;
+}
+</style>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ✅ GLOBAL CONTROLS (desktop)
+  const WIPE_END_DISTANCE = 900;
+  const SCRUB_SMOOTHNESS  = 1.1;
+  const LINE_DURATION     = 1.0;
+  const OVERLAP           = 0.0;
+
+  // ✅ MOBILE CONTROLS (no scrub to prevent scroll locking)
+  const MOBILE_LINE_STAGGER = 0.12;   // spacing between line wipes
+  const MOBILE_LINE_DUR     = 0.55;   // duration per line (seconds)
+
+  const isMobile = () => window.matchMedia("(max-width: 768px)").matches;
+
+  function buildWipeFor(sectionEl) {
+    const p = sectionEl.querySelector(".wipe-copy");
+    if (!p) return;
+
+    const state = sectionEl.__wipeState || (sectionEl.__wipeState = { st: null, tl: null });
+
+    // kill only our stuff
+    if (state.st) { state.st.kill(); state.st = null; }
+    if (state.tl) { state.tl.kill(); state.tl = null; }
+
+    // normalize source text (store once)
+    const raw = (p.__rawText || p.textContent).replace(/\s+/g, " ").trim();
+    if (!raw) return;
+    if (!p.__rawText) p.__rawText = raw;
+
+    // --- 1) temp word spans to measure wrapping ---
+    const words = raw.split(" ");
+    p.innerHTML = "";
+    words.forEach((w, i) => {
+      const span = document.createElement("span");
+      span.className = "w";
+      span.textContent = w;
+      p.appendChild(span);
+      if (i !== words.length - 1) p.appendChild(document.createTextNode(" "));
+    });
+
+    const wordEls = Array.from(p.querySelectorAll(".w"));
+    if (!wordEls.length) return;
+
+    // --- 2) group into visual lines by offsetTop ---
+    const groups = [];
+    let current = [wordEls[0]];
+    let top = wordEls[0].offsetTop;
+
+    for (let i = 1; i < wordEls.length; i++) {
+      const w = wordEls[i];
+      if (Math.abs(w.offsetTop - top) > 1) {
+        groups.push(current);
+        current = [w];
+        top = w.offsetTop;
+      } else {
+        current.push(w);
+      }
+    }
+    if (current.length) groups.push(current);
+
+    // --- 3) rebuild into line spans + overlay wipe ---
+    p.innerHTML = "";
+    const overlays = groups.map((g) => {
+      const text = g.map(el => el.textContent).join(" ").trim();
+
+      const lineEl = document.createElement("span");
+      lineEl.className = "line";
+      lineEl.textContent = text;
+
+      const overlay = document.createElement("span");
+      overlay.className = "reveal";
+
+      const inner = document.createElement("span");
+      inner.className = "reveal-inner";
+      inner.textContent = text;
+
+      overlay.appendChild(inner);
+      lineEl.appendChild(overlay);
+      p.appendChild(lineEl);
+
+      return overlay;
+    });
+
+    // explicit start state (critical)
+    gsap.set(overlays, {
+      clipPath: "inset(0 100% 0 0)",
+      WebkitClipPath: "inset(0 100% 0 0)"
+    });
+
+    // --- 4) timeline ---
+    let tl;
+
+    if (isMobile()) {
+      // ✅ MOBILE: NOT scrubbed (prevents scroll lock)
+      tl = gsap.timeline({ defaults: { ease: "power2.out" }, paused: true });
+      overlays.forEach((ov, i) => {
+        tl.to(ov, {
+          clipPath: "inset(0 0% 0 0)",
+          WebkitClipPath: "inset(0 0% 0 0)",
+          duration: MOBILE_LINE_DUR
+        }, i * MOBILE_LINE_STAGGER);
+      });
+
+      state.st = ScrollTrigger.create({
+        trigger: sectionEl,
+        start: "top 80%",
+        end: "bottom 20%",
+        onEnter: () => tl.play(),
+        onLeaveBack: () => tl.reverse(),
+        invalidateOnRefresh: true
+      });
+
+    } else {
+      // ✅ DESKTOP: EXACTLY like you had it (scrubbed)
+      tl = gsap.timeline({ defaults: { ease: "none" } });
+      overlays.forEach((ov, i) => {
+        tl.to(ov, {
+          clipPath: "inset(0 0% 0 0)",
+          WebkitClipPath: "inset(0 0% 0 0)",
+          duration: LINE_DURATION
+        }, i === 0 ? 0 : `+=${OVERLAP}`);
+      });
+
+      state.st = ScrollTrigger.create({
+        animation: tl,
+        trigger: sectionEl,
+        start: "top 75%",
+        end: `+=${WIPE_END_DISTANCE}`,
+        scrub: SCRUB_SMOOTHNESS,
+        invalidateOnRefresh: true
+      });
+    }
+
+    state.tl = tl;
+  }
+
+  function buildAllWipes() {
+    document.querySelectorAll(".design-section").forEach(buildWipeFor);
+  }
+
+  // ✅ IMPORTANT MOBILE FIX:
+  // - iOS fires resize on URL bar changes -> DO NOT rebuild on mobile
+  // - only rebuild when width truly changes (orientation / real resize)
+  let lastW = window.innerWidth;
+
+  window.addEventListener("load", () => {
+    // stop ScrollTrigger from trying to constantly refresh on mobile resizes
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
+    buildAllWipes();
+    ScrollTrigger.refresh();
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+
+    clearTimeout(window.__wipeRT);
+    window.__wipeRT = setTimeout(() => {
+      buildAllWipes();
+      ScrollTrigger.refresh();
+    }, 250);
+  });
+
+  window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+      buildAllWipes();
+      ScrollTrigger.refresh();
+    }, 400);
+  });
+</script>
 
 
 <script src="app.js"></script>

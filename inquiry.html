@@ -37,11 +37,11 @@
 
 </head>
 <body>
-  <div class="inquiry-notice" id="inquiryNotice" hidden>
+<div class="inquiry-notice is-hidden" id="inquiryNotice">
   <span class="notice-dot"></span>
   <p>
-    <strong>We’ve received your info.</strong>
-    Add a few more details below for a faster, more accurate response.
+    <strong>We got your request.</strong>
+    Add a few more details below so we can reply faster with a clean timeline + next steps.
   </p>
 </div>
 
@@ -582,12 +582,13 @@ document.addEventListener("scroll", () => {
 (() => {
   const params = new URLSearchParams(window.location.search);
   const notice = document.getElementById("inquiryNotice");
+  if (!notice) return;
 
-  // ✅ only show when they came from the footer modal
-  if (params.get("from") === "footerSpot" && notice) {
-    notice.hidden = false;
+  // default stays hidden
+  if (params.get("from") === "footerSpot") {
+    notice.classList.remove("is-hidden");
 
-    // optional: remove the flag from the URL after showing (keeps it clean)
+    // clean the URL so it doesn't show again on refresh/share
     const url = new URL(window.location.href);
     url.searchParams.delete("from");
     window.history.replaceState({}, "", url);

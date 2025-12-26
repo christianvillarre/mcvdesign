@@ -442,3 +442,7 @@ input {
     0 0 14px rgba(84,243,164,0.45);
   flex-shrink: 0;
 }
+/* Force-hide helper (beats display:flex) */
+.is-hidden{
+  display: none !important;
+}

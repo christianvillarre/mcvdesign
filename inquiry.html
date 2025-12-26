@@ -583,11 +583,14 @@ document.addEventListener("scroll", () => {
   const params = new URLSearchParams(window.location.search);
   const notice = document.getElementById("inquiryNotice");
 
-  if (params.get("received") === "1" && notice) {
+  // ✅ only show when they came from the footer modal
+  if (params.get("from") === "footerSpot" && notice) {
     notice.hidden = false;
 
-    // Optional: scroll gently to the notice
-    notice.scrollIntoView({ behavior: "smooth", block: "start" });
+    // optional: remove the flag from the URL after showing (keeps it clean)
+    const url = new URL(window.location.href);
+    url.searchParams.delete("from");
+    window.history.replaceState({}, "", url);
   }
 })();
 </script>

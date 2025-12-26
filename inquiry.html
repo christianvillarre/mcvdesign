@@ -584,14 +584,24 @@ document.addEventListener("scroll", () => {
   const notice = document.getElementById("inquiryNotice");
   if (!notice) return;
 
-  // default stays hidden
   if (params.get("from") === "footerSpot") {
     notice.classList.remove("is-hidden");
 
-    // clean the URL so it doesn't show again on refresh/share
+    // Clean URL immediately
     const url = new URL(window.location.href);
     url.searchParams.delete("from");
     window.history.replaceState({}, "", url);
+
+    // Auto-hide after 20 seconds
+    setTimeout(() => {
+      notice.classList.add("is-fading");
+
+      // fully hide after fade
+      setTimeout(() => {
+        notice.classList.add("is-hidden");
+        notice.classList.remove("is-fading");
+      }, 500);
+    }, 20000);
   }
 })();
 </script>

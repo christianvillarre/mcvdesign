@@ -446,3 +446,12 @@ input {
 .is-hidden{
   display: none !important;
 }
+/* Smooth fade-out */
+.inquiry-notice{
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.inquiry-notice.is-fading{
+  opacity: 0;
+  transform: translateY(-6px);
+}

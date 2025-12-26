@@ -75,7 +75,7 @@
 
 
   </style>
-<script>
+ <script>
 (() => {
   const root = document.getElementById("bgGrid");
   if (!root) return;
@@ -83,38 +83,42 @@
   const GREEN_CLASS = "on";
   const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // Visual sizing (keep identical look)
-  const CELL_SIZE = 18; // must match CSS
-  const GAP       = 6;  // must match CSS
-  const PAD       = 10; // must match CSS
+  // keep same visual density
+  const CELL_SIZE = 18;
+  const GAP       = 6;
+  const PAD       = 10;
 
-  // Perf knobs
-  const SPARKS_PER_HIT   = isCoarse ? 12 : 6;  // taps feel bigger on mobile
-  const RADIUS_PX        = isCoarse ? 95 : 55;
-  const LINGER_MS        = isCoarse ? 520 : 400;
-  const MIN_INTERVAL_MS  = isCoarse ? 0 : 16;  // mobile tap should respond instantly
-  const MAX_ACTIVE_CELLS = isCoarse ? 180 : 600; // ✅ caps “green workload”
+  // feel knobs
+  const DESKTOP_SPARKS = 6;
+  const DESKTOP_RADIUS = 55;
+  const DESKTOP_LINGER = 400;
 
-  // ✅ Big win: cap total DOM cells on mobile while keeping same cell/gap size.
-  // This lowers bloat without changing the look of each cell.
-  const MAX_CELLS_MOBILE = 2200; // adjust 1600–2600 depending on how light you want it
+  const TOUCH_SPARKS   = 10;   // bigger effect on touch
+  const TOUCH_RADIUS   = 80;
+  const TOUCH_LINGER   = 420;
+
+  // perf knobs
+  const MOVE_INTERVAL_DESKTOP = 16;
+  const MOVE_INTERVAL_TOUCH   = 55;  // ✅ strong throttle to avoid jank
+  const MAX_ACTIVE_CELLS      = isCoarse ? 160 : 500; // ✅ cap active "on" cells
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
 
   let raf = null;
   let mx = -9999, my = -9999;
-  let last = 0;
 
-  // prevent “scroll fight”
+  // --- scroll/momentum guard ---
   let scrolling = false;
   let scrollTO = null;
+
   window.addEventListener("scroll", () => {
     scrolling = true;
     clearTimeout(scrollTO);
     scrollTO = setTimeout(() => (scrolling = false), 140);
   }, { passive: true });
 
+  // --- build grid ---
   function build(){
     root.innerHTML = "";
     gridEl = document.createElement("div");
@@ -124,22 +128,8 @@
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    // ideal counts
-    let idealCols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
-    let idealRows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
-
-    // ✅ cap total cells on mobile (reduces DOM bloat)
-    if (isCoarse) {
-      const idealTotal = idealCols * idealRows;
-      if (idealTotal > MAX_CELLS_MOBILE) {
-        const scale = Math.sqrt(MAX_CELLS_MOBILE / idealTotal);
-        idealCols = Math.max(1, Math.floor(idealCols * scale));
-        idealRows = Math.max(1, Math.floor(idealRows * scale));
-      }
-    }
-
-    cols = idealCols;
-    rows = idealRows;
+    cols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+    rows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
 
     gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL_SIZE}px)`;
 
@@ -166,19 +156,16 @@
   // ✅ One RAF cleanup loop (no per-cell setTimeout)
   const active = new Map(); // el -> expireTime
 
-  function markOn(el, now){
-    // ✅ hard cap how many cells we keep active (prevents “too many greens” load)
+  function markOn(el, now, linger){
     if (!active.has(el) && active.size >= MAX_ACTIVE_CELLS) {
-      // remove the oldest entry (Map preserves insertion order)
       const oldest = active.keys().next().value;
       if (oldest) {
         oldest.classList.remove(GREEN_CLASS);
         active.delete(oldest);
       }
     }
-
     if (!el.classList.contains(GREEN_CLASS)) el.classList.add(GREEN_CLASS);
-    active.set(el, now + LINGER_MS);
+    active.set(el, now + linger);
   }
 
   function cleanup(now){
@@ -192,12 +179,12 @@
   }
   requestAnimationFrame(cleanup);
 
-  function spark(x, y){
+  function spark(x, y, sparks, radius, linger){
     const now = performance.now();
 
-    for (let i = 0; i < SPARKS_PER_HIT; i++){
+    for (let i = 0; i < sparks; i++){
       const a = Math.random() * Math.PI * 2;
-      const r = Math.random() * RADIUS_PX;
+      const r = Math.random() * radius;
       const px = x + Math.cos(a) * r;
       const py = y + Math.sin(a) * r;
 
@@ -207,45 +194,83 @@
       const el = cells[idx];
       if (!el) continue;
 
-      markOn(el, now);
+      markOn(el, now, linger);
     }
   }
 
-  function queueSpark(x, y){
+  // throttled queue
+  let lastDesktop = 0;
+  let lastTouch   = 0;
+
+  function queueSpark(x, y, mode){
     mx = x; my = y;
 
     const now = performance.now();
-    if (now - last < MIN_INTERVAL_MS) return;
-    last = now;
+    const minInterval = mode === "touch" ? MOVE_INTERVAL_TOUCH : MOVE_INTERVAL_DESKTOP;
+    const lastRef = mode === "touch" ? lastTouch : lastDesktop;
+    if (now - lastRef < minInterval) return;
+
+    if (mode === "touch") lastTouch = now;
+    else lastDesktop = now;
 
     if (raf) return;
     raf = requestAnimationFrame(() => {
-      if (!scrolling) spark(mx, my);
+      // ✅ never spark during momentum scroll
+      if (scrolling) { raf = null; return; }
+
+      if (mode === "touch") {
+        spark(mx, my, TOUCH_SPARKS, TOUCH_RADIUS, TOUCH_LINGER);
+      } else {
+        spark(mx, my, DESKTOP_SPARKS, DESKTOP_RADIUS, DESKTOP_LINGER);
+      }
       raf = null;
     });
   }
 
-  // Desktop: hover trail
+  // desktop: hover trail + click
   function onPointerMove(e){
-    if (isCoarse) return; // ✅ mobile: no hover trail
-    queueSpark(e.clientX, e.clientY);
+    if (isCoarse) return;
+    queueSpark(e.clientX, e.clientY, "desktop");
   }
-
-  // Desktop click + Mobile tap (pointerdown)
   function onPointerDown(e){
-    queueSpark(e.clientX, e.clientY);
+    queueSpark(e.clientX, e.clientY, isCoarse ? "touch" : "desktop");
   }
 
-  // ✅ Touch: TAP ONLY (no touchmove)
+  // ✅ touchmove without scroll fighting:
+  // Only spark when horizontal intent is stronger than vertical intent.
+  let sx = 0, sy = 0;
+  let tracking = false;
+
   function onTouchStart(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
-    queueSpark(t.clientX, t.clientY);
+    tracking = true;
+    sx = t.clientX;
+    sy = t.clientY;
+    queueSpark(t.clientX, t.clientY, "touch"); // immediate hit on touchstart
+  }
+
+  function onTouchMove(e){
+    if (!tracking) return;
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+
+    const dx = t.clientX - sx;
+    const dy = t.clientY - sy;
+
+    // ✅ if user is mostly scrolling vertically, DO NOT spark (prevents hitch)
+    if (Math.abs(dy) > Math.abs(dx) * 1.15 && Math.abs(dy) > 6) return;
+
+    queueSpark(t.clientX, t.clientY, "touch");
+  }
+
+  function onTouchEnd(){
+    tracking = false;
   }
 
   build();
 
-  // debounce rebuild
+  // debounced rebuild
   let rTO;
   window.addEventListener("resize", () => {
     clearTimeout(rTO);
@@ -256,7 +281,9 @@
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
   window.addEventListener("touchstart", onTouchStart, { passive: true });
-  // ❌ no touchmove (biggest bloat/jank source)
+  window.addEventListener("touchmove",  onTouchMove,  { passive: true });
+  window.addEventListener("touchend",   onTouchEnd,   { passive: true });
+  window.addEventListener("touchcancel",onTouchEnd,   { passive: true });
 })();
 </script>
  <nav class="navbar">

@@ -75,20 +75,27 @@
 
 
   </style>
-  <script>
+<script>
 (() => {
   const root = document.getElementById("bgGrid");
   if (!root) return;
 
   const GREEN_CLASS = "on";
 
-  // ✅ tweak knobs
-  const CELL_SIZE = 18;        // must match CSS .cell width/height
-  const GAP = 6;               // must match CSS grid gap
-  const PAD = 10;              // must match CSS grid padding
-  const SPARKS_PER_MOVE = 6;   // minimal amount of squares
-  const RADIUS_PX = 55;        // small random area around cursor/finger
-  const LINGER_MS = 400;       // how long it stays green
+  // detect coarse pointer = mobile/tablet
+  const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+  // ✅ tweak knobs (mobile runs lighter)
+  const CELL_SIZE      = isCoarse ? 26 : 18;  // bigger cells = fewer DOM nodes
+  const GAP            = isCoarse ? 8  : 6;
+  const PAD            = 10;
+
+  const SPARKS_PER_HIT = isCoarse ? 3 : 6;
+  const RADIUS_PX      = isCoarse ? 40 : 55;
+  const LINGER_MS      = isCoarse ? 260 : 400;
+
+  // how often we allow sparks (ms). Mobile gets a stronger throttle.
+  const MIN_INTERVAL   = isCoarse ? 55 : 16;
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
@@ -96,6 +103,17 @@
   let raf = null;
   let mx = -9999, my = -9999;
 
+  // --- scroll guard (don’t animate while user is actively scrolling) ---
+  let scrolling = false;
+  let scrollTO = null;
+
+  window.addEventListener("scroll", () => {
+    scrolling = true;
+    clearTimeout(scrollTO);
+    scrollTO = setTimeout(() => (scrolling = false), 140);
+  }, { passive: true });
+
+  // --- build grid ---
   function build(){
     root.innerHTML = "";
     gridEl = document.createElement("div");
@@ -130,8 +148,29 @@
     return cy * cols + cx;
   }
 
+  // ✅ Replace per-cell setTimeout with ONE RAF cleanup loop
+  const active = new Map(); // el -> expireTime
+
+  function markOn(el, now){
+    if (!el.classList.contains(GREEN_CLASS)) el.classList.add(GREEN_CLASS);
+    active.set(el, now + LINGER_MS);
+  }
+
+  function cleanup(now){
+    for (const [el, exp] of active){
+      if (now >= exp){
+        el.classList.remove(GREEN_CLASS);
+        active.delete(el);
+      }
+    }
+    requestAnimationFrame(cleanup);
+  }
+  requestAnimationFrame(cleanup);
+
   function spark(x, y){
-    for (let i = 0; i < SPARKS_PER_MOVE; i++){
+    const now = performance.now();
+
+    for (let i = 0; i < SPARKS_PER_HIT; i++){
       const a = Math.random() * Math.PI * 2;
       const r = Math.random() * RADIUS_PX;
       const px = x + Math.cos(a) * r;
@@ -143,27 +182,40 @@
       const el = cells[idx];
       if (!el) continue;
 
-      el.classList.add(GREEN_CLASS);
-      clearTimeout(el._t);
-      el._t = setTimeout(() => el.classList.remove(GREEN_CLASS), LINGER_MS);
+      markOn(el, now);
     }
   }
 
+  // throttle sparks (especially mobile)
+  let last = 0;
   function queueSpark(x, y){
     mx = x; my = y;
+
+    const now = performance.now();
+    if (now - last < MIN_INTERVAL) return;
+    last = now;
+
     if (raf) return;
     raf = requestAnimationFrame(() => {
-      spark(mx, my);
+      // ✅ do not animate during active scroll on mobile
+      if (!scrolling) spark(mx, my);
       raf = null;
     });
   }
 
-  // ✅ Pointer events (desktop + many mobiles)
-  function onPointerMove(e){ queueSpark(e.clientX, e.clientY); }
-  function onPointerDown(e){ queueSpark(e.clientX, e.clientY); }
+  // Pointer events:
+  // - desktop: allow hover trail (pointermove)
+  // - mobile: ignore pointermove to avoid fighting scroll; allow pointerdown (tap)
+  function onPointerMove(e){
+    if (isCoarse) return;                // ✅ mobile: no move trail
+    queueSpark(e.clientX, e.clientY);
+  }
+  function onPointerDown(e){
+    queueSpark(e.clientX, e.clientY);
+  }
 
-  // ✅ Touch fallback (iOS Safari can be picky)
-  function onTouch(e){
+  // Touch: tap only (no touchmove)
+  function onTouchStart(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
     queueSpark(t.clientX, t.clientY);
@@ -171,17 +223,21 @@
 
   build();
 
-  window.addEventListener("resize", build, { passive: true });
+  // ✅ rebuild on resize (debounced)
+  let rTO;
+  window.addEventListener("resize", () => {
+    clearTimeout(rTO);
+    rTO = setTimeout(build, 150);
+  }, { passive: true });
 
-  // Pointer
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
-  // Touch fallback
-  window.addEventListener("touchstart", onTouch, { passive: true });
-  window.addEventListener("touchmove", onTouch, { passive: true });
+  window.addEventListener("touchstart", onTouchStart, { passive: true });
+  // ❌ removed touchmove on purpose (major jank source)
 })();
 </script>
+
  <nav class="navbar">
     <div class="navbar__container">
       <div class="navbar__left">

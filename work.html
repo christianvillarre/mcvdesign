@@ -75,26 +75,45 @@
 
 
   </style>
-  <script>
+<script>
 (() => {
   const root = document.getElementById("bgGrid");
   if (!root) return;
 
   const GREEN_CLASS = "on";
+  const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // ✅ tweak knobs
-  const CELL_SIZE = 18;        // must match CSS .cell width/height
-  const GAP = 6;               // must match CSS grid gap
-  const PAD = 10;              // must match CSS grid padding
-  const SPARKS_PER_MOVE = 6;   // minimal amount of squares
-  const RADIUS_PX = 55;        // small random area around cursor/finger
-  const LINGER_MS = 400;       // how long it stays green
+  // Visual sizing (keep identical look)
+  const CELL_SIZE = 18; // must match CSS
+  const GAP       = 6;  // must match CSS
+  const PAD       = 10; // must match CSS
+
+  // Perf knobs
+  const SPARKS_PER_HIT   = isCoarse ? 12 : 6;  // taps feel bigger on mobile
+  const RADIUS_PX        = isCoarse ? 95 : 55;
+  const LINGER_MS        = isCoarse ? 520 : 400;
+  const MIN_INTERVAL_MS  = isCoarse ? 0 : 16;  // mobile tap should respond instantly
+  const MAX_ACTIVE_CELLS = isCoarse ? 180 : 600; // ✅ caps “green workload”
+
+  // ✅ Big win: cap total DOM cells on mobile while keeping same cell/gap size.
+  // This lowers bloat without changing the look of each cell.
+  const MAX_CELLS_MOBILE = 2200; // adjust 1600–2600 depending on how light you want it
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
 
   let raf = null;
   let mx = -9999, my = -9999;
+  let last = 0;
+
+  // prevent “scroll fight”
+  let scrolling = false;
+  let scrollTO = null;
+  window.addEventListener("scroll", () => {
+    scrolling = true;
+    clearTimeout(scrollTO);
+    scrollTO = setTimeout(() => (scrolling = false), 140);
+  }, { passive: true });
 
   function build(){
     root.innerHTML = "";
@@ -105,8 +124,22 @@
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    cols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
-    rows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+    // ideal counts
+    let idealCols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+    let idealRows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+
+    // ✅ cap total cells on mobile (reduces DOM bloat)
+    if (isCoarse) {
+      const idealTotal = idealCols * idealRows;
+      if (idealTotal > MAX_CELLS_MOBILE) {
+        const scale = Math.sqrt(MAX_CELLS_MOBILE / idealTotal);
+        idealCols = Math.max(1, Math.floor(idealCols * scale));
+        idealRows = Math.max(1, Math.floor(idealRows * scale));
+      }
+    }
+
+    cols = idealCols;
+    rows = idealRows;
 
     gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL_SIZE}px)`;
 
@@ -130,8 +163,39 @@
     return cy * cols + cx;
   }
 
+  // ✅ One RAF cleanup loop (no per-cell setTimeout)
+  const active = new Map(); // el -> expireTime
+
+  function markOn(el, now){
+    // ✅ hard cap how many cells we keep active (prevents “too many greens” load)
+    if (!active.has(el) && active.size >= MAX_ACTIVE_CELLS) {
+      // remove the oldest entry (Map preserves insertion order)
+      const oldest = active.keys().next().value;
+      if (oldest) {
+        oldest.classList.remove(GREEN_CLASS);
+        active.delete(oldest);
+      }
+    }
+
+    if (!el.classList.contains(GREEN_CLASS)) el.classList.add(GREEN_CLASS);
+    active.set(el, now + LINGER_MS);
+  }
+
+  function cleanup(now){
+    for (const [el, exp] of active){
+      if (now >= exp){
+        el.classList.remove(GREEN_CLASS);
+        active.delete(el);
+      }
+    }
+    requestAnimationFrame(cleanup);
+  }
+  requestAnimationFrame(cleanup);
+
   function spark(x, y){
-    for (let i = 0; i < SPARKS_PER_MOVE; i++){
+    const now = performance.now();
+
+    for (let i = 0; i < SPARKS_PER_HIT; i++){
       const a = Math.random() * Math.PI * 2;
       const r = Math.random() * RADIUS_PX;
       const px = x + Math.cos(a) * r;
@@ -143,27 +207,37 @@
       const el = cells[idx];
       if (!el) continue;
 
-      el.classList.add(GREEN_CLASS);
-      clearTimeout(el._t);
-      el._t = setTimeout(() => el.classList.remove(GREEN_CLASS), LINGER_MS);
+      markOn(el, now);
     }
   }
 
   function queueSpark(x, y){
     mx = x; my = y;
+
+    const now = performance.now();
+    if (now - last < MIN_INTERVAL_MS) return;
+    last = now;
+
     if (raf) return;
     raf = requestAnimationFrame(() => {
-      spark(mx, my);
+      if (!scrolling) spark(mx, my);
       raf = null;
     });
   }
 
-  // ✅ Pointer events (desktop + many mobiles)
-  function onPointerMove(e){ queueSpark(e.clientX, e.clientY); }
-  function onPointerDown(e){ queueSpark(e.clientX, e.clientY); }
+  // Desktop: hover trail
+  function onPointerMove(e){
+    if (isCoarse) return; // ✅ mobile: no hover trail
+    queueSpark(e.clientX, e.clientY);
+  }
 
-  // ✅ Touch fallback (iOS Safari can be picky)
-  function onTouch(e){
+  // Desktop click + Mobile tap (pointerdown)
+  function onPointerDown(e){
+    queueSpark(e.clientX, e.clientY);
+  }
+
+  // ✅ Touch: TAP ONLY (no touchmove)
+  function onTouchStart(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
     queueSpark(t.clientX, t.clientY);
@@ -171,15 +245,18 @@
 
   build();
 
-  window.addEventListener("resize", build, { passive: true });
+  // debounce rebuild
+  let rTO;
+  window.addEventListener("resize", () => {
+    clearTimeout(rTO);
+    rTO = setTimeout(build, 150);
+  }, { passive: true });
 
-  // Pointer
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
-  // Touch fallback
-  window.addEventListener("touchstart", onTouch, { passive: true });
-  window.addEventListener("touchmove", onTouch, { passive: true });
+  window.addEventListener("touchstart", onTouchStart, { passive: true });
+  // ❌ no touchmove (biggest bloat/jank source)
 })();
 </script>
  <nav class="navbar">

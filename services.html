@@ -356,7 +356,7 @@
   <!-- Intro -->
   <section class="intro">
     <div class="services-video-bg">
-      <video autoplay muted loop playsinline>
+      <video autoplay muted loop playsinline preload="auto" poster="/images/video-poster.jpg">
         <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
       </video>
     </div>
@@ -366,7 +366,25 @@
       <p>Houston web design and graphic design services from concept to launch — including branding, UX/UI, websites, and custom web apps.</p>
     </div>
   </section>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const v = document.querySelector(".services-video-bg video");
+  if (!v) return;
 
+  v.muted = true;          // autoplay requirement
+  v.playsInline = true;
+
+  const tryPlay = async () => {
+    try { await v.play(); } catch(e) {}
+  };
+
+  v.addEventListener("loadedmetadata", tryPlay, { once:true });
+  v.addEventListener("canplay",        tryPlay, { once:true });
+
+  // safety in case events are missed
+  setTimeout(tryPlay, 250);
+});
+</script>
   <style>
     .services-video-bg {
       position: absolute;

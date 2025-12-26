@@ -1724,6 +1724,18 @@ window.addEventListener("resize", () => {
   letter-spacing: inherit;
   white-space: pre-wrap;
 }
+@media (max-width: 768px) {
+  .wipe-copy{
+    font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+    line-height: 0.65;      /* slightly looser so lines don’t collide */
+    max-width: 90vw;        /* prevent cramped wrapping */
+  }
+
+  .wipe-copy .line{
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.55em; /* keeps descenders safe at larger size */
+  }
+}
 </style>
 <script>
 gsap.registerPlugin(ScrollTrigger);

@@ -75,7 +75,7 @@
 
 
   </style>
-  <script>
+<script>
 (() => {
   const root = document.getElementById("bgGrid");
   if (!root) return;
@@ -83,16 +83,29 @@
   const GREEN_CLASS = "on";
   const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // ✅ MATCH YOUR ORIGINAL LOOK (tight grid)
-  const CELL_SIZE = 18;  // must match CSS .cell width/height
-  const GAP       = 6;   // must match CSS grid gap
-  const PAD       = 10;  // must match CSS grid padding
+  // ✅ tight grid (same look as before)
+  const CELL_SIZE = 18;
+  const GAP       = 6;
+  const PAD       = 10;
 
-  // ✅ Performance knobs (mobile slightly lighter, but same spacing)
-  const SPARKS_PER_HIT = isCoarse ? 4 : 6;
-  const RADIUS_PX      = isCoarse ? 50 : 55;
-  const LINGER_MS      = isCoarse ? 280 : 400;
-  const MIN_INTERVAL   = isCoarse ? 45 : 16; // throttle sparks
+  // ✅ desktop baseline
+  const DESKTOP_SPARKS = 6;
+  const DESKTOP_RADIUS = 55;
+  const DESKTOP_LINGER = 400;
+  const DESKTOP_MIN_INTERVAL = 16;
+
+  // ✅ touch boosted (bigger + more sensitive)
+  const TOUCH_SPARKS = 14;       // more squares per tap
+  const TOUCH_RADIUS = 95;       // bigger bloom radius
+  const TOUCH_LINGER = 520;      // stays on longer
+  const TOUCH_BURSTS = 2;        // multiple quick bursts per tap
+  const TOUCH_BURST_GAP = 40;    // ms between bursts
+  const TOUCH_MIN_INTERVAL = 0;  // tap should always fire instantly
+
+  const SPARKS_PER_HIT = isCoarse ? TOUCH_SPARKS : DESKTOP_SPARKS;
+  const RADIUS_PX      = isCoarse ? TOUCH_RADIUS : DESKTOP_RADIUS;
+  const LINGER_MS      = isCoarse ? TOUCH_LINGER : DESKTOP_LINGER;
+  const MIN_INTERVAL   = isCoarse ? TOUCH_MIN_INTERVAL : DESKTOP_MIN_INTERVAL;
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
@@ -101,7 +114,7 @@
   let mx = -9999, my = -9999;
   let last = 0;
 
-  // ✅ Do not animate during active scroll (prevents “scroll fight”)
+  // ✅ prevent “scroll fight”
   let scrolling = false;
   let scrollTO = null;
   window.addEventListener("scroll", () => {
@@ -144,7 +157,7 @@
     return cy * cols + cx;
   }
 
-  // ✅ One RAF cleanup loop (no per-cell setTimeout)
+  // ✅ one RAF cleanup loop (no per-cell timeouts)
   const active = new Map(); // el -> expireTime
 
   function markOn(el, now){
@@ -196,27 +209,38 @@
     });
   }
 
-  // ✅ Desktop: hover trail
+  // ✅ desktop: hover trail
   function onPointerMove(e){
-    if (isCoarse) return; // ✅ mobile: no move trail
+    if (isCoarse) return; // mobile: no move trail
     queueSpark(e.clientX, e.clientY);
   }
 
-  // ✅ Desktop click + Mobile tap sparks
+  // ✅ desktop click + mobile tap sparks via pointerdown
   function onPointerDown(e){
     queueSpark(e.clientX, e.clientY);
   }
 
-  // ✅ Touch: TAP ONLY (no touchmove)
+  // ✅ touch: TAP ONLY, but “bigger” via bursts
   function onTouchStart(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
-    queueSpark(t.clientX, t.clientY);
+
+    const x = t.clientX;
+    const y = t.clientY;
+
+    // instant hit
+    queueSpark(x, y);
+
+    // extra bursts to feel bigger/stronger
+    if (TOUCH_BURSTS > 1){
+      for (let i = 1; i < TOUCH_BURSTS; i++){
+        setTimeout(() => queueSpark(x, y), i * TOUCH_BURST_GAP);
+      }
+    }
   }
 
   build();
 
-  // ✅ debounced rebuild
   let rTO;
   window.addEventListener("resize", () => {
     clearTimeout(rTO);
@@ -227,7 +251,6 @@
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
   window.addEventListener("touchstart", onTouchStart, { passive: true });
-  // ❌ no touchmove (tap sparks only)
 })();
 </script>
  <nav class="navbar">
@@ -1802,8 +1825,6 @@ document.addEventListener("scroll", () => {
     if (pageField) pageField.value = window.location.pathname;
   });
 </script>
-
-
 <script src="app.js"></script>
 </body>
 </html>

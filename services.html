@@ -1766,10 +1766,40 @@ BOX ANIMATIONS GSAP SHAPES*/
 }
 
 @keyframes dfPulse{
-  0%   { opacity: 0; transform: scale(0.84) rotate(0.6deg); }
-  20%  { opacity: 1; }
-  70%  { opacity: 1; transform: scale(1.06) rotate(-0.6deg); }
-  100% { opacity: 0; transform: scale(1.14) rotate(-1.0deg); }
+  0%{
+    opacity: 0;
+    border-color: rgba(255,255,255,0.09);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset;
+    transform: scale(0.84) rotate(0.6deg);
+  }
+
+  20%{
+    opacity: 1;
+  }
+
+  70%{
+    opacity: 1;
+    border-color:#54f3a4;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05) inset;
+    transform: scale(1.06) rotate(-0.6deg);
+  }
+
+  /* 🌿 GREEN BEGINS TO APPEAR */
+  85%{
+    border-color:#54f3a475;
+    box-shadow:
+      0 0 0 1px rgba(16,255,163,0.20),
+      0 0 20px rgba(16,255,163,0.12);
+  }
+
+  100%{
+    opacity: 0;
+    border-color:#54f3a43a;
+    box-shadow:
+      0 0 0 1px rgba(16,255,163,0.30),
+      0 0 28px rgba(16,255,163,0.18);
+    transform: scale(1.14) rotate(-1.0deg);
+  }
 }
 
 @media (max-width: 520px){

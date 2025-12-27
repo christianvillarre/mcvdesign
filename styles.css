@@ -1183,7 +1183,7 @@ a {
 }
 @media (max-width: 768px) {
   .large-text h2 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 600;
   color: #ffffff;
   text-align: left;

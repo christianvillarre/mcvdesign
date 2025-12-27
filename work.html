@@ -34,90 +34,69 @@
 </head>
 <body>
   <div id="bgGrid" aria-hidden="true"></div>
-<style>
-/* Background grid overlay */
+  <style>
+    /* Background grid overlay (safe: doesn't change your layout) */
 #bgGrid{
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
-  background: #fff;
+  z-index: -1;                 /* ✅ always behind */
+  background: #fff;            /* ✅ keep white background */
   overflow: hidden;
-
-  /* ✅ desktop density */
-  --cell: 18px;
-  --gap: 6px;
-  --pad: 10px;
 }
 
+/* the grid itself */
 #bgGrid .grid{
   position: absolute;
   inset: 0;
   display: grid;
-  gap: var(--gap);
-  padding: var(--pad);
+  gap: 6px;                    /* grid spacing */
+  padding: 10px;
 }
 
+/* each square */
 #bgGrid .cell{
-  width: var(--cell);
-  height: var(--cell);
-  background: transparent;
+  width: 18px;                 /* ✅ grid feel */
+  height: 18px;
+  background: transparent;     /* keep clean */
   border: 1px solid rgba(0,0,0,0.08);
+  
   transform: translateZ(0);
   transition: background 220ms ease, transform 220ms ease, border-color 220ms ease;
   will-change: background, transform;
 }
 
+/* flipped state */
 #bgGrid .cell.on{
-  background: #54f3a4;
+  background: #54f3a4;         /* ✅ your green */
   border-color: rgba(0,0,0,0.04);
   transform: rotateY(180deg);
 }
 
-/* ✅ mobile: fewer squares (less DOM), no 3D flip */
-@media (hover: none) and (pointer: coarse){
-  #bgGrid{
-    --cell: 24px;  /* bigger = fewer cells = smoother */
-    --gap: 4px;
-    --pad: 10px;
-  }
-  #bgGrid .cell{
-    transition: background 160ms ease, border-color 160ms ease;
-    transform: none !important;
-  }
-  #bgGrid .cell.on{
-    transform: none !important;
-  }
-}
-</style>
- <script>
+
+  </style>
+  <script>
 (() => {
   const root = document.getElementById("bgGrid");
   if (!root) return;
 
-  const GREEN = "on";
-  const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  const GREEN_CLASS = "on";
+
+  // ✅ tweak knobs
+  const CELL_SIZE = 18;        // must match CSS .cell width/height
+  const GAP = 6;               // must match CSS grid gap
+  const PAD = 10;              // must match CSS grid padding
+  const SPARKS_PER_MOVE = 6;   // minimal amount of squares
+  const RADIUS_PX = 55;        // small random area around cursor/finger
+  const LINGER_MS = 400;       // how long it stays green
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
 
-  // ---------- helpers ----------
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-
-  function readVars(){
-    const cs = getComputedStyle(root);
-    return {
-      CELL: parseFloat(cs.getPropertyValue("--cell")) || 18,
-      GAP:  parseFloat(cs.getPropertyValue("--gap"))  || 6,
-      PAD:  parseFloat(cs.getPropertyValue("--pad"))  || 10
-    };
-  }
-
-  let CELL = 18, GAP = 6, PAD = 10;
+  let raf = null;
+  let mx = -9999, my = -9999;
 
   function build(){
-    ({ CELL, GAP, PAD } = readVars());
-
     root.innerHTML = "";
     gridEl = document.createElement("div");
     gridEl.className = "grid";
@@ -126,205 +105,81 @@
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    cols = Math.floor((w - PAD * 2 + GAP) / (CELL + GAP));
-    rows = Math.floor((h - PAD * 2 + GAP) / (CELL + GAP));
+    cols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+    rows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
 
-    gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL}px)`;
+    gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL_SIZE}px)`;
 
     const total = cols * rows;
     cells = new Array(total);
 
-    // ✅ create DOM once
-    const frag = document.createDocumentFragment();
     for (let i = 0; i < total; i++){
       const c = document.createElement("div");
       c.className = "cell";
-      frag.appendChild(c);
+      gridEl.appendChild(c);
       cells[i] = c;
     }
-    gridEl.appendChild(frag);
   }
 
   function idxFromXY(x, y){
-    const cx = Math.floor((x - PAD) / (CELL + GAP));
-    const cy = Math.floor((y - PAD) / (CELL + GAP));
+    const gx = (x - PAD) / (CELL_SIZE + GAP);
+    const gy = (y - PAD) / (CELL_SIZE + GAP);
+    const cx = Math.floor(gx);
+    const cy = Math.floor(gy);
     if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return -1;
     return cy * cols + cx;
   }
 
-  // ---------- “active” pool without setTimeout spam ----------
-  const active = new Map(); // el -> expireTime
-  const MAX_ACTIVE = isTouch ? 90 : 450;
-
-  function markOn(el, now, linger){
-    if (!active.has(el) && active.size >= MAX_ACTIVE){
-      const oldest = active.keys().next().value;
-      if (oldest){
-        oldest.classList.remove(GREEN);
-        active.delete(oldest);
-      }
-    }
-    if (!el.classList.contains(GREEN)) el.classList.add(GREEN);
-    active.set(el, now + linger);
-  }
-
-  function cleanup(now){
-    for (const [el, exp] of active){
-      if (now >= exp){
-        el.classList.remove(GREEN);
-        active.delete(el);
-      }
-    }
-    requestAnimationFrame(cleanup);
-  }
-  requestAnimationFrame(cleanup);
-
-  // ---------- precomputed offsets (NO trig per move) ----------
-  function makeOffsets(count, radius){
-    const arr = new Array(count);
-    for (let i = 0; i < count; i++){
-      // cheap-ish random scatter in a circle-ish area
-      const dx = (Math.random() * 2 - 1) * radius;
-      const dy = (Math.random() * 2 - 1) * radius;
-      arr[i] = [dx, dy];
-    }
-    return arr;
-  }
-
-  // Tune knobs
-  const DESKTOP = {
-    sparks: 6,
-    radius: 55,
-    linger: 400,
-    minInterval: 16,
-    minMovePx: 0
-  };
-
-  const TOUCH = {
-    sparksStart: 12,
-    radiusStart: 90,
-    lingerStart: 420,
-
-    sparksMove: 5,          // ✅ still visible trail
-    radiusMove: 70,         // ✅ bigger / more sensitive look
-    lingerMove: 260,
-
-    minInterval: 90,        // ✅ heavy throttle = smooth scroll
-    minMovePx: 10           // ✅ don’t fire on micro jitter
-  };
-
-  let offDesktop = makeOffsets(DESKTOP.sparks, DESKTOP.radius);
-  let offTouchStart = makeOffsets(TOUCH.sparksStart, TOUCH.radiusStart);
-  let offTouchMove  = makeOffsets(TOUCH.sparksMove,  TOUCH.radiusMove);
-
-  function sparkWithOffsets(x, y, offsets, linger){
-    const now = performance.now();
-    for (let i = 0; i < offsets.length; i++){
-      const px = x + offsets[i][0];
-      const py = y + offsets[i][1];
+  function spark(x, y){
+    for (let i = 0; i < SPARKS_PER_MOVE; i++){
+      const a = Math.random() * Math.PI * 2;
+      const r = Math.random() * RADIUS_PX;
+      const px = x + Math.cos(a) * r;
+      const py = y + Math.sin(a) * r;
 
       const idx = idxFromXY(px, py);
       if (idx < 0) continue;
 
       const el = cells[idx];
-      if (el) markOn(el, now, linger);
+      if (!el) continue;
+
+      el.classList.add(GREEN_CLASS);
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove(GREEN_CLASS), LINGER_MS);
     }
   }
 
-  // ---------- throttled input ----------
-  let lastTime = 0;
-  function canRun(minInterval){
-    const now = performance.now();
-    if (now - lastTime < minInterval) return false;
-    lastTime = now;
-    return true;
+  function queueSpark(x, y){
+    mx = x; my = y;
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      spark(mx, my);
+      raf = null;
+    });
   }
 
-  // desktop pointer trail (skip on touch devices)
-  function onPointerMove(e){
-    if (isTouch) return;
-    if (!canRun(DESKTOP.minInterval)) return;
-    sparkWithOffsets(e.clientX, e.clientY, offDesktop, DESKTOP.linger);
-  }
+  // ✅ Pointer events (desktop + many mobiles)
+  function onPointerMove(e){ queueSpark(e.clientX, e.clientY); }
+  function onPointerDown(e){ queueSpark(e.clientX, e.clientY); }
 
-  function onPointerDown(e){
-    if (!canRun(isTouch ? TOUCH.minInterval : DESKTOP.minInterval)) return;
-    if (isTouch) sparkWithOffsets(e.clientX, e.clientY, offTouchStart, TOUCH.lingerStart);
-    else sparkWithOffsets(e.clientX, e.clientY, offDesktop, DESKTOP.linger);
-  }
-
-  // ✅ touch trail without wrecking scroll
-  let startX = 0, startY = 0;
-  let lastX  = 0, lastY  = 0;
-  let allowTrail = true;
-
-  function onTouchStart(e){
+  // ✅ Touch fallback (iOS Safari can be picky)
+  function onTouch(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
-
-    startX = lastX = t.clientX;
-    startY = lastY = t.clientY;
-    allowTrail = true;
-
-    // always fire a strong hit on start
-    sparkWithOffsets(lastX, lastY, offTouchStart, TOUCH.lingerStart);
-  }
-
-  function onTouchMove(e){
-    if (!allowTrail) return;
-
-    const t = e.touches && e.touches[0];
-    if (!t) return;
-
-    const x = t.clientX;
-    const y = t.clientY;
-
-    const dxFromStart = x - startX;
-    const dyFromStart = y - startY;
-
-    // ✅ if it’s clearly a vertical scroll, disable for this gesture
-    if (Math.abs(dyFromStart) > Math.abs(dxFromStart) * 1.15 && Math.abs(dyFromStart) > 8){
-      allowTrail = false;
-      return;
-    }
-
-    // ✅ don’t fire for tiny jitter
-    const dx = x - lastX;
-    const dy = y - lastY;
-    if ((dx*dx + dy*dy) < (TOUCH.minMovePx * TOUCH.minMovePx)) return;
-
-    if (!canRun(TOUCH.minInterval)) return;
-
-    lastX = x; lastY = y;
-    sparkWithOffsets(x, y, offTouchMove, TOUCH.lingerMove);
-  }
-
-  function onTouchEnd(){
-    allowTrail = true;
+    queueSpark(t.clientX, t.clientY);
   }
 
   build();
 
-  // resize (debounced)
-  let rTO;
-  window.addEventListener("resize", () => {
-    clearTimeout(rTO);
-    rTO = setTimeout(() => {
-      build();
-      // rebuild offsets in case vars changed
-      offDesktop = makeOffsets(DESKTOP.sparks, DESKTOP.radius);
-      offTouchStart = makeOffsets(TOUCH.sparksStart, TOUCH.radiusStart);
-      offTouchMove  = makeOffsets(TOUCH.sparksMove,  TOUCH.radiusMove);
-    }, 150);
-  }, { passive: true });
+  window.addEventListener("resize", build, { passive: true });
 
+  // Pointer
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
-  window.addEventListener("touchstart", onTouchStart, { passive: true });
-  window.addEventListener("touchmove",  onTouchMove,  { passive: true });
-  window.addEventListener("touchend",   onTouchEnd,   { passive: true });
-  window.addEventListener("touchcancel",onTouchEnd,   { passive: true });
+  // Touch fallback
+  window.addEventListener("touchstart", onTouch, { passive: true });
+  window.addEventListener("touchmove", onTouch, { passive: true });
 })();
 </script>
  <nav class="navbar">

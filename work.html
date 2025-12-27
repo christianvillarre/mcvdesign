@@ -38,13 +38,15 @@
     /* Background grid overlay (safe: doesn't change your layout) */
 #bgGrid{
   position: fixed;
-  inset: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--gridH, 100vh); /* ✅ JS will set this */
   pointer-events: none;
-  z-index: -1;                 /* ✅ always behind */
-  background: #fff;            /* ✅ keep white background */
+  z-index: -1;
+  background: #fff;
   overflow: hidden;
 }
-
 /* the grid itself */
 #bgGrid .grid{
   position: absolute;
@@ -81,29 +83,50 @@
   if (!root) return;
 
   const GREEN_CLASS = "on";
+  const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // ✅ tweak knobs
-  const CELL_SIZE = 18;        // must match CSS .cell width/height
-  const GAP = 6;               // must match CSS grid gap
-  const PAD = 10;              // must match CSS grid padding
-  const SPARKS_PER_MOVE = 6;   // minimal amount of squares
-  const RADIUS_PX = 55;        // small random area around cursor/finger
-  const LINGER_MS = 400;       // how long it stays green
+  // must match CSS
+  const CELL_SIZE = 18;
+  const GAP = 6;
+  const PAD = 10;
+
+  // effect
+  const SPARKS_PER_MOVE = 6;
+  const RADIUS_PX = 55;
+  const LINGER_MS = 400;
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
 
-  let raf = null;
-  let mx = -9999, my = -9999;
+  // ✅ lock dimensions on mobile so URL bar doesn't cause rebuilds
+  let lockedW = 0;
+  let lockedH = 0;
 
-  function build(){
+  function getStableViewport() {
+    // visualViewport is best on iOS; fallback to inner sizes
+    const vv = window.visualViewport;
+    const w = Math.round(vv?.width  ?? window.innerWidth);
+    const h = Math.round(vv?.height ?? window.innerHeight);
+    return { w, h };
+  }
+
+  function lockMobileViewportOnce() {
+    const { w, h } = getStableViewport();
+    lockedW = w;
+    lockedH = h;
+
+    // ✅ lock overlay height in px so it won't grow/shrink with the URL bar
+    root.style.setProperty("--gridH", lockedH + "px");
+  }
+
+  function build(usingW, usingH){
     root.innerHTML = "";
     gridEl = document.createElement("div");
     gridEl.className = "grid";
     root.appendChild(gridEl);
 
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const w = usingW;
+    const h = usingH;
 
     cols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
     rows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
@@ -149,6 +172,7 @@
     }
   }
 
+  let raf = null, mx = -9999, my = -9999;
   function queueSpark(x, y){
     mx = x; my = y;
     if (raf) return;
@@ -158,28 +182,67 @@
     });
   }
 
-  // ✅ Pointer events (desktop + many mobiles)
-  function onPointerMove(e){ queueSpark(e.clientX, e.clientY); }
+  // desktop
+  function onPointerMove(e){ if (!isCoarse) queueSpark(e.clientX, e.clientY); }
   function onPointerDown(e){ queueSpark(e.clientX, e.clientY); }
 
-  // ✅ Touch fallback (iOS Safari can be picky)
+  // touch
   function onTouch(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
     queueSpark(t.clientX, t.clientY);
   }
 
-  build();
+  // ✅ INIT
+  if (isCoarse) {
+    lockMobileViewportOnce();
+    build(lockedW, lockedH);
+  } else {
+    const { w, h } = getStableViewport();
+    root.style.setProperty("--gridH", "100vh");
+    build(w, h);
+  }
 
-  window.addEventListener("resize", build, { passive: true });
+  // ✅ Resize handling:
+  // - Desktop: rebuild normally
+  // - Mobile: ONLY rebuild if width changes a lot (orientation), ignore height changes (URL bar)
+  let rTO;
+  function onResize(){
+    clearTimeout(rTO);
+    rTO = setTimeout(() => {
+      const { w, h } = getStableViewport();
 
-  // Pointer
+      if (isCoarse) {
+        // ignore URL bar height changes
+        if (Math.abs(w - lockedW) > 12) {
+          // real change (orientation / breakpoint) -> re-lock + rebuild
+          lockMobileViewportOnce();
+          build(lockedW, lockedH);
+        }
+        return;
+      }
+
+      // desktop normal
+      build(w, h);
+    }, 150);
+  }
+
+  window.addEventListener("resize", onResize, { passive: true });
+  window.addEventListener("orientationchange", () => {
+    // orientationchange is "real" on mobile -> allow rebuild
+    if (isCoarse) {
+      setTimeout(() => {
+        lockMobileViewportOnce();
+        build(lockedW, lockedH);
+      }, 250);
+    }
+  }, { passive: true });
+
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
-  // Touch fallback
   window.addEventListener("touchstart", onTouch, { passive: true });
-  window.addEventListener("touchmove", onTouch, { passive: true });
+  window.addEventListener("touchmove",  onTouch, { passive: true });
 })();
 </script>
  <nav class="navbar">

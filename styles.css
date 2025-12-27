@@ -2132,6 +2132,7 @@ a {
   background: rgba(84,243,164,0.16);
   color: #fff;
   cursor: pointer;
+  font-size: 1rem;
 }
 .spot-cancel{
   padding: 0.9rem 1.1rem;
@@ -2140,6 +2141,7 @@ a {
   background: rgba(255,255,255,0.06);
   color: rgba(255,255,255,0.85);
   cursor: pointer;
+  font-size: 1rem;
 }
 .spot-note{
   margin: 0.5rem 0 0;

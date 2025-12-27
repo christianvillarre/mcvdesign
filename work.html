@@ -110,14 +110,28 @@
     return { w, h };
   }
 
-  function lockMobileViewportOnce() {
-    const { w, h } = getStableViewport();
-    lockedW = w;
-    lockedH = h;
+function lockMobileViewportOnce() {
+  // start with current
+  let { w, h } = getStableViewport();
+  lockedW = w;
+  lockedH = h;
 
-    // ✅ lock overlay height in px so it won't grow/shrink with the URL bar
-    root.style.setProperty("--gridH", lockedH + "px");
+  // ✅ capture the max height for ~900ms (covers URL bar collapsing after load)
+  const start = performance.now();
+  function sample() {
+    const vv = getStableViewport();
+    lockedW = vv.w;                 // width is stable anyway
+    lockedH = Math.max(lockedH, vv.h);
+
+    if (performance.now() - start < 900) {
+      requestAnimationFrame(sample);
+    } else {
+      // lock overlay height in px
+      root.style.setProperty("--gridH", lockedH + "px");
+    }
   }
+  requestAnimationFrame(sample);
+}
 
   function build(usingW, usingH){
     root.innerHTML = "";

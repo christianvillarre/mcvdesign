@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Houston Web Design Company | Custom Websites That Convert – MCVDesign</title>
+  <meta name="description" content="MCVDesign is a Houston web design company building custom, high-performance websites for small businesses, service companies, and industrial brands. Strategy-driven design that converts." />
+
+  <!-- ✅ Canonical (update to your real domain) -->
+  <link rel="canonical" href="https://YOURDOMAIN.com/houston-web-design" />
+
+  <link rel="icon" type="image/png" href="images/favicon.jpg"/>
+
+  <!-- ✅ LocalBusiness + Service Schema (update placeholders) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"ProfessionalService",
+        "@id":"https://YOURDOMAIN.com/#business",
+        "name":"MCVDesign",
+        "url":"https://YOURDOMAIN.com/",
+        "areaServed":[
+          {"@type":"City","name":"Houston"},
+          {"@type":"City","name":"Cypress"},
+          {"@type":"City","name":"Katy"},
+          {"@type":"City","name":"Sugar Land"},
+          {"@type":"City","name":"The Woodlands"},
+          {"@type":"City","name":"Pearland"}
+        ],
+        "address":{
+          "@type":"PostalAddress",
+          "addressLocality":"Houston",
+          "addressRegion":"TX",
+          "addressCountry":"US"
+        },
+        "contactPoint":{
+          "@type":"ContactPoint",
+          "contactType":"sales",
+          "url":"https://YOURDOMAIN.com/inquiry.html"
+        },
+        "sameAs":[
+          "https://www.instagram.com/YOURHANDLE",
+          "https://www.linkedin.com/company/YOURHANDLE"
+        ]
+      },
+      {
+        "@type":"Service",
+        "@id":"https://YOURDOMAIN.com/houston-web-design#service",
+        "name":"Houston Web Design",
+        "serviceType":"Web design and website development",
+        "provider":{"@id":"https://YOURDOMAIN.com/#business"},
+        "areaServed":{"@type":"City","name":"Houston"},
+        "url":"https://YOURDOMAIN.com/houston-web-design"
+      },
+      {
+        "@type":"FAQPage",
+        "@id":"https://YOURDOMAIN.com/houston-web-design#faq",
+        "mainEntity":[
+          {
+            "@type":"Question",
+            "name":"How much does web design cost in Houston?",
+            "acceptedAnswer":{
+              "@type":"Answer",
+              "text":"Pricing depends on scope (pages, custom design, integrations, copy, and SEO needs). Most projects fall into a range based on complexity. If you share your goals and examples you like, we can send a clear estimate and timeline."
+            }
+          },
+          {
+            "@type":"Question",
+            "name":"How long does a website take to build?",
+            "acceptedAnswer":{
+              "@type":"Answer",
+              "text":"Timelines vary by scope. Smaller sites are typically faster; larger builds with custom sections, motion, copywriting, and SEO structure take longer. After a short discovery, we provide a realistic timeline with milestones."
+            }
+          },
+          {
+            "@type":"Question",
+            "name":"Do you redesign existing websites?",
+            "acceptedAnswer":{
+              "@type":"Answer",
+              "text":"Yes. Website redesign is one of the best ways to improve clarity, performance, and conversions—especially if your current site is slow, outdated, or not generating leads."
+            }
+          },
+          {
+            "@type":"Question",
+            "name":"Do you help with SEO?",
+            "acceptedAnswer":{
+              "@type":"Answer",
+              "text":"Yes. We build SEO-ready structure (headings, internal linking, speed, semantic markup) and can support ongoing SEO depending on your goals."
+            }
+          },
+          {
+            "@type":"Question",
+            "name":"What platforms do you build on?",
+            "acceptedAnswer":{
+              "@type":"Answer",
+              "text":"We can build custom-coded sites and also work with modern platforms depending on what fits your business, editing needs, and performance goals."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- ✅ Page-only styles (scoped) -->
+  <style>
+    /* =========================
+       HOUSTON SEO PAGE (SCOPED)
+       Won't affect other pages
+    ========================= */
+    html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;   /* so even if anything shows, it's black */
+}
+    .seo-houston-page{
+      background:#000;
+      color:#fff;
+      min-height:100vh;
+      position:relative;
+      overflow:hidden;
+      font-family: 'Funnel Display', sans-serif;
+    }
+
+    /* subtle corner glow like your .main::before */
+    .seo-houston-page::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at top left, rgba(84,243,164,0.22) 0, transparent 38vw),
+        radial-gradient(circle at top right, rgba(84,243,164,0.22) 0, transparent 38vw);
+      opacity: 0.9;
+      z-index:0;
+    }
+
+    .seo-wrap{
+      position:relative;
+      z-index:1;
+      width:min(1200px, 92vw);
+      margin:0 auto;
+    }
+
+    .seo-hero{
+      padding: 16vh 0 7vh;
+    }
+
+    .seo-grid-hero{
+      display:grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: clamp(1.5rem, 3.5vw, 4rem);
+      align-items:start;
+    }
+
+    .seo-kicker{
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 1rem;
+    }
+
+    .seo-title{
+      font-size: clamp(3.1rem, 5.6vw, 8rem);
+      line-height: 0.88;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    .seo-title .accent{ color:#54f3a4; }
+    .accent{ color:#54f3a4; }
+
+    .seo-lede{
+      margin-top: 1.3rem;
+      font-size: clamp(1.2rem, 1.9vw, 1.65rem);
+      font-weight: 200;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.25;
+      max-width: 66ch;
+    }
+
+    .seo-local-proof{
+      margin-top: 1.15rem;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.35;
+    }
+    .seo-local-proof strong{
+      color: rgba(255,255,255,0.88);
+      font-weight: 600;
+    }
+
+    /* CTA panel */
+    .seo-panel{
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      padding: 1.25rem;
+      display:grid;
+      gap: 0.85rem;
+      align-content:start;
+    }
+
+    .seo-panel .seo-panel-title{
+      font-size: 1rem;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin: 0;
+    }
+
+    .seo-panel p{
+      margin:0;
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.35;
+      font-weight: 200;
+    }
+
+    .seo-nap{
+      border-top: 1px solid rgba(255,255,255,0.14);
+      padding-top: 0.85rem;
+      margin-top: 0.25rem;
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.98rem;
+      color: rgba(255,255,255,0.78);
+    }
+    .seo-nap .label{
+      font-size: 0.85rem;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* button style inspired by your pill + arrow */
+    .seo-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 1rem;
+      width: 100%;
+      padding: 0 1.2rem;
+      height: 64px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.9);
+      color:#fff;
+      background: transparent;
+      cursor:pointer;
+      text-decoration:none;
+      font-size: 1.15rem;
+      font-weight: 600;
+      position:relative;
+      overflow:hidden;
+      isolation:isolate;
+    }
+
+    .seo-btn::before{
+      content:"";
+      position:absolute;
+      width: 120px;
+      height: 120px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%) scale(0);
+      border-radius: 999px;
+      background:#fff;
+      z-index:-1;
+      transition: transform 0.65s ease;
+    }
+
+    .seo-btn:hover::before{ transform: translate(-50%,-50%) scale(1); }
+    .seo-btn:hover{ color:#000; }
+
+    .seo-btn .seo-arrow{
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      background:#54f3a4;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      flex: 0 0 auto;
+      transition: transform .25s ease;
+    }
+
+    .seo-btn:hover .seo-arrow{
+      transform: translate(2px, -2px);
+      background:#000;
+    }
+
+    .seo-btn:hover .seo-arrow svg{ stroke:#fff; }
+
+    .seo-arrow svg{
+      width: 16px;
+      height: 16px;
+      stroke:#000;
+    }
+
+    .seo-mini{
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .seo-mini a{
+      color:#fff;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      opacity: 0.9;
+    }
+
+    .seo-divider{
+      width: 100%;
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.14);
+      margin: 0;
+    }
+
+    /* Value strip */
+    .seo-strip{ padding: 2.5rem 0 1.5rem; }
+    .seo-strip-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .seo-chip{
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 16px;
+      padding: 1.25rem;
+      background: rgba(255,255,255,0.02);
+    }
+    .seo-chip .k{
+      font-size: 0.85rem;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0.55rem;
+    }
+    .seo-chip .v{
+      font-size: clamp(1.5rem, 2.2vw, 2.4rem);
+      line-height: 1;
+      font-weight: 600;
+    }
+
+    /* Sections */
+    .seo-section{ padding: clamp(3rem, 7vw, 6rem) 0; }
+
+    .seo-h2{
+      font-size: clamp(2.2rem, 3.2vw, 3.8rem);
+      line-height: 0.95;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      letter-spacing: -0.01em;
+    }
+
+    .seo-copy{
+      font-size: clamp(1.1rem, 1.55vw, 1.4rem);
+      font-weight: 200;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.35;
+      max-width: 72ch;
+    }
+
+    .seo-card-grid{
+      margin-top: 2.25rem;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .seo-card{
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 18px;
+      background: transparent;
+      padding: 1.6rem;
+      min-height: 320px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      transition: transform .25s ease, background .25s ease, border-color .25s ease;
+    }
+
+    .seo-card:hover{
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.03);
+      border-color: rgba(84,243,164,0.28);
+    }
+
+    .seo-card .title{
+      font-size: clamp(1.7rem, 2.2vw, 2.6rem);
+      font-weight: 200;
+      color:#54f3a4;
+      line-height: 1.05;
+      margin: 0 0 1rem 0;
+    }
+
+    .seo-card .desc{
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.75);
+      font-weight: 200;
+      line-height: 1.35;
+      margin: 0 0 1rem 0;
+    }
+
+    .seo-list{
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display:grid;
+      gap: 0.4rem;
+      color: rgba(255,255,255,0.92);
+      font-weight: 600;
+    }
+
+    .seo-list li{
+      position:relative;
+      padding-left: 1.1rem;
+    }
+
+    .seo-list li::before{
+      content:"—";
+      position:absolute;
+      left:0;
+      opacity: 0.6;
+    }
+
+    /* Process */
+    .seo-process{
+      margin-top: 2rem;
+      display:grid;
+      gap: 1rem;
+      max-width: 900px;
+    }
+
+    .seo-step{
+      display:grid;
+      grid-template-columns: 80px 1fr;
+      gap: 1rem;
+      padding: 1.25rem 1.25rem;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .seo-num{
+      color:#54f3a4;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      font-size: 1rem;
+      padding-top: 0.15rem;
+    }
+
+    .seo-step h3{
+      margin: 0 0 0.4rem 0;
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+
+    .seo-step p{
+      margin: 0;
+      color: rgba(255,255,255,0.78);
+      font-weight: 200;
+      line-height: 1.35;
+      font-size: 1.05rem;
+    }
+
+    /* FAQ */
+    .seo-faq{
+      margin-top: 2rem;
+      display:grid;
+      gap: 0.75rem;
+      max-width: 900px;
+    }
+
+    .faq-item{
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+      overflow:hidden;
+    }
+
+    .faq-item summary{
+      cursor: pointer;
+      list-style: none;
+      padding: 1.15rem 1.25rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.92);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 1rem;
+    }
+
+    .faq-item summary::-webkit-details-marker{ display:none; }
+
+    .faq-plus{
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.04);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      flex: 0 0 auto;
+      color: rgba(255,255,255,0.8);
+      transition: transform .25s ease, background .25s ease, border-color .25s ease;
+    }
+
+    details[open] .faq-plus{
+      transform: rotate(45deg);
+      border-color: rgba(84,243,164,0.28);
+      background: rgba(84,243,164,0.08);
+      color:#54f3a4;
+    }
+
+    .faq-body{
+      padding: 0 1.25rem 1.15rem;
+      color: rgba(255,255,255,0.78);
+      font-weight: 200;
+      line-height: 1.35;
+      font-size: 1.05rem;
+    }
+
+    /* Final CTA block */
+    .seo-final{ padding: 0 0 clamp(3rem, 7vw, 6rem); }
+
+    .seo-final-box{
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 22px;
+      padding: clamp(1.4rem, 3vw, 3rem);
+      background: rgba(255,255,255,0.03);
+      display:grid;
+      gap: 1rem;
+    }
+
+    .seo-final-title{
+      margin: 0;
+      font-size: clamp(2.7rem, 5vw, 6rem);
+      line-height: 0.85;
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .seo-grid-hero{ grid-template-columns: 1fr; }
+      .seo-strip-grid{ grid-template-columns: 1fr; }
+      .seo-card-grid{ grid-template-columns: 1fr; }
+      .seo-step{ grid-template-columns: 64px 1fr; }
+      .seo-hero{ padding-top: 13vh; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="seo-houston-page">
+
+    <!-- HERO -->
+    <section class="seo-hero">
+      <div class="seo-wrap">
+        <div class="seo-grid-hero">
+
+          <div>
+            <div class="seo-kicker">MCVDesign • Houston, Texas</div>
+
+            <h1 class="seo-title">
+              <span class="accent">Houston Web Design</span><br>
+              that’s Built to Convert
+            </h1>
+
+            <p class="seo-lede">
+              Custom websites for Houston businesses that need clarity, speed, and structure —
+              designed to earn trust fast, rank better, and turn visits into leads.
+            </p>
+
+            <!-- ✅ Local proof (E-E-A-T / local relevance) -->
+            <p class="seo-local-proof">
+              <strong>Based in Houston, TX.</strong> Serving Houston and nearby areas like
+              Cypress, Katy, The Heights, Downtown, Sugar Land, The Woodlands, and Pearland.
+              <br><br>
+              Ideal for small businesses, service companies, contractors, and industrial brands.
+            </p>
+          </div>
+
+          <!-- CTA PANEL + NAP -->
+          <aside class="seo-panel">
+            <p class="seo-panel-title">Start Here</p>
+            <p>
+              Tell us what you’re building and we’ll reply with next steps,
+              timeline, and a clear plan.
+            </p>
+
+            <a class="seo-btn" href="inquiry.html">
+              Start Your Project
+              <span class="seo-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7"/>
+                  <path d="M7 7h10v10"/>
+                </svg>
+              </span>
+            </a>
+
+            <div class="seo-mini">
+              Want examples? <a href="work.html">View Work</a> • See <a href="services.html">Services</a>
+            </div>
+
+            <!-- ✅ NAP-lite -->
+            <div class="seo-nap">
+              <div class="label">Business</div>
+              <div><strong>MCVDesign</strong> — Houston, TX</div>
+              <div class="label" style="margin-top:0.35rem;">Contact</div>
+              <div><a href="inquiry.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Inquiry Form</a></div>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+
+    <hr class="seo-divider" />
+
+    <!-- VALUE STRIP -->
+    <section class="seo-strip">
+      <div class="seo-wrap">
+        <div class="seo-strip-grid">
+          <div class="seo-chip">
+            <div class="k">Built for</div>
+            <div class="v">Speed</div>
+          </div>
+          <div class="seo-chip">
+            <div class="k">Built for</div>
+            <div class="v">SEO</div>
+          </div>
+          <div class="seo-chip">
+            <div class="k">Built for</div>
+            <div class="v">Leads</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARDS -->
+    <section class="seo-section">
+      <div class="seo-wrap">
+        <h2 class="seo-h2">Web design for Houston businesses that need results</h2>
+        <p class="seo-copy">
+          Houston is competitive. Your website has seconds to communicate trust.
+          We build modern, performance-first sites for small businesses, service companies,
+          contractors, and industrial brands that want a site that actually works.
+        </p>
+
+        <div class="seo-card-grid">
+
+          <article class="seo-card">
+            <div>
+              <h3 class="title">Websites That Feel Premium</h3>
+              <p class="desc">
+                Clean typography, intentional spacing, and modern motion — design that communicates trust quickly.
+              </p>
+              <ul class="seo-list">
+                <li>Custom design systems</li>
+                <li>Visual hierarchy</li>
+                <li>Brand consistency</li>
+              </ul>
+            </div>
+            <div style="margin-top:1.25rem;">
+              <a class="seo-btn" href="work.html">
+                View Work
+                <span class="seo-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7 17L17 7"/>
+                    <path d="M7 7h10v10"/>
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </article>
+
+          <article class="seo-card">
+            <div>
+              <h3 class="title">Performance First</h3>
+              <p class="desc">
+                Fast-loading pages and clean structure so your site feels instant on mobile.
+              </p>
+              <ul class="seo-list">
+                <li>Mobile-first builds</li>
+                <li>Lightweight front-end</li>
+                <li>Better UX signals</li>
+              </ul>
+            </div>
+            <div style="margin-top:1.25rem;">
+              <a class="seo-btn" href="inquiry.html">
+                Get a Quote
+                <span class="seo-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7 17L17 7"/>
+                    <path d="M7 7h10v10"/>
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </article>
+
+          <article class="seo-card">
+            <div>
+              <h3 class="title">SEO-Ready Structure</h3>
+              <p class="desc">
+                We build pages Google can understand — headings, internal links, and intent-driven sections.
+              </p>
+              <ul class="seo-list">
+                <li>Semantic markup</li>
+                <li>Clear sections</li>
+                <li>On-page fundamentals</li>
+              </ul>
+            </div>
+            <div style="margin-top:1.25rem;">
+              <a class="seo-btn" href="services.html">
+                Services
+                <span class="seo-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7 17L17 7"/>
+                    <path d="M7 7h10v10"/>
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- ✅ Internal links to future SEO pages (safe now; update when created) -->
+        <p class="seo-copy" style="margin-top:2.25rem;">
+          Looking for something specific? Explore
+          <a href="website-redesign-houston.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Website Redesign</a>,
+          <a href="small-business-web-design-houston.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Small Business Web Design</a>,
+          and <a href="industrial-web-design-houston.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Industrial Web Design</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="seo-section" style="padding-top:0;">
+      <div class="seo-wrap">
+        <h2 class="seo-h2">Our process is simple and strategic</h2>
+        <p class="seo-copy">
+          We keep it clean: strategy → structure → design/build → launch.
+          No confusion, no random revisions, no bloated deliverables.
+        </p>
+
+        <div class="seo-process">
+          <div class="seo-step">
+            <div class="seo-num">01</div>
+            <div>
+              <h3>Strategy</h3>
+              <p>We align goals, audience, and what your site needs to convert.</p>
+            </div>
+          </div>
+
+          <div class="seo-step">
+            <div class="seo-num">02</div>
+            <div>
+              <h3>Structure</h3>
+              <p>We map pages, messaging, and calls-to-action for clarity and intent.</p>
+            </div>
+          </div>
+
+          <div class="seo-step">
+            <div class="seo-num">03</div>
+            <div>
+              <h3>Design + Build</h3>
+              <p>Custom design paired with solid front-end development and responsive QA.</p>
+            </div>
+          </div>
+
+          <div class="seo-step">
+            <div class="seo-num">04</div>
+            <div>
+              <h3>Launch</h3>
+              <p>Performance checks, on-page SEO setup, and final polish — then ship.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ✅ FAQ (on-page + FAQ schema already included) -->
+    <section class="seo-section" style="padding-top:0;">
+      <div class="seo-wrap">
+        <h2 class="seo-h2">FAQ</h2>
+        <p class="seo-copy">
+          Quick answers to common questions Houston businesses ask when planning a new website.
+        </p>
+
+        <div class="seo-faq">
+
+          <details class="faq-item">
+            <summary>
+              How much does web design cost in Houston?
+              <span class="faq-plus">+</span>
+            </summary>
+            <div class="faq-body">
+              Pricing depends on scope (pages, custom design, integrations, copy, and SEO needs).
+              If you share your goals and examples you like, we can send a clear estimate and timeline.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              How long does a website take to build?
+              <span class="faq-plus">+</span>
+            </summary>
+            <div class="faq-body">
+              Timelines vary by scope. Smaller sites are typically faster; larger builds with custom sections,
+              motion, copywriting, and SEO structure take longer. After a short discovery, we provide a realistic timeline.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              Do you redesign existing websites?
+              <span class="faq-plus">+</span>
+            </summary>
+            <div class="faq-body">
+              Yes. Website redesign is one of the best ways to improve clarity, performance, and conversions—
+              especially if your current site is slow, outdated, or not generating leads.
+              See <a href="website-redesign-houston.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Website Redesign</a>.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              Do you help with SEO?
+              <span class="faq-plus">+</span>
+            </summary>
+            <div class="faq-body">
+              Yes. We build SEO-ready structure (headings, internal linking, speed, semantic markup) and can support
+              ongoing SEO depending on your goals.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              What platforms do you build on?
+              <span class="faq-plus">+</span>
+            </summary>
+            <div class="faq-body">
+              We can build custom-coded sites and also work with modern platforms depending on what fits your business,
+              editing needs, and performance goals.
+            </div>
+          </details>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="seo-final">
+      <div class="seo-wrap">
+        <div class="seo-final-box">
+          <h2 class="seo-final-title">
+            Ready for a website that actually <span class="accent">moves</span> your business?
+          </h2>
+          <p class="seo-copy" style="margin:0; max-width:72ch;">
+            Tell us what you’re building. We’ll reply with next steps, timeline, and a clear plan.
+          </p>
+          <a class="seo-btn" href="inquiry.html" style="max-width: 460px;">
+            Start Your Project
+            <span class="seo-arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 17L17 7"/>
+                <path d="M7 7h10v10"/>
+              </svg>
+            </span>
+          </a>
+
+          <!-- ✅ subtle NAP repeat (helps local trust, still minimal) -->
+          <div class="seo-mini" style="margin-top:0.25rem;">
+            MCVDesign • Houston, TX • <a href="inquiry.html">Contact</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

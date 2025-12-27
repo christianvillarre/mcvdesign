@@ -1028,16 +1028,10 @@ window.addEventListener("resize", () => {
 </div>
       <!-- ✅ DESIGN BOX (drop-in replacement for an <img>) -->
       <!-- Paste this where your image tag was -->
-      <div class="service-design-box themed theme-design mode-morph" data-mode="morph" aria-label="Design animation">
-        <div class="shapes" aria-hidden="true">
-          <div class="shape shape--soft" style="width:170px;height:170px;left:-40px;top:80px;"></div>
-          <div class="shape shape--ring" style="width:210px;height:210px;right:-70px;top:120px;"></div>
-          <div class="shape shape--soft" style="width:120px;height:120px;right:40px;top:50px;"></div>
-          <div class="shape shape--bar"  style="width:240px;height:58px;left:60px;bottom:120px;"></div>
-          <div class="shape shape--ring" style="width:140px;height:140px;left:90px;top:220px;"></div>
-        </div>
+      <div class="service-design-box themed theme-design mode-morph" data-mode="morph" aria-label="Design animation" >
+          <div class="dot-grid" aria-hidden="true"></div>
 
-        <div class="sys-dot" aria-hidden="true"></div>
+        <!--<div class="sys-dot" aria-hidden="true"></div>-->
 
         <div class="word" aria-label="DESIGN">
           <div class="word-line">
@@ -1251,15 +1245,9 @@ window.addEventListener("resize", () => {
 
       <!-- ✅ GROWTH BOX (drop-in replacement for an <img>) -->
       <div class="service-growth-box themed theme-growth" aria-label="Growth animation">
-        <div class="growth-shapes" aria-hidden="true">
-          <div class="gshape gshape--soft" style="width:160px;height:160px;left:-30px;top:90px;"></div>
-          <div class="gshape gshape--ring" style="width:240px;height:240px;right:-80px;top:70px;"></div>
-          <div class="gshape gshape--pill" style="width:260px;height:64px;left:70px;bottom:120px;"></div>
-          <div class="gshape gshape--soft" style="width:120px;height:120px;right:60px;top:190px;"></div>
-          <div class="gshape gshape--ring" style="width:150px;height:150px;left:120px;top:240px;"></div>
-        </div>
+        
 
-        <div class="growth-dot" aria-hidden="true"></div>
+        <div class="growth-tunnel" aria-hidden="true"></div>
 
         <div class="word" aria-label="GROWTH">
           <div class="word-line">
@@ -1721,49 +1709,266 @@ BOX ANIMATIONS GSAP SHAPES*/
   box-shadow: 0 0 0 5px rgba(255,255,255,.08);
 }
 
-/* shapes */
-.service-growth-box .growth-shapes{
+/* =========================
+   GROWTH: SQUARE TUNNEL
+========================= */
+
+
+/* each square frame */
+/* Tunnel container sits behind your word/caption */
+.service-growth-box .growth-tunnel{
   position:absolute;
   inset:0;
-  z-index:2;
+  z-index:2;              /* behind text (your text is z-index:5) */
+  pointer-events:none;
+  overflow:hidden;
 }
-.service-growth-box .gshape{
+
+/* Each square outline */
+.service-growth-box .tunnel-square{
   position:absolute;
-  border-radius: 999px;
-  border: 1px solid var(--g1);
-  background: var(--g2);
-  box-shadow: 0 25px 60px rgba(0,0,0,.55);
+  left:50%;
+  top:50%;
+  width: 60vmin;
+  height: 60vmin;
+
+  /* ❌ REMOVE translate from CSS */
+  transform: scale(0.05);
+
+  transform-origin: center center;
+  border: 1px solid rgba(255,186,84,.55);
+  box-shadow: 0 0 18px rgba(255,186,84,.12);
   opacity: 0;
-  transform: scale(0.7);
   will-change: transform, opacity;
 }
-.service-growth-box .gshape--ring{
-  background: transparent;
-  box-shadow: none;
-  border-width: 1px;
-}
-.service-growth-box .gshape--pill{
-  border-radius: 18px;
-  border-color: var(--g3);
-  background: rgba(255,255,255,.05);
+/* DOT GRID (inside the design service box) */
+#design .service-design-box .dot-grid{
+  position:absolute;
+  inset:0;
+  z-index: 2;
+  pointer-events:none;
+
+  /* keep dots away from edges */
+  padding: 26px;
+
+  display:grid;
+  justify-content:center;
+  align-content:center;
+
+  -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 58%, transparent 82%);
+  mask-image: radial-gradient(circle at 50% 45%, #000 58%, transparent 82%);
 }
 
-/* little system dot */
-.service-growth-box .growth-dot{
-  position:absolute;
-  width: 12px;
-  height: 12px;
+#design .service-design-box .dg-dot{
+  width: var(--dotSize, 6px);
+  height: var(--dotSize, 6px);
   border-radius: 999px;
-  background: var(--dot);
-  box-shadow:
-    0 0 0 6px rgba(255,186,84,.12),
-    0 0 18px rgba(255,186,84,.45);
-  z-index: 4;
-  pointer-events:none;
-  will-change: transform;
+
+  background: rgba(16,255,163,.22);
+  box-shadow: 0 0 0 5px rgba(16,255,163,.06);
+
+  transform: scale(var(--s, .55));
+  opacity: var(--o, .25);
+  will-change: transform, opacity;
 }
 </style>
+<script>
+  // GROWTH: SQUARE TUNNEL EFFECT
+(() => {
+  const box = document.querySelector("#growth .service-growth-box");
+  const tunnel = box?.querySelector(".growth-tunnel");
+  if (!box || !tunnel || !window.gsap) return;
 
+  const COUNT = 14;
+  const DURATION = 4.6;
+  const START = 0.04;
+  const END   = 2.9;
+  const STAGGER = DURATION / COUNT;
+
+  tunnel.innerHTML = "";
+  const squares = [];
+
+  for (let i = 0; i < COUNT; i++) {
+    const s = document.createElement("div");
+    s.className = "tunnel-square";
+    tunnel.appendChild(s);
+    squares.push(s);
+  }
+
+  // ✅ LOCK TRUE CENTER (scale-safe)
+  gsap.set(squares, {
+    left: "50%",
+    top: "50%",
+    xPercent: -50,
+    yPercent: -50,
+    scale: START,
+    opacity: 0
+  });
+
+  const tl = gsap.timeline({ repeat: -1 });
+
+  squares.forEach((sq, i) => {
+    tl.fromTo(
+      sq,
+      { scale: START, opacity: 0 },
+      {
+        scale: END,
+        opacity: 1,
+        duration: DURATION,
+        ease: "none",
+        onUpdate: () => {
+          const p = gsap.getProperty(sq, "scale") / END;
+          const fade = p > 0.75 ? 1 - (p - 0.75) / 0.25 : 1;
+          gsap.set(sq, { opacity: fade });
+        }
+      },
+      i * STAGGER
+    );
+  });
+})();
+</script>
+<script>
+  // ---- DOT GRID ---- EFFECT
+(() => {
+  const section = document.querySelector("#design");
+  const box     = section?.querySelector(".service-design-box");
+  const grid    = box?.querySelector(".dot-grid");
+  if (!box || !grid) {
+    console.warn("[dot-grid] Missing #design .service-design-box or .dot-grid");
+    return;
+  }
+
+  // ---- TUNE ----
+  const GAP       = 18;
+  const DOT_SIZE  = 6;
+
+  const MIN_COLS  = 22;
+  const MIN_ROWS  = 16;
+
+  const BASE      = 0.55;
+  const PEAK      = 3.05;
+  const DURATION  = 5.0;
+
+  const OVERSHOOT   = 0.45;
+  const HEAD_RADIUS = 0.34;
+  const SPINE_WIDTH = 0.055;
+  const EDGE_FLOOR  = 0.18;
+  const SOFTEN      = 0.85;
+
+  const JITTER_MIN = 0.92;
+  const JITTER_MAX = 1.08;
+
+  let dots = [];
+  let cols = 0, rows = 0;
+  let rafId = null;
+
+  const gaussian = (d, s) => Math.exp(-(d * d) / (2 * s * s));
+
+  function clearAnim(){
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+
+  function build(){
+    grid.innerHTML = "";
+    dots = [];
+
+    // ✅ use the BOX size (reliable), and subtract the grid padding
+    const pad = 26 * 2;
+    const w = Math.max(0, box.clientWidth  - pad);
+    const h = Math.max(0, box.clientHeight - pad);
+
+    cols = Math.max(MIN_COLS, Math.floor(w / GAP));
+    rows = Math.max(MIN_ROWS, Math.floor(h / GAP));
+
+    grid.style.gridTemplateColumns = `repeat(${cols}, ${GAP}px)`;
+    grid.style.gridTemplateRows    = `repeat(${rows}, ${GAP}px)`;
+    grid.style.setProperty("--dotSize", DOT_SIZE + "px");
+
+    for (let y=0; y<rows; y++){
+      for (let x=0; x<cols; x++){
+        const el = document.createElement("div");
+        el.className = "dg-dot";
+        grid.appendChild(el);
+
+        const xn = x / Math.max(1, cols - 1);
+        const yn = y / Math.max(1, rows - 1);
+
+        dots.push({
+          el,
+          xn, yn,
+          perp: Math.abs(xn - yn) / Math.SQRT2,
+          jitter: JITTER_MIN + Math.random() * (JITTER_MAX - JITTER_MIN),
+        });
+      }
+    }
+
+    // ✅ ensure you see MANY dots immediately (even before animation)
+    for (const d of dots){
+      d.el.style.setProperty("--s", BASE.toFixed(3));
+      d.el.style.setProperty("--o", "0.25");
+    }
+  }
+
+  function animate(ms){
+    const t = ms / 1000;
+    const prog = (t % DURATION) / DURATION;
+
+    const travel = 1 + OVERSHOOT * 2;
+    const cx = -OVERSHOOT + prog * travel;
+    const cy = -OVERSHOOT + prog * travel;
+
+    for (const d of dots){
+      const dx = d.xn - cx;
+      const dy = d.yn - cy;
+      const dist = Math.hypot(dx, dy);
+
+      let wave = gaussian(dist, HEAD_RADIUS);
+      wave = Math.pow(wave, SOFTEN);
+
+      const spine = gaussian(d.perp, SPINE_WIDTH);
+
+      const strength = wave * (EDGE_FLOOR + (1 - EDGE_FLOOR) * spine) * d.jitter;
+
+      const s = BASE + (PEAK - BASE) * strength;
+      const o = 0.20 + 0.80 * strength;
+
+      d.el.style.setProperty("--s", s.toFixed(3));
+      d.el.style.setProperty("--o", o.toFixed(3));
+    }
+
+    rafId = requestAnimationFrame(animate);
+  }
+
+  // ✅ wait until box has real size (prevents 1-dot build)
+  function start(){
+    clearAnim();
+
+    const w = box.clientWidth;
+    const h = box.clientHeight;
+
+    if (w < 50 || h < 50) {
+      requestAnimationFrame(start); // keep waiting
+      return;
+    }
+
+    build();
+    rafId = requestAnimationFrame(animate);
+  }
+
+  // run when visible + sized
+  const io = new IntersectionObserver((entries) => {
+    const on = entries.some(e => e.isIntersecting);
+    if (on) start();
+  }, { threshold: 0.2 });
+
+  io.observe(box);
+
+  // rebuild on resize
+  const ro = new ResizeObserver(() => start());
+  ro.observe(box);
+})();
+</script>
 <script>
 (() => {
   // target THIS box only

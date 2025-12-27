@@ -303,7 +303,38 @@
   pointer-events: none;
   will-change: transform;
 }
+/* ✅ DOT GRID (DESIGN BOX ONLY) */
+#designBox .dot-grid{
+  position:absolute;
+  inset: 0;
+  z-index: 2;                 /* behind text */
+  pointer-events:none;
+
+  /* inner padding so dots don't hit the border */
+  padding: 26px;
+
+  display:grid;
+  place-items:center;
+
+  /* soft vignette (premium fade) */
+  -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 58%, transparent 82%);
+  mask-image: radial-gradient(circle at 50% 45%, #000 58%, transparent 82%);
+}
+
+#designBox .dot{
+  width: var(--dotSize, 6px);
+  height: var(--dotSize, 6px);
+  border-radius: 999px;
+
+  background: rgba(16,255,163,.22);
+  box-shadow: 0 0 0 5px rgba(16,255,163,.06);
+
+  transform: scale(var(--s, 1));
+  opacity: var(--o, .75);
+  will-change: transform, opacity;
+}
   </style>
+  
 </head>
 
 <body>
@@ -311,13 +342,8 @@
   <!-- HERO: DESIGN (morphing) -->
   <section class="hero">
     <div class="image-box themed theme-design mode-morph" id="designBox" data-mode="morph">
-      <div class="shapes">
-        <div class="shape shape--soft" style="width:170px;height:170px;left:-40px;top:80px;"></div>
-        <div class="shape shape--ring" style="width:210px;height:210px;right:-70px;top:120px;"></div>
-        <div class="shape shape--soft" style="width:120px;height:120px;right:40px;top:50px;"></div>
-        <div class="shape shape--bar"  style="width:240px;height:58px;left:60px;bottom:120px;"></div>
-        <div class="shape shape--ring" style="width:140px;height:140px;left:90px;top:220px;"></div>
-      </div>    
+     
+      <div class="dot-grid" aria-hidden="true"></div>
       <div class="sys-dot" aria-hidden="true"></div>
       <div class="word" aria-label="DESIGN">
         <div class="word-line">
@@ -352,6 +378,7 @@
           <div class="shape shape--bar"  style="width:210px;height:52px;left:40px;bottom:80px;"></div>
           <div class="shape shape--soft" style="width:140px;height:140px;right:-50px;bottom:120px;"></div>
         </div>
+        <div class="dot-grid" aria-hidden="true"></div>
         <div class="sys-dot" aria-hidden="true"></div>
         <div class="mini-word" aria-label="DESIGN">
           <div class="word-line">
@@ -688,6 +715,137 @@ document.querySelectorAll(".mini-box").forEach(box => {
 
   // ✅ on resize, re-place runner (keeps it aligned)
   window.addEventListener("resize", () => placeRunner(state.t));
+})();
+</script>
+<script>
+/* ✅ DOT GRID: full-grid wave (TL -> BR), centerline dots largest, starts OFF-GRID then passes through */
+(() => {
+  const box  = document.querySelector("#designBox");
+  const grid = box?.querySelector(".dot-grid");
+  if (!box || !grid) return;
+
+  // ---- TUNE ----
+  const MIN_COLS = 25;
+  const MIN_ROWS = 18;
+
+  const GAP      = 18;
+  const DOT_SIZE = 6;
+
+  const BASE     = 0.55;
+  const PEAK     = 3.05;      // max scale on the “spine”
+  const DURATION = 5.0;       // seconds TL -> BR
+  const RESET_GAP = 0.05;
+
+  // ✅ start/end off-grid so it begins “farther back”
+  const OVERSHOOT = 0.40;     // 0.25–0.60 (bigger = starts farther back)
+
+  // wave shape controls
+  const HEAD_RADIUS   = 0.34;  // overall wave radius (bigger = affects more grid)
+  const SPINE_WIDTH   = 0.055; // thickness of the “biggest dot” band around diagonal
+  const EDGE_FLOOR    = 0.18;  // how much the outer dots still react (0..1)
+  const SOFTEN        = 0.85;  // makes the wave roll-in smoother
+
+  // optional: make it feel a touch more organic (small per-dot variation)
+  const JITTER_MIN = 0.92;
+  const JITTER_MAX = 1.08;
+
+  let dots = [];
+  let cols = 0, rows = 0;
+  let rafId = null;
+
+  const gaussian = (d, s) => Math.exp(-(d * d) / (2 * s * s));
+  const clamp01  = v => Math.max(0, Math.min(1, v));
+
+  function build() {
+    grid.innerHTML = "";
+    dots = [];
+
+    const r = grid.getBoundingClientRect();
+    cols = Math.max(MIN_COLS, Math.floor(r.width  / GAP));
+    rows = Math.max(MIN_ROWS, Math.floor(r.height / GAP));
+
+    grid.style.gridTemplateColumns = `repeat(${cols}, ${GAP}px)`;
+    grid.style.gridTemplateRows    = `repeat(${rows}, ${GAP}px)`;
+    grid.style.setProperty("--dotSize", DOT_SIZE + "px");
+
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const el = document.createElement("div");
+        el.className = "dot";
+        grid.appendChild(el);
+
+        const xn = x / Math.max(1, cols - 1);
+        const yn = y / Math.max(1, rows - 1);
+
+        dots.push({
+          el,
+          xn, yn,
+          // perpendicular distance to the diagonal (0 on diagonal)
+          perp: Math.abs(xn - yn) / Math.SQRT2,
+          // tiny per-dot variety so it’s not perfectly uniform
+          jitter: JITTER_MIN + Math.random() * (JITTER_MAX - JITTER_MIN)
+        });
+      }
+    }
+  }
+
+  function animate(ms){
+    const t = ms / 1000;
+
+    // progress 0..1 with a small reset gap (clean restart)
+    const raw  = (t % DURATION) / DURATION;
+    const prog = clamp01((raw - RESET_GAP) / (1 - RESET_GAP));
+
+    // ✅ start wave center off-grid → travel across → end off-grid
+    const travel = 1 + OVERSHOOT * 2;
+    const cx = -OVERSHOOT + prog * travel;
+    const cy = -OVERSHOOT + prog * travel;
+
+    for (const d of dots){
+      // distance to moving center (affects whole grid)
+      const dx = d.xn - cx;
+      const dy = d.yn - cy;
+      const dist = Math.hypot(dx, dy);
+
+      // overall wave influence across the grid
+      let wave = gaussian(dist, HEAD_RADIUS);
+
+      // soften the leading edge so it starts smoother
+      wave = Math.pow(wave, SOFTEN);
+
+      // spine boost so diagonal band (the “currently going dots”) are largest
+      const spine = gaussian(d.perp, SPINE_WIDTH);
+
+      // combine:
+      // - wave makes everything respond
+      // - spine makes the center band respond MORE
+      // - EDGE_FLOOR keeps outer dots from going dead
+      const strength = wave * (EDGE_FLOOR + (1 - EDGE_FLOOR) * spine) * d.jitter;
+
+      const s = BASE + (PEAK - BASE) * strength;
+      const o = 0.20 + 0.80 * strength;
+
+      d.el.style.setProperty("--s", s.toFixed(3));
+      d.el.style.setProperty("--o", o.toFixed(3));
+    }
+
+    rafId = requestAnimationFrame(animate);
+  }
+
+  function start(){
+    if (rafId) cancelAnimationFrame(rafId);
+    build();
+    rafId = requestAnimationFrame(animate);
+  }
+
+  start();
+
+  // rebuild on resize (debounced)
+  let rt;
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(start, 120);
+  }, { passive:true });
 })();
 </script>
 </body>

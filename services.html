@@ -1710,36 +1710,38 @@ BOX ANIMATIONS GSAP SHAPES*/
 }
 
 /* =========================
-   GROWTH: SQUARE TUNNEL
+   GROWTH: SQUARE TUNNEL (CSS ONLY)
 ========================= */
-
-
-/* each square frame */
-/* Tunnel container sits behind your word/caption */
-.service-growth-box .growth-tunnel{
+#growth .service-growth-box .growth-tunnel{
   position:absolute;
   inset:0;
-  z-index:2;              /* behind text (your text is z-index:5) */
+  z-index:2;
   pointer-events:none;
   overflow:hidden;
 }
 
-/* Each square outline */
-.service-growth-box .tunnel-square{
+/* Create multiple outlines via box-shadow trick? (not for outlines)
+   We'll do real elements injected once by JS (cheap) + CSS animation. */
+#growth .service-growth-box .tunnel-square{
   position:absolute;
   left:50%;
   top:50%;
-  width: 60vmin;
-  height: 60vmin;
-
-  /* ❌ REMOVE translate from CSS */
-  transform: scale(0.05);
-
-  transform-origin: center center;
+  width:min(12vmin, 90px);
+  height:min(12vmin, 90px);
+  transform: translate(-50%, -50%) scale(0.05);
+  transform-origin:center;
   border: 1px solid rgba(255,186,84,.55);
   box-shadow: 0 0 18px rgba(255,186,84,.12);
   opacity: 0;
   will-change: transform, opacity;
+  animation: tunnelGrow 2.8s linear infinite;
+}
+
+@keyframes tunnelGrow{
+  0%   { transform: translate(-50%, -50%) scale(0.05); opacity: 0; }
+  10%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(6.0); opacity: 0; }
 }
 /* DOT GRID (inside the design service box) */
 #design .service-design-box .dot-grid{
@@ -1773,113 +1775,121 @@ BOX ANIMATIONS GSAP SHAPES*/
 }
 </style>
 <script>
-  // GROWTH: SQUARE TUNNEL EFFECT
 (() => {
   const box = document.querySelector("#growth .service-growth-box");
   const tunnel = box?.querySelector(".growth-tunnel");
-  if (!box || !tunnel || !window.gsap) return;
+  if (!box || !tunnel) return;
 
-  const COUNT = 8;
-  const DURATION = 4.6;
-  const START = 0.04;
-  const END   = 2.9;
-  const STAGGER = DURATION / COUNT;
+  // ✅ init guard (prevents duplicates if script runs twice)
+  if (tunnel.dataset.inited === "1") return;
+  tunnel.dataset.inited = "1";
+
+  const COUNT = 10;          // more frames = smoother tunnel
+  const STAGGER = 0.22;      // spacing between squares
+  const DURATION = 2.8;      // must match CSS keyframe duration
 
   tunnel.innerHTML = "";
-  const squares = [];
-
   for (let i = 0; i < COUNT; i++) {
     const s = document.createElement("div");
     s.className = "tunnel-square";
+    s.style.animationDelay = `${i * STAGGER}s`;
+    s.style.animationDuration = `${DURATION}s`;
     tunnel.appendChild(s);
-    squares.push(s);
   }
 
-  // ✅ LOCK TRUE CENTER (scale-safe)
-  gsap.set(squares, {
-    left: "50%",
-    top: "50%",
-    xPercent: -50,
-    yPercent: -50,
-    scale: START,
-    opacity: 0
-  });
+  // ✅ pause CSS animations when out of view
+  const squares = Array.from(tunnel.children);
 
-  const tl = gsap.timeline({ repeat: -1 });
+  function setPlayState(state){
+    squares.forEach(el => el.style.animationPlayState = state);
+  }
 
-  squares.forEach((sq, i) => {
-    tl.fromTo(
-      sq,
-      { scale: START, opacity: 0 },
-      {
-        scale: END,
-        opacity: 1,
-        duration: DURATION,
-        ease: "none",
-        onUpdate: () => {
-          const p = gsap.getProperty(sq, "scale") / END;
-          const fade = p > 0.75 ? 1 - (p - 0.75) / 0.25 : 1;
-          gsap.set(sq, { opacity: fade });
-        }
-      },
-      i * STAGGER
-    );
-  });
+  const io = new IntersectionObserver((entries) => {
+    const on = entries.some(e => e.isIntersecting);
+    setPlayState(on ? "running" : "paused");
+  }, { threshold: 0.15 });
+
+  io.observe(box);
+
+  // start paused until it enters view
+  setPlayState("paused");
 })();
 </script>
 <script>
-  // ---- DOT GRID ---- EFFECT
+/* ✅ DESIGN DOT GRID (optimized)
+   - builds once per size change
+   - animates at ~30fps (not 60)
+   - only runs while in view
+   - hard guard to prevent duplicates
+*/
 (() => {
   const section = document.querySelector("#design");
   const box     = section?.querySelector(".service-design-box");
   const grid    = box?.querySelector(".dot-grid");
-  if (!box || !grid) {
-    console.warn("[dot-grid] Missing #design .service-design-box or .dot-grid");
-    return;
-  }
+  if (!box || !grid) return;
+
+  // ✅ init guard
+  if (grid.dataset.inited === "1") return;
+  grid.dataset.inited = "1";
 
   // ---- TUNE ----
-  const GAP       = 18;
-  const DOT_SIZE  = 6;
+  const GAP        = 18;
+  const DOT_SIZE   = 6;
+  const PAD        = 26 * 2;
 
-  const MIN_COLS  = 22;
-  const MIN_ROWS  = 16;
+  const MIN_COLS   = 22;
+  const MIN_ROWS   = 16;
 
-  const BASE      = 0.55;
-  const PEAK      = 3.05;
-  const DURATION  = 5.0;
+  const BASE       = 0.55;
+  const PEAK       = 3.05;
+  const SPEED_SEC  = 5.0;
 
-  const OVERSHOOT   = 0.45;
-  const HEAD_RADIUS = 0.34;
-  const SPINE_WIDTH = 0.055;
-  const EDGE_FLOOR  = 0.18;
-  const SOFTEN      = 0.85;
+  const OVERSHOOT  = 0.45;
+  const HEAD_R     = 0.34;
+  const SPINE_W    = 0.055;
+  const EDGE_FLOOR = 0.18;
+  const SOFTEN     = 0.85;
 
   const JITTER_MIN = 0.92;
   const JITTER_MAX = 1.08;
 
-  let dots = [];
-  let cols = 0, rows = 0;
-  let rafId = null;
+  const FPS        = 30;
+  const FRAME_MS   = 1000 / FPS;
 
   const gaussian = (d, s) => Math.exp(-(d * d) / (2 * s * s));
+
+  let dots = [];
+  let cols = 0, rows = 0;
+
+  let running = false;
+  let rafId = null;
+  let lastMs = 0;
+
+  // cache these so we don't read layout per frame
+  let w = 0, h = 0;
 
   function clearAnim(){
     if (rafId) cancelAnimationFrame(rafId);
     rafId = null;
+    lastMs = 0;
   }
 
   function build(){
+    // measure ONCE here
+    w = Math.max(0, box.clientWidth  - PAD);
+    h = Math.max(0, box.clientHeight - PAD);
+
+    const nextCols = Math.max(MIN_COLS, Math.floor(w / GAP));
+    const nextRows = Math.max(MIN_ROWS, Math.floor(h / GAP));
+
+    // no need to rebuild if grid count unchanged
+    if (nextCols === cols && nextRows === rows && dots.length) return;
+
+    cols = nextCols;
+    rows = nextRows;
+
     grid.innerHTML = "";
     dots = [];
-
-    // ✅ use the BOX size (reliable), and subtract the grid padding
-    const pad = 26 * 2;
-    const w = Math.max(0, box.clientWidth  - pad);
-    const h = Math.max(0, box.clientHeight - pad);
-
-    cols = Math.max(MIN_COLS, Math.floor(w / GAP));
-    rows = Math.max(MIN_ROWS, Math.floor(h / GAP));
 
     grid.style.gridTemplateColumns = `repeat(${cols}, ${GAP}px)`;
     grid.style.gridTemplateRows    = `repeat(${rows}, ${GAP}px)`;
@@ -1894,25 +1904,33 @@ BOX ANIMATIONS GSAP SHAPES*/
         const xn = x / Math.max(1, cols - 1);
         const yn = y / Math.max(1, rows - 1);
 
+        // precompute perp + jitter once (cheap)
         dots.push({
           el,
           xn, yn,
           perp: Math.abs(xn - yn) / Math.SQRT2,
           jitter: JITTER_MIN + Math.random() * (JITTER_MAX - JITTER_MIN),
         });
-      }
-    }
 
-    // ✅ ensure you see MANY dots immediately (even before animation)
-    for (const d of dots){
-      d.el.style.setProperty("--s", BASE.toFixed(3));
-      d.el.style.setProperty("--o", "0.25");
+        // baseline so you see the grid immediately
+        el.style.setProperty("--s", BASE.toFixed(3));
+        el.style.setProperty("--o", "0.22");
+      }
     }
   }
 
-  function animate(ms){
-    const t = ms / 1000;
-    const prog = (t % DURATION) / DURATION;
+  function tick(ms){
+    if (!running) return;
+
+    // throttle to ~30fps
+    if (ms - lastMs < FRAME_MS) {
+      rafId = requestAnimationFrame(tick);
+      return;
+    }
+    lastMs = ms;
+
+    const t = (ms / 1000);
+    const prog = (t % SPEED_SEC) / SPEED_SEC;
 
     const travel = 1 + OVERSHOOT * 2;
     const cx = -OVERSHOOT + prog * travel;
@@ -1923,11 +1941,10 @@ BOX ANIMATIONS GSAP SHAPES*/
       const dy = d.yn - cy;
       const dist = Math.hypot(dx, dy);
 
-      let wave = gaussian(dist, HEAD_RADIUS);
+      let wave = gaussian(dist, HEAD_R);
       wave = Math.pow(wave, SOFTEN);
 
-      const spine = gaussian(d.perp, SPINE_WIDTH);
-
+      const spine = gaussian(d.perp, SPINE_W);
       const strength = wave * (EDGE_FLOOR + (1 - EDGE_FLOOR) * spine) * d.jitter;
 
       const s = BASE + (PEAK - BASE) * strength;
@@ -1937,36 +1954,37 @@ BOX ANIMATIONS GSAP SHAPES*/
       d.el.style.setProperty("--o", o.toFixed(3));
     }
 
-    rafId = requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(tick);
   }
 
-  // ✅ wait until box has real size (prevents 1-dot build)
   function start(){
-    clearAnim();
-
-    const w = box.clientWidth;
-    const h = box.clientHeight;
-
-    if (w < 50 || h < 50) {
-      requestAnimationFrame(start); // keep waiting
-      return;
-    }
-
     build();
-    rafId = requestAnimationFrame(animate);
+    if (running) return;
+    running = true;
+    clearAnim();
+    rafId = requestAnimationFrame(tick);
   }
 
-  // run when visible + sized
+  function stop(){
+    running = false;
+    clearAnim();
+  }
+
+  // ✅ run only in view
   const io = new IntersectionObserver((entries) => {
     const on = entries.some(e => e.isIntersecting);
     if (on) start();
+    else stop();
   }, { threshold: 0.2 });
 
   io.observe(box);
 
-  // rebuild on resize
-  const ro = new ResizeObserver(() => start());
+  // ✅ rebuild only when size changes (debounced-ish)
+  const ro = new ResizeObserver(() => build());
   ro.observe(box);
+
+  // start stopped until visible
+  stop();
 })();
 </script>
 <script>

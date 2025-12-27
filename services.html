@@ -1827,45 +1827,43 @@ BOX ANIMATIONS GSAP SHAPES*/
 <script>
 (() => {
   const section = document.querySelector("#design");
-  const box     = section?.querySelector(".service-design-box");
-  const grid    = box?.querySelector(".dot-grid");
+  const box  = section?.querySelector(".service-design-box");
+  const grid = box?.querySelector(".dot-grid");
   if (!box || !grid) return;
 
-  // ✅ init guard (prevents double-running / memory spikes)
   if (grid.dataset.inited === "1") return;
   grid.dataset.inited = "1";
 
-  // ---- TUNE ----
-  const GAP       = 18;
-  const DOT_SIZE  = 6;
+  // ---- TUNE (lighter) ----
+  const SIZE_DESKTOP = 520;
+  const SIZE_MOBILE  = 260;
 
-  // ✅ fixed “center square” size (must match CSS)
- const GRID_SIZE_DESKTOP = 500; // ⬅️ bigger square
-const GRID_SIZE_MOBILE  = 280;
+  const GAP_DESKTOP  = 18;
+  const GAP_MOBILE   = 28;   // ✅ fewer dots on mobile
+  const DOT_DESKTOP  = 6;
+  const DOT_MOBILE   = 5;
 
-  const BASE      = 0.55;
-  const PEAK      = 3.05;
-  const DURATION  = 5.0;
+  const FPS_DESKTOP  = 30;
+  const FPS_MOBILE   = 18;
 
-  const OVERSHOOT    = 0.45;
-  const HEAD_RADIUS  = 0.34;
-  const SPINE_WIDTH  = 0.055;
-  const EDGE_FLOOR   = 0.18;
-  const SOFTEN       = 0.85;
+  const BASE_SCALE   = 0.55;
+  const PEAK_SCALE   = 2.2;  // ✅ slightly lower peak = less jarring + cheaper
+  const BASE_OPACITY = 0.18;
 
-  const JITTER_MIN = 0.92;
-  const JITTER_MAX = 1.08;
+  const DURATION     = 4.5;
+  const OVERSHOOT    = 0.35;
+  const HEAD_RADIUS  = 0.30; // ✅ slightly wider blob = looks smooth with fewer dots
 
-  // ✅ throttle (huge win)
-  const FPS = 30;
-  const FRAME_MS = 1000 / FPS;
+  const prefersReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReduce) return; // respectful + saves perf
 
   let dots = [];
-  let cols = 0, rows = 0;
   let rafId = null;
   let running = false;
   let lastMs = 0;
+  let frameMs = 1000 / FPS_DESKTOP;
 
+  const isMobile = () => window.matchMedia("(max-width: 520px)").matches;
   const gaussian = (d, s) => Math.exp(-(d * d) / (2 * s * s));
 
   function clearAnim(){
@@ -1874,47 +1872,40 @@ const GRID_SIZE_MOBILE  = 280;
     lastMs = 0;
   }
 
-  function gridSize(){
-    return window.matchMedia("(max-width: 520px)").matches
-      ? GRID_SIZE_MOBILE
-      : GRID_SIZE_DESKTOP;
-  }
-
   function build(){
     grid.innerHTML = "";
     dots = [];
 
-    const size = gridSize();
-    // lock the dot-grid square to a predictable size
-    grid.style.width = size + "px";
+    const mobile = isMobile();
+    const size = mobile ? SIZE_MOBILE : SIZE_DESKTOP;
+    const gap  = mobile ? GAP_MOBILE  : GAP_DESKTOP;
+    const dot  = mobile ? DOT_MOBILE  : DOT_DESKTOP;
+    frameMs    = 1000 / (mobile ? FPS_MOBILE : FPS_DESKTOP);
+
+    grid.style.width  = size + "px";
     grid.style.height = size + "px";
 
-    cols = Math.max(8, Math.floor(size / GAP));
-    rows = Math.max(8, Math.floor(size / GAP));
+    const cols = Math.max(6, Math.floor(size / gap));
+    const rows = Math.max(6, Math.floor(size / gap));
 
-    grid.style.gridTemplateColumns = `repeat(${cols}, ${GAP}px)`;
-    grid.style.gridTemplateRows    = `repeat(${rows}, ${GAP}px)`;
-    grid.style.setProperty("--dotSize", DOT_SIZE + "px");
+    grid.style.display = "grid";
+    grid.style.gridTemplateColumns = `repeat(${cols}, ${gap}px)`;
+    grid.style.gridTemplateRows    = `repeat(${rows}, ${gap}px)`;
 
     for (let y=0; y<rows; y++){
       for (let x=0; x<cols; x++){
         const el = document.createElement("div");
         el.className = "dg-dot";
+        el.style.width = dot + "px";
+        el.style.height = dot + "px";
+        el.style.borderRadius = "999px";
+        el.style.opacity = BASE_OPACITY;
+        el.style.transform = `scale(${BASE_SCALE})`;
         grid.appendChild(el);
 
         const xn = x / Math.max(1, cols - 1);
         const yn = y / Math.max(1, rows - 1);
-
-        dots.push({
-          el,
-          xn, yn,
-          perp: Math.abs(xn - yn) / Math.SQRT2,
-          jitter: JITTER_MIN + Math.random() * (JITTER_MAX - JITTER_MIN),
-        });
-
-        // baseline so you see the grid instantly
-        el.style.setProperty("--s", BASE.toFixed(3));
-        el.style.setProperty("--o", "0.22");
+        dots.push({ el, xn, yn });
       }
     }
   }
@@ -1923,7 +1914,7 @@ const GRID_SIZE_MOBILE  = 280;
     if (!running) return;
 
     // ✅ throttle
-    if (ms - lastMs < FRAME_MS) {
+    if (ms - lastMs < frameMs) {
       rafId = requestAnimationFrame(animate);
       return;
     }
@@ -1936,22 +1927,19 @@ const GRID_SIZE_MOBILE  = 280;
     const cx = -OVERSHOOT + prog * travel;
     const cy = -OVERSHOOT + prog * travel;
 
-    for (const d of dots){
+    // ✅ single loop, direct writes
+    for (let i=0; i<dots.length; i++){
+      const d = dots[i];
       const dx = d.xn - cx;
       const dy = d.yn - cy;
       const dist = Math.hypot(dx, dy);
 
-      let wave = gaussian(dist, HEAD_RADIUS);
-      wave = Math.pow(wave, SOFTEN);
+      const strength = gaussian(dist, HEAD_RADIUS);
+      const s = BASE_SCALE + (PEAK_SCALE - BASE_SCALE) * strength;
+      const o = BASE_OPACITY + (1 - BASE_OPACITY) * strength;
 
-      const spine = gaussian(d.perp, SPINE_WIDTH);
-      const strength = wave * (EDGE_FLOOR + (1 - EDGE_FLOOR) * spine) * d.jitter;
-
-      const s = BASE + (PEAK - BASE) * strength;
-      const o = 0.20 + 0.80 * strength;
-
-      d.el.style.setProperty("--s", s.toFixed(3));
-      d.el.style.setProperty("--o", o.toFixed(3));
+      d.el.style.transform = `scale(${s.toFixed(3)})`;
+      d.el.style.opacity   = o.toFixed(3);
     }
 
     rafId = requestAnimationFrame(animate);
@@ -1970,7 +1958,7 @@ const GRID_SIZE_MOBILE  = 280;
     clearAnim();
   }
 
-  // ✅ only run while visible (and stop when not)
+  // ✅ run only while visible
   const io = new IntersectionObserver((entries) => {
     const on = entries.some(e => e.isIntersecting);
     if (on) start();
@@ -1979,17 +1967,13 @@ const GRID_SIZE_MOBILE  = 280;
 
   io.observe(box);
 
-  // ✅ rebuild only on breakpoint change / resize
+  // ✅ rebuild on resize, debounced
   let rt;
   window.addEventListener("resize", () => {
     clearTimeout(rt);
-    rt = setTimeout(() => {
-      if (!running) return;
-      build();
-    }, 120);
-  }, { passive:true });
+    rt = setTimeout(() => { if (running) build(); }, 200);
+  }, { passive: true });
 
-  // start stopped
   stop();
 })();
 </script>

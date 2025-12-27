@@ -34,82 +34,90 @@
 </head>
 <body>
   <div id="bgGrid" aria-hidden="true"></div>
-  <style>
-    /* Background grid overlay (safe: doesn't change your layout) */
+<style>
+/* Background grid overlay */
 #bgGrid{
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;                 /* ✅ always behind */
-  background: #fff;            /* ✅ keep white background */
+  z-index: -1;
+  background: #fff;
   overflow: hidden;
+
+  /* ✅ desktop density */
+  --cell: 18px;
+  --gap: 6px;
+  --pad: 10px;
 }
 
-/* the grid itself */
 #bgGrid .grid{
   position: absolute;
   inset: 0;
   display: grid;
-  gap: 6px;                    /* grid spacing */
-  padding: 10px;
+  gap: var(--gap);
+  padding: var(--pad);
 }
 
-/* each square */
 #bgGrid .cell{
-  width: 18px;                 /* ✅ grid feel */
-  height: 18px;
-  background: transparent;     /* keep clean */
+  width: var(--cell);
+  height: var(--cell);
+  background: transparent;
   border: 1px solid rgba(0,0,0,0.08);
-  
   transform: translateZ(0);
   transition: background 220ms ease, transform 220ms ease, border-color 220ms ease;
   will-change: background, transform;
 }
 
-/* flipped state */
 #bgGrid .cell.on{
-  background: #54f3a4;         /* ✅ your green */
+  background: #54f3a4;
   border-color: rgba(0,0,0,0.04);
   transform: rotateY(180deg);
 }
 
+/* ✅ mobile: fewer squares (less DOM), no 3D flip */
 @media (hover: none) and (pointer: coarse){
+  #bgGrid{
+    --cell: 24px;  /* bigger = fewer cells = smoother */
+    --gap: 4px;
+    --pad: 10px;
+  }
   #bgGrid .cell{
-    transition: background 180ms ease, border-color 180ms ease; /* no transform transition */
+    transition: background 160ms ease, border-color 160ms ease;
     transform: none !important;
   }
   #bgGrid .cell.on{
-    transform: none !important; /* ✅ kills rotateY on mobile */
+    transform: none !important;
   }
 }
-  </style>
-  <script>
+</style>
+ <script>
 (() => {
   const root = document.getElementById("bgGrid");
   if (!root) return;
 
-  const GREEN_CLASS = "on";
-  const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-
-  // same look
-  const CELL_SIZE = 18;
-  const GAP       = 6;
-  const PAD       = 10;
-
-  // effect
-  const DESKTOP_SPARKS = 6,  DESKTOP_RADIUS = 55, DESKTOP_LINGER = 400;
-  const TOUCH_START_SPARKS = 12, TOUCH_START_RADIUS = 90, TOUCH_START_LINGER = 420; // tap/press hit
-  const TOUCH_MOVE_SPARKS  = 4,  TOUCH_MOVE_RADIUS  = 55, TOUCH_MOVE_LINGER  = 260; // lighter trail
-
-  // perf
-  const MOVE_INTERVAL_DESKTOP = 16;
-  const MOVE_INTERVAL_TOUCH   = 80;     // ✅ stronger throttle = less hitch
-  const MAX_ACTIVE_CELLS      = isCoarse ? 120 : 600;
+  const GREEN = "on";
+  const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
 
+  // ---------- helpers ----------
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function readVars(){
+    const cs = getComputedStyle(root);
+    return {
+      CELL: parseFloat(cs.getPropertyValue("--cell")) || 18,
+      GAP:  parseFloat(cs.getPropertyValue("--gap"))  || 6,
+      PAD:  parseFloat(cs.getPropertyValue("--pad"))  || 10
+    };
+  }
+
+  let CELL = 18, GAP = 6, PAD = 10;
+
   function build(){
+    ({ CELL, GAP, PAD } = readVars());
+
     root.innerHTML = "";
     gridEl = document.createElement("div");
     gridEl.className = "grid";
@@ -118,50 +126,52 @@
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    cols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
-    rows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+    cols = Math.floor((w - PAD * 2 + GAP) / (CELL + GAP));
+    rows = Math.floor((h - PAD * 2 + GAP) / (CELL + GAP));
 
-    gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL_SIZE}px)`;
+    gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL}px)`;
 
     const total = cols * rows;
     cells = new Array(total);
 
+    // ✅ create DOM once
+    const frag = document.createDocumentFragment();
     for (let i = 0; i < total; i++){
       const c = document.createElement("div");
       c.className = "cell";
-      gridEl.appendChild(c);
+      frag.appendChild(c);
       cells[i] = c;
     }
+    gridEl.appendChild(frag);
   }
 
   function idxFromXY(x, y){
-    const gx = (x - PAD) / (CELL_SIZE + GAP);
-    const gy = (y - PAD) / (CELL_SIZE + GAP);
-    const cx = Math.floor(gx);
-    const cy = Math.floor(gy);
+    const cx = Math.floor((x - PAD) / (CELL + GAP));
+    const cy = Math.floor((y - PAD) / (CELL + GAP));
     if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return -1;
     return cy * cols + cx;
   }
 
-  // ✅ one RAF cleanup loop (no setTimeout spam)
+  // ---------- “active” pool without setTimeout spam ----------
   const active = new Map(); // el -> expireTime
+  const MAX_ACTIVE = isTouch ? 90 : 450;
 
   function markOn(el, now, linger){
-    if (!active.has(el) && active.size >= MAX_ACTIVE_CELLS) {
+    if (!active.has(el) && active.size >= MAX_ACTIVE){
       const oldest = active.keys().next().value;
-      if (oldest) {
-        oldest.classList.remove(GREEN_CLASS);
+      if (oldest){
+        oldest.classList.remove(GREEN);
         active.delete(oldest);
       }
     }
-    if (!el.classList.contains(GREEN_CLASS)) el.classList.add(GREEN_CLASS);
+    if (!el.classList.contains(GREEN)) el.classList.add(GREEN);
     active.set(el, now + linger);
   }
 
   function cleanup(now){
     for (const [el, exp] of active){
       if (now >= exp){
-        el.classList.remove(GREEN_CLASS);
+        el.classList.remove(GREEN);
         active.delete(el);
       }
     }
@@ -169,67 +179,95 @@
   }
   requestAnimationFrame(cleanup);
 
-  function spark(x, y, sparks, radius, linger){
+  // ---------- precomputed offsets (NO trig per move) ----------
+  function makeOffsets(count, radius){
+    const arr = new Array(count);
+    for (let i = 0; i < count; i++){
+      // cheap-ish random scatter in a circle-ish area
+      const dx = (Math.random() * 2 - 1) * radius;
+      const dy = (Math.random() * 2 - 1) * radius;
+      arr[i] = [dx, dy];
+    }
+    return arr;
+  }
+
+  // Tune knobs
+  const DESKTOP = {
+    sparks: 6,
+    radius: 55,
+    linger: 400,
+    minInterval: 16,
+    minMovePx: 0
+  };
+
+  const TOUCH = {
+    sparksStart: 12,
+    radiusStart: 90,
+    lingerStart: 420,
+
+    sparksMove: 5,          // ✅ still visible trail
+    radiusMove: 70,         // ✅ bigger / more sensitive look
+    lingerMove: 260,
+
+    minInterval: 90,        // ✅ heavy throttle = smooth scroll
+    minMovePx: 10           // ✅ don’t fire on micro jitter
+  };
+
+  let offDesktop = makeOffsets(DESKTOP.sparks, DESKTOP.radius);
+  let offTouchStart = makeOffsets(TOUCH.sparksStart, TOUCH.radiusStart);
+  let offTouchMove  = makeOffsets(TOUCH.sparksMove,  TOUCH.radiusMove);
+
+  function sparkWithOffsets(x, y, offsets, linger){
     const now = performance.now();
-    for (let i = 0; i < sparks; i++){
-      const a = Math.random() * Math.PI * 2;
-      const r = Math.random() * radius;
-      const px = x + Math.cos(a) * r;
-      const py = y + Math.sin(a) * r;
+    for (let i = 0; i < offsets.length; i++){
+      const px = x + offsets[i][0];
+      const py = y + offsets[i][1];
 
       const idx = idxFromXY(px, py);
       if (idx < 0) continue;
 
       const el = cells[idx];
-      if (!el) continue;
-
-      markOn(el, now, linger);
+      if (el) markOn(el, now, linger);
     }
   }
 
-  // throttle
-  let lastDesktop = 0;
-  let lastTouch   = 0;
-
-  function sparkThrottled(x, y, mode, kind){
+  // ---------- throttled input ----------
+  let lastTime = 0;
+  function canRun(minInterval){
     const now = performance.now();
-    const minInterval = mode === "touch" ? MOVE_INTERVAL_TOUCH : MOVE_INTERVAL_DESKTOP;
-    const last = mode === "touch" ? lastTouch : lastDesktop;
-    if (kind === "start" || now - last >= minInterval) {
-      if (mode === "touch") lastTouch = now; else lastDesktop = now;
-
-      if (mode === "touch") {
-        if (kind === "start") spark(x, y, TOUCH_START_SPARKS, TOUCH_START_RADIUS, TOUCH_START_LINGER);
-        else spark(x, y, TOUCH_MOVE_SPARKS, TOUCH_MOVE_RADIUS, TOUCH_MOVE_LINGER);
-      } else {
-        spark(x, y, DESKTOP_SPARKS, DESKTOP_RADIUS, DESKTOP_LINGER);
-      }
-    }
+    if (now - lastTime < minInterval) return false;
+    lastTime = now;
+    return true;
   }
 
-  // desktop hover trail
+  // desktop pointer trail (skip on touch devices)
   function onPointerMove(e){
-    if (isCoarse) return;
-    sparkThrottled(e.clientX, e.clientY, "desktop", "move");
-  }
-  function onPointerDown(e){
-    sparkThrottled(e.clientX, e.clientY, isCoarse ? "touch" : "desktop", "start");
+    if (isTouch) return;
+    if (!canRun(DESKTOP.minInterval)) return;
+    sparkWithOffsets(e.clientX, e.clientY, offDesktop, DESKTOP.linger);
   }
 
-  // ✅ touchmove WITHOUT scroll lock:
-  // Once we detect vertical scrolling, we STOP sparking until touchend.
+  function onPointerDown(e){
+    if (!canRun(isTouch ? TOUCH.minInterval : DESKTOP.minInterval)) return;
+    if (isTouch) sparkWithOffsets(e.clientX, e.clientY, offTouchStart, TOUCH.lingerStart);
+    else sparkWithOffsets(e.clientX, e.clientY, offDesktop, DESKTOP.linger);
+  }
+
+  // ✅ touch trail without wrecking scroll
   let startX = 0, startY = 0;
+  let lastX  = 0, lastY  = 0;
   let allowTrail = true;
 
   function onTouchStart(e){
     const t = e.touches && e.touches[0];
     if (!t) return;
 
-    startX = t.clientX;
-    startY = t.clientY;
+    startX = lastX = t.clientX;
+    startY = lastY = t.clientY;
     allowTrail = true;
 
-    sparkThrottled(t.clientX, t.clientY, "touch", "start"); // strong first hit
+    // always fire a strong hit on start
+    sparkWithOffsets(lastX, lastY, offTouchStart, TOUCH.lingerStart);
   }
 
   function onTouchMove(e){
@@ -238,16 +276,27 @@
     const t = e.touches && e.touches[0];
     if (!t) return;
 
-    const dx = t.clientX - startX;
-    const dy = t.clientY - startY;
+    const x = t.clientX;
+    const y = t.clientY;
 
-    // ✅ if it becomes a vertical scroll gesture, disable trail for remainder of this touch
-    if (Math.abs(dy) > Math.abs(dx) * 1.1 && Math.abs(dy) > 6) {
+    const dxFromStart = x - startX;
+    const dyFromStart = y - startY;
+
+    // ✅ if it’s clearly a vertical scroll, disable for this gesture
+    if (Math.abs(dyFromStart) > Math.abs(dxFromStart) * 1.15 && Math.abs(dyFromStart) > 8){
       allowTrail = false;
       return;
     }
 
-    sparkThrottled(t.clientX, t.clientY, "touch", "move");
+    // ✅ don’t fire for tiny jitter
+    const dx = x - lastX;
+    const dy = y - lastY;
+    if ((dx*dx + dy*dy) < (TOUCH.minMovePx * TOUCH.minMovePx)) return;
+
+    if (!canRun(TOUCH.minInterval)) return;
+
+    lastX = x; lastY = y;
+    sparkWithOffsets(x, y, offTouchMove, TOUCH.lingerMove);
   }
 
   function onTouchEnd(){
@@ -256,10 +305,17 @@
 
   build();
 
+  // resize (debounced)
   let rTO;
   window.addEventListener("resize", () => {
     clearTimeout(rTO);
-    rTO = setTimeout(build, 150);
+    rTO = setTimeout(() => {
+      build();
+      // rebuild offsets in case vars changed
+      offDesktop = makeOffsets(DESKTOP.sparks, DESKTOP.radius);
+      offTouchStart = makeOffsets(TOUCH.sparksStart, TOUCH.radiusStart);
+      offTouchMove  = makeOffsets(TOUCH.sparksMove,  TOUCH.radiusMove);
+    }, 150);
   }, { passive: true });
 
   window.addEventListener("pointermove", onPointerMove, { passive: true });

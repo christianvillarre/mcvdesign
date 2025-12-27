@@ -1029,7 +1029,7 @@ window.addEventListener("resize", () => {
       <!-- ✅ DESIGN BOX (drop-in replacement for an <img>) -->
       <!-- Paste this where your image tag was -->
       <div class="service-design-box themed theme-design mode-morph" data-mode="morph" aria-label="Design animation" >
-          <div class="dot-grid" aria-hidden="true"></div>
+          <div class="design-frames"></div>
 
         <!--<div class="sys-dot" aria-hidden="true"></div>-->
 
@@ -1744,43 +1744,42 @@ BOX ANIMATIONS GSAP SHAPES*/
   100% { transform: translate(-50%, -50%) scale(6.0); opacity: 0; }
 }
 /* DOT GRID (center square only) */
-#design .service-design-box .dot-grid{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width: 320px;              /* ✅ fixed square size */
-  height: 320px;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  pointer-events:none;
-
-  display:grid;
-  justify-content:center;
-  align-content:center;
-
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 65%, transparent 92%);
-  mask-image: radial-gradient(circle at 50% 50%, #000 65%, transparent 92%);
+#design .design-frames{
+  position: relative;
+  width: 520px;
+  height: 520px;
+  border-radius: 22px;
+  overflow: hidden;
+  isolation: isolate;
 }
 
-/* responsive: shrink on small screens */
-@media (max-width: 520px){
-  #design .service-design-box .dot-grid{
-    width: 240px;
-    height: 240px;
-  }
-}
-
-#design .service-design-box .dg-dot{
-  width: var(--dotSize, 6px);
-  height: var(--dotSize, 6px);
-  border-radius: 999px;
-
-  background: rgba(16,255,163,.22);
-  box-shadow: 0 0 0 5px rgba(16,255,163,.06);
-
-  transform: scale(var(--s, .55));
-  opacity: var(--o, .25);
+#design .df-frame{
+  position: absolute;
+  inset: 14%;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.09);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset;
+  opacity: 0;
+  transform: translateZ(0) scale(0.86) rotate(0.6deg);
+  animation: dfPulse 3.0s ease-in-out infinite;
   will-change: transform, opacity;
+}
+
+@keyframes dfPulse{
+  0%   { opacity: 0; transform: scale(0.84) rotate(0.6deg); }
+  20%  { opacity: 1; }
+  70%  { opacity: 1; transform: scale(1.06) rotate(-0.6deg); }
+  100% { opacity: 0; transform: scale(1.14) rotate(-1.0deg); }
+}
+
+@media (max-width: 520px){
+  #design .design-frames{ width: 280px; height: 280px; }
+}
+/* center the design frames container */
+#design .service-design-box{
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
 <script>
@@ -1826,235 +1825,38 @@ BOX ANIMATIONS GSAP SHAPES*/
 </script>
 <script>
 (() => {
-  const section = document.querySelector("#design");
-  const box     = section?.querySelector(".service-design-box");
-  const grid    = box?.querySelector(".dot-grid");
-  if (!box || !grid) return;
+  const box = document.querySelector("#design .service-design-box");
+  const wrap = box?.querySelector(".design-frames");
+  if (!box || !wrap) return;
 
-  // ✅ init guard
-  if (grid.dataset.inited === "1") return;
-  grid.dataset.inited = "1";
+  if (wrap.dataset.inited === "1") return;
+  wrap.dataset.inited = "1";
 
-  // ---- TUNE ----
-  const GAP_DESKTOP = 18;
-  const GAP_MOBILE  = 22; // ✅ small change (keeps look, fewer dots)
-  const DOT_SIZE    = 6;
+  const COUNT = 10;
+  const STAGGER = 0.22;
+  const DURATION = 3.0;
 
-  const GRID_SIZE_DESKTOP = 500;
-  const GRID_SIZE_MOBILE  = 280;
-
-  const BASE      = 0.55;
-  const PEAK      = 3.05;
-  const DURATION  = 5.0;
-
-  const OVERSHOOT    = 0.45;
-  const HEAD_RADIUS  = 0.34;
-  const SPINE_WIDTH  = 0.055;
-  const EDGE_FLOOR   = 0.18;
-  const SOFTEN       = 0.85;
-
-  const JITTER_MIN = 0.92;
-  const JITTER_MAX = 1.08;
-
-  // ✅ fps (mobile lower)
-  const FPS_DESKTOP = 30;
-  const FPS_MOBILE  = 22;
-
-  // ✅ skip far dots (HUGE win)
-  // Only dots within this distance from the wave head get updated.
-  // Increase slightly if you see “popping” (but this is usually safe).
-  const UPDATE_RADIUS_MULT_DESKTOP = 2.4;
-  const UPDATE_RADIUS_MULT_MOBILE  = 2.0;
-
-  let dots = [];
-  let cols = 0, rows = 0;
-  let rafId = null;
-  let running = false;
-  let lastMs = 0;
-  let frameMs = 1000 / FPS_DESKTOP;
-
-  const gaussian = (d, s) => Math.exp(-(d * d) / (2 * s * s));
-
-  function clearAnim(){
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = null;
-    lastMs = 0;
+  wrap.innerHTML = "";
+  for (let i = 0; i < COUNT; i++) {
+    const f = document.createElement("div");
+    f.className = "df-frame";
+    f.style.animationDelay = `${i * STAGGER}s`;
+    f.style.animationDuration = `${DURATION}s`;
+    // optional: tiny inset variance so it feels more organic
+    f.style.inset = `${14 + i * 0.35}%`;
+    wrap.appendChild(f);
   }
 
-  function isMobile(){
-    return window.matchMedia("(max-width: 520px)").matches;
-  }
+  const frames = Array.from(wrap.children);
+  const setPlay = (state) => frames.forEach(el => el.style.animationPlayState = state);
 
-  function gridSize(){
-    return isMobile() ? GRID_SIZE_MOBILE : GRID_SIZE_DESKTOP;
-  }
-
-  function gapSize(){
-    return isMobile() ? GAP_MOBILE : GAP_DESKTOP;
-  }
-
-  function build(){
-    grid.innerHTML = "";
-    dots = [];
-
-    const size = gridSize();
-    const gap  = gapSize();
-
-    // lock square
-    grid.style.width  = size + "px";
-    grid.style.height = size + "px";
-
-    cols = Math.max(8, Math.floor(size / gap));
-    rows = Math.max(8, Math.floor(size / gap));
-
-    grid.style.gridTemplateColumns = `repeat(${cols}, ${gap}px)`;
-    grid.style.gridTemplateRows    = `repeat(${rows}, ${gap}px)`;
-    grid.style.setProperty("--dotSize", DOT_SIZE + "px");
-
-    // ✅ set fps per mode
-    frameMs = 1000 / (isMobile() ? FPS_MOBILE : FPS_DESKTOP);
-
-    for (let y=0; y<rows; y++){
-      for (let x=0; x<cols; x++){
-        const el = document.createElement("div");
-        el.className = "dg-dot";
-        grid.appendChild(el);
-
-        const xn = x / Math.max(1, cols - 1);
-        const yn = y / Math.max(1, rows - 1);
-
-        // precompute constants per dot
-        const perp = Math.abs(xn - yn) / Math.SQRT2;
-        const spine = gaussian(perp, SPINE_WIDTH); // ✅ precompute spine once
-
-        dots.push({
-          el,
-          xn, yn,
-          spine,
-          jitter: JITTER_MIN + Math.random() * (JITTER_MAX - JITTER_MIN),
-          // track last values so we don’t write if unchanged
-          lastS: -1,
-          lastO: -1,
-        });
-
-        // baseline instantly
-        el.style.setProperty("--s", BASE);
-        el.style.setProperty("--o", 0.22);
-      }
-    }
-  }
-
-  function animate(ms){
-    if (!running) return;
-
-    // ✅ throttle
-    if (ms - lastMs < frameMs) {
-      rafId = requestAnimationFrame(animate);
-      return;
-    }
-    lastMs = ms;
-
-    const t = ms / 1000;
-    const prog = (t % DURATION) / DURATION;
-
-    const travel = 1 + OVERSHOOT * 2;
-    const cx = -OVERSHOOT + prog * travel;
-    const cy = -OVERSHOOT + prog * travel;
-
-    // ✅ only update dots near the head
-    const updateMult = isMobile() ? UPDATE_RADIUS_MULT_MOBILE : UPDATE_RADIUS_MULT_DESKTOP;
-    const updateRadius = HEAD_RADIUS * updateMult;
-
-    for (let i=0; i<dots.length; i++){
-      const d = dots[i];
-      const dx = d.xn - cx;
-      const dy = d.yn - cy;
-
-      // cheap reject (square radius)
-      if (Math.abs(dx) > updateRadius || Math.abs(dy) > updateRadius) {
-        // far away: keep baseline (but only write if needed)
-        if (d.lastS !== BASE) {
-          d.lastS = BASE;
-          d.el.style.setProperty("--s", BASE);
-        }
-        if (d.lastO !== 0.22) {
-          d.lastO = 0.22;
-          d.el.style.setProperty("--o", 0.22);
-        }
-        continue;
-      }
-
-      const dist = Math.hypot(dx, dy);
-
-      // if still far (circle reject)
-      if (dist > updateRadius) {
-        if (d.lastS !== BASE) {
-          d.lastS = BASE;
-          d.el.style.setProperty("--s", BASE);
-        }
-        if (d.lastO !== 0.22) {
-          d.lastO = 0.22;
-          d.el.style.setProperty("--o", 0.22);
-        }
-        continue;
-      }
-
-      // same math as your original
-      let wave = gaussian(dist, HEAD_RADIUS);
-      wave = Math.pow(wave, SOFTEN);
-
-      const strength = wave * (EDGE_FLOOR + (1 - EDGE_FLOOR) * d.spine) * d.jitter;
-
-      const s = BASE + (PEAK - BASE) * strength;
-      const o = 0.20 + 0.80 * strength;
-
-      // ✅ avoid needless writes
-      if (s !== d.lastS) {
-        d.lastS = s;
-        d.el.style.setProperty("--s", s);
-      }
-      if (o !== d.lastO) {
-        d.lastO = o;
-        d.el.style.setProperty("--o", o);
-      }
-    }
-
-    rafId = requestAnimationFrame(animate);
-  }
-
-  function start(){
-    if (running) return;
-    running = true;
-    build();
-    clearAnim();
-    rafId = requestAnimationFrame(animate);
-  }
-
-  function stop(){
-    running = false;
-    clearAnim();
-  }
-
-  // ✅ only run while visible
   const io = new IntersectionObserver((entries) => {
     const on = entries.some(e => e.isIntersecting);
-    if (on) start();
-    else stop();
-  }, { threshold: 0.2 });
+    setPlay(on ? "running" : "paused");
+  }, { threshold: 0.15 });
 
   io.observe(box);
-
-  // ✅ rebuild on resize (debounced)
-  let rt;
-  window.addEventListener("resize", () => {
-    clearTimeout(rt);
-    rt = setTimeout(() => {
-      if (!running) return;
-      build();
-    }, 160);
-  }, { passive:true });
-
-  stop();
+  setPlay("paused");
 })();
 </script>
 <script>

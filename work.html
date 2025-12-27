@@ -90,33 +90,53 @@
   const GAP = 6;
   const PAD = 10;
 
-  // effect
-  const SPARKS_PER_MOVE = 6;
-  const RADIUS_PX = 55;
-  const LINGER_MS = 400;
+  // effect (desktop)
+  const DESKTOP_SPARKS = 6;
+  const DESKTOP_RADIUS = 55;
+  const DESKTOP_LINGER = 380;
+
+  // effect (mobile) - more sensitive + bigger
+  const TOUCH_SPARKS   = 10;   // bigger burst
+  const TOUCH_RADIUS   = 95;   // wider area
+  const TOUCH_LINGER   = 420;
+
+  // perf
+  const TOUCH_INTERVAL_MS = 45;     // ✅ lower = more responsive (but heavier)
+  const DESKTOP_INTERVAL_MS = 16;
+  const MAX_ACTIVE = isCoarse ? 140 : 700;
 
   let gridEl, cells = [];
   let cols = 0, rows = 0;
 
   // ✅ lock dimensions on mobile so URL bar doesn't cause rebuilds
-  let lockedW = 0;
-  let lockedH = 0;
+  let lockedW = 0, lockedH = 0;
 
   function getStableViewport() {
-    // visualViewport is best on iOS; fallback to inner sizes
     const vv = window.visualViewport;
     const w = Math.round(vv?.width  ?? window.innerWidth);
     const h = Math.round(vv?.height ?? window.innerHeight);
     return { w, h };
   }
 
-  function lockMobileViewportOnce() {
-    const { w, h } = getStableViewport();
-    lockedW = w;
-    lockedH = h;
+  // ✅ lock to the "largest" height we see shortly after load (fills to bottom)
+  function lockMobileViewportMax() {
+    const first = getStableViewport();
+    lockedW = first.w;
+    lockedH = first.h;
 
-    // ✅ lock overlay height in px so it won't grow/shrink with the URL bar
-    root.style.setProperty("--gridH", lockedH + "px");
+    const start = performance.now();
+    function sample() {
+      const v = getStableViewport();
+      lockedW = v.w;                     // width stays stable
+      lockedH = Math.max(lockedH, v.h);  // take max height seen
+
+      if (performance.now() - start < 900) {
+        requestAnimationFrame(sample);
+      } else {
+        root.style.setProperty("--gridH", lockedH + "px");
+      }
+    }
+    requestAnimationFrame(sample);
   }
 
   function build(usingW, usingH){
@@ -153,10 +173,38 @@
     return cy * cols + cx;
   }
 
-  function spark(x, y){
-    for (let i = 0; i < SPARKS_PER_MOVE; i++){
+  // ✅ single RAF cleanup loop instead of per-cell setTimeout spam
+  const active = new Map(); // el -> expireTime
+
+  function markOn(el, now, linger){
+    if (!active.has(el) && active.size >= MAX_ACTIVE){
+      const oldest = active.keys().next().value;
+      if (oldest){
+        oldest.classList.remove(GREEN_CLASS);
+        active.delete(oldest);
+      }
+    }
+    if (!el.classList.contains(GREEN_CLASS)) el.classList.add(GREEN_CLASS);
+    active.set(el, now + linger);
+  }
+
+  function cleanup(now){
+    for (const [el, exp] of active){
+      if (now >= exp){
+        el.classList.remove(GREEN_CLASS);
+        active.delete(el);
+      }
+    }
+    requestAnimationFrame(cleanup);
+  }
+  requestAnimationFrame(cleanup);
+
+  function spark(x, y, sparks, radius, linger){
+    const now = performance.now();
+
+    for (let i = 0; i < sparks; i++){
       const a = Math.random() * Math.PI * 2;
-      const r = Math.random() * RADIUS_PX;
+      const r = Math.random() * radius;
       const px = x + Math.cos(a) * r;
       const py = y + Math.sin(a) * r;
 
@@ -166,37 +214,32 @@
       const el = cells[idx];
       if (!el) continue;
 
-      el.classList.add(GREEN_CLASS);
-      clearTimeout(el._t);
-      el._t = setTimeout(() => el.classList.remove(GREEN_CLASS), LINGER_MS);
+      markOn(el, now, linger);
     }
   }
 
-  let raf = null, mx = -9999, my = -9999;
-  function queueSpark(x, y){
-    mx = x; my = y;
-    if (raf) return;
-    raf = requestAnimationFrame(() => {
-      spark(mx, my);
-      raf = null;
-    });
+  // ✅ throttle so touchmove doesn’t hitch the page
+  let lastTouch = 0;
+  let lastDesk  = 0;
+
+  function sparkTouch(x, y){
+    const now = performance.now();
+    if (now - lastTouch < TOUCH_INTERVAL_MS) return;
+    lastTouch = now;
+    spark(x, y, TOUCH_SPARKS, TOUCH_RADIUS, TOUCH_LINGER);
   }
 
-  // desktop
-  function onPointerMove(e){ if (!isCoarse) queueSpark(e.clientX, e.clientY); }
-  function onPointerDown(e){ queueSpark(e.clientX, e.clientY); }
-
-  // touch
-  function onTouch(e){
-    const t = e.touches && e.touches[0];
-    if (!t) return;
-    queueSpark(t.clientX, t.clientY);
+  function sparkDesktop(x, y){
+    const now = performance.now();
+    if (now - lastDesk < DESKTOP_INTERVAL_MS) return;
+    lastDesk = now;
+    spark(x, y, DESKTOP_SPARKS, DESKTOP_RADIUS, DESKTOP_LINGER);
   }
 
   // ✅ INIT
-  if (isCoarse) {
-    lockMobileViewportOnce();
-    build(lockedW, lockedH);
+  if (isCoarse){
+    lockMobileViewportMax();
+    build((lockedW || getStableViewport().w), (lockedH || getStableViewport().h));
   } else {
     const { w, h } = getStableViewport();
     root.style.setProperty("--gridH", "100vh");
@@ -205,44 +248,54 @@
 
   // ✅ Resize handling:
   // - Desktop: rebuild normally
-  // - Mobile: ONLY rebuild if width changes a lot (orientation), ignore height changes (URL bar)
+  // - Mobile: ONLY rebuild if width changes (orientation). Ignore height changes (URL bar)
   let rTO;
   function onResize(){
     clearTimeout(rTO);
     rTO = setTimeout(() => {
       const { w, h } = getStableViewport();
 
-      if (isCoarse) {
-        // ignore URL bar height changes
-        if (Math.abs(w - lockedW) > 12) {
-          // real change (orientation / breakpoint) -> re-lock + rebuild
-          lockMobileViewportOnce();
-          build(lockedW, lockedH);
+      if (isCoarse){
+        if (Math.abs(w - lockedW) > 12){
+          lockMobileViewportMax();
+          build(lockedW || w, lockedH || h);
         }
         return;
       }
 
-      // desktop normal
       build(w, h);
     }, 150);
   }
 
   window.addEventListener("resize", onResize, { passive: true });
   window.addEventListener("orientationchange", () => {
-    // orientationchange is "real" on mobile -> allow rebuild
-    if (isCoarse) {
+    if (isCoarse){
       setTimeout(() => {
-        lockMobileViewportOnce();
-        build(lockedW, lockedH);
+        lockMobileViewportMax();
+        const v = getStableViewport();
+        build(lockedW || v.w, lockedH || v.h);
       }, 250);
     }
   }, { passive: true });
 
-  window.addEventListener("pointermove", onPointerMove, { passive: true });
-  window.addEventListener("pointerdown", onPointerDown, { passive: true });
+  // desktop pointer trail
+  window.addEventListener("pointermove", (e) => {
+    if (isCoarse) return;
+    sparkDesktop(e.clientX, e.clientY);
+  }, { passive: true });
 
-  window.addEventListener("touchstart", onTouch, { passive: true });
-  window.addEventListener("touchmove",  onTouch, { passive: true });
+  // ✅ mobile: spark during scroll (touchmove) without scroll-locking
+  window.addEventListener("touchstart", (e) => {
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+    sparkTouch(t.clientX, t.clientY);
+  }, { passive: true });
+
+  window.addEventListener("touchmove", (e) => {
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+    sparkTouch(t.clientX, t.clientY);
+  }, { passive: true });
 })();
 </script>
  <nav class="navbar">

@@ -675,11 +675,11 @@
   const buf = document.createElement("canvas");
   const btx = buf.getContext("2d", { alpha: true });
 
-  // Post buffer (mobile uses this as the “melted” source)
+  // ✅ Post buffer (mobile uses this as the “melted” source)
   const post = document.createElement("canvas");
   const ptx  = post.getContext("2d", { alpha: true });
 
-  // Melt buffer (mobile-only downsample → blur → upsample to kill circles)
+  // ✅ Melt buffer (mobile-only downsample → blur → upsample to kill circles)
   const melt = document.createElement("canvas");
   const mtx  = melt.getContext("2d", { alpha: true });
 
@@ -691,7 +691,7 @@
     // slow drift
     speed: 0.0046,
 
-    // smoothness / pixel control
+    // ✅ smoothness / pixel control
     scale: 0.70,   // desktop baseline (kept)
     fade: 0.22,
     glow: 0.25,
@@ -712,10 +712,10 @@
     mx: 0, my: 0, px: 0, py: 0
   };
 
-  // Mobile detection
+  // --- Mobile detection ---
   const IS_MOBILE = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // desktop baseline (restored on desktop)
+  // keep your desktop values as baseline (restored on desktop)
   const DESKTOP = {
     dprMax: 2,
     scale: S.scale,
@@ -724,22 +724,16 @@
     blurGlow: S.blurGlow
   };
 
-  // ✅ stronger mobile-only smoothing
+  // mobile overrides (ONLY mobile changes)
   const MOBILE = {
     dprMax: 3,
-    scale: 0.95,         // higher sim res (more overlap detail to blur)
-    blurBaseMul: 1.95,   // more blur on final composite
-    blurDetailMul: 1.70,
-    blurGlowMul: 2.05,
-
-    puffSizeMul: 0.86,
-    alphaMul: 0.72,      // lower stamp intensity
-
-    meltScale: 0.48,     // ✅ smaller = more “melt” (kills circles harder)
-    meltBlur1: 18,       // ✅ blur inside melt (downsampled space)
-    meltBlur2: 28,       // ✅ blur while upsampling into post
-    meltBlur3: 16,       // ✅ extra smoothing pass
-    finalExtraBlur: 6    // ✅ one more blur pass on the main canvas
+    scale: 0.42,        // higher sim res to reduce stamps
+    blurBaseMul: 2.75,  // much blurrier on mobile
+    blurDetailMul: 1.45,
+    blurGlowMul: 1.85,
+    puffSizeMul: 0.88,
+    alphaMul: 0.78,
+    meltScale: 0.55     // downsample amount (stamp killer)
   };
 
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
@@ -784,13 +778,13 @@
 
     // blur tuning (ONLY mobile changes)
     if (IS_MOBILE) {
-      S.blurBase   = Math.round(DESKTOP.blurBase   * MOBILE.blurBaseMul);
+      S.blurBase = Math.round(DESKTOP.blurBase * MOBILE.blurBaseMul);
       S.blurDetail = Math.round(DESKTOP.blurDetail * MOBILE.blurDetailMul);
-      S.blurGlow   = Math.round(DESKTOP.blurGlow   * MOBILE.blurGlowMul);
+      S.blurGlow = Math.round(DESKTOP.blurGlow * MOBILE.blurGlowMul);
     } else {
-      S.blurBase   = DESKTOP.blurBase;
+      S.blurBase = DESKTOP.blurBase;
       S.blurDetail = DESKTOP.blurDetail;
-      S.blurGlow   = DESKTOP.blurGlow;
+      S.blurGlow = DESKTOP.blurGlow;
     }
 
     // quality hints
@@ -815,10 +809,14 @@
   window.visualViewport?.addEventListener("resize", resize, { passive: true });
   resize();
 
-  window.addEventListener("pointermove", (e) => {
-    S.mx = (e.clientX / S.w) * 2 - 1;
-    S.my = (e.clientY / S.h) * 2 - 1;
-  }, { passive: true });
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      S.mx = (e.clientX / S.w) * 2 - 1;
+      S.my = (e.clientY / S.h) * 2 - 1;
+    },
+    { passive: true }
+  );
 
   // organic-ish fast noise
   function n2(x, y) {
@@ -870,17 +868,17 @@
     btx.globalCompositeOperation = "lighter";
 
     const layers = [
-      { y: 0.33, amp: S.amp * 0.85, phase: 0.0,  drift:  0.14, tint: 0.0, strength: 0.92 },
-      { y: 0.56, amp: S.amp * 1.05, phase: 1.4,  drift: -0.10, tint: 1.3, strength: 0.80 },
-      { y: 0.74, amp: S.amp * 0.95, phase: 2.25, drift:  0.08, tint: 2.2, strength: 0.70 }
+      { y: 0.33, amp: S.amp * 0.85, phase: 0.0, drift: 0.14, tint: 0.0, strength: 0.92 },
+      { y: 0.56, amp: S.amp * 1.05, phase: 1.4, drift: -0.10, tint: 1.3, strength: 0.80 },
+      { y: 0.74, amp: S.amp * 0.95, phase: 2.25, drift: 0.08, tint: 2.2, strength: 0.70 }
     ];
 
     for (const L of layers) {
       const sweep = Math.sin(S.t * 0.55 + L.phase) * 0.5 + 0.5;
       const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
 
-      // ✅ higher overlap on mobile
-      const steps = IS_MOBILE ? 220 : 120;
+      // ✅ increase overlap on mobile (less stamp visibility)
+      const steps = IS_MOBILE ? 190 : 120;
 
       for (let i = 0; i <= steps; i++) {
         const u = i / steps;
@@ -905,19 +903,20 @@
         const c2 = Math.cos(S.t * 0.24 - tint + u * 1.7) * 0.5 + 0.5;
 
         // ✅ Stable mint palette (mobile tighter so it can’t shift cyan)
-        const gBoost = (IS_MOBILE ? 8 : 18) * (c2 - 0.5);
-        const bBoost = (IS_MOBILE ? 2 : 10) * (c1 - 0.5);
+        const gBoost = (IS_MOBILE ? 10 : 18) * (c2 - 0.5);
+        const bBoost = (IS_MOBILE ? 4 : 10) * (c1 - 0.5);
 
         const baseR = 84;
         const baseG = 243;
         const baseB = 164;
 
-        const A = `rgba(${baseR}, ${clamp(baseG + gBoost, 230, 255)}, ${clamp(baseB + bBoost, 158, 172)}, {a})`;
-        const B = `rgba(${clamp(baseR - 10, 60, 90)}, ${clamp(baseG - 55 + gBoost, 168, 212)}, ${clamp(baseB - 35 + bBoost, 128, 150)}, {a})`;
+        const A = `rgba(${baseR}, ${clamp(baseG + gBoost, 225, 255)}, ${clamp(baseB + bBoost, 150, 175)}, {a})`;
+        const B = `rgba(${clamp(baseR - 10, 60, 90)}, ${clamp(baseG - 55 + gBoost, 160, 215)}, ${clamp(baseB - 35 + bBoost, 120, 155)}, {a})`;
 
         const end = 0.35 + 0.65 * (1 - Math.pow(Math.abs(u - 0.5) * 2, 2.2));
         const sizeMul = IS_MOBILE ? MOBILE.puffSizeMul : 1;
 
+        // PASS 1: wide haze sheet
         const r1 = clamp(band * (1.18 + 0.35 * Math.sin(tt)) * sizeMul, 52, 220);
 
         const a1Base =
@@ -926,10 +925,12 @@
           L.strength *
           (0.40 + 0.60 * end);
 
+        // ✅ Mobile reduces stamp intensity
         const a1 = IS_MOBILE ? a1Base * MOBILE.alphaMul : a1Base;
 
         puff(x, yC, r1, A, B, a1);
 
+        // PASS 2: inner wisps
         const r2 = clamp(r1 * 0.40, 20, 88);
         const a2 = a1 * 0.78;
 
@@ -940,40 +941,48 @@
         puff(x + jx * 0.45, yC - off * 0.30, r2 * 0.72, B, A, a2 * 0.46);
       }
 
+      // super soft background volume
       const hx = W * 0.5 + Math.sin(S.t * 0.28 + L.phase) * W * 0.12 + S.px * 10;
       const hy = H * L.y + Math.cos(S.t * 0.26 - L.phase) * H * 0.10 + S.py * 8;
-      puff(hx, hy, Math.hypot(W, H) * 0.22, "rgba(84,243,164,{a})", "rgba(170,110,255,{a})", 0.009 * S.density);
+      puff(
+        hx,
+        hy,
+        Math.hypot(W, H) * 0.22,
+        "rgba(84,243,164,{a})",
+        "rgba(170,110,255,{a})",
+        0.009 * S.density
+      );
     }
 
     btx.globalCompositeOperation = "source-over";
 
-    // ✅ MOBILE “STAMP KILLER” + MORE BLUR
+    // ✅ MOBILE “STAMP KILLER”: downsample → blur → upsample into post
     let SRC = buf;
 
     if (IS_MOBILE) {
-      // Downsample buf → melt
+      // 1) Downsample buf into melt (blends circle edges)
       mtx.globalCompositeOperation = "source-over";
       mtx.clearRect(0, 0, melt.width, melt.height);
       mtx.filter = "none";
       mtx.globalAlpha = 1;
       mtx.drawImage(buf, 0, 0, W, H, 0, 0, melt.width, melt.height);
 
-      // Blur inside melt (strong)
-      mtx.filter = `blur(${MOBILE.meltBlur1}px)`;
+      // 2) Blur the small image (strong + cheap)
+      mtx.filter = `blur(${Math.max(10, S.blurBase * 0.9)}px)`;
       mtx.globalAlpha = 1;
       mtx.drawImage(melt, 0, 0);
 
-      // Upsample melt → post with heavy blur
+      // 3) Upsample into post with heavy blur = vapor
       ptx.globalCompositeOperation = "source-over";
       ptx.clearRect(0, 0, W, H);
 
-      ptx.filter = `blur(${MOBILE.meltBlur2}px)`;
+      ptx.filter = `blur(${Math.max(18, S.blurBase * 1.35)}px)`;
       ptx.globalAlpha = 1;
       ptx.drawImage(melt, 0, 0, melt.width, melt.height, 0, 0, W, H);
 
-      // Extra smoothing pass
-      ptx.filter = `blur(${MOBILE.meltBlur3}px)`;
-      ptx.globalAlpha = 0.92;
+      // extra smoothing pass
+      ptx.filter = `blur(${Math.max(10, S.blurDetail * 1.6)}px)`;
+      ptx.globalAlpha = 0.9;
       ptx.drawImage(melt, 0, 0, melt.width, melt.height, 0, 0, W, H);
 
       ptx.filter = "none";
@@ -1009,16 +1018,6 @@
     ctx.drawImage(SRC, 0, 0, W, H, 0, 0, S.w, S.h);
     ctx.restore();
 
-    // ✅ final extra blur on mobile to fully hide any remaining stamps
-    if (IS_MOBILE) {
-      ctx.save();
-      ctx.filter = `blur(${MOBILE.finalExtraBlur}px)`;
-      ctx.globalCompositeOperation = "source-over";
-      ctx.globalAlpha = 1;
-      ctx.drawImage(canvas, 0, 0); // blur itself
-      ctx.restore();
-    }
-
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
     ctx.filter = "none";
@@ -1027,6 +1026,7 @@
   gsap.ticker.fps(60);
   gsap.ticker.add(step);
 
+  // Reduced motion
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     gsap.ticker.remove(step);
     for (let i = 0; i < 20; i++) step();

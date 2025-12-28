@@ -671,11 +671,9 @@
   const canvas = document.getElementById("vapor");
   const ctx = canvas.getContext("2d", { alpha:true });
 
-  // Offscreen buffer (we render the sim here, then blur-composite to main)
   const buf = document.createElement("canvas");
   const btx = buf.getContext("2d", { alpha:true });
 
-  // ✅ mobile detection (real devices + small screens)
   const mqMobile = window.matchMedia("(max-width: 980px), (hover: none) and (pointer: coarse)");
   let isMobile = mqMobile.matches;
   mqMobile.addEventListener?.("change", (e) => {
@@ -690,9 +688,8 @@
 
     speed: 0.0046,
 
-    // sim resolution
-    scale: 0.70,        // desktop
-    mobileScale: 0.92,  // mobile (higher = smoother ribbon edges)
+    scale: 0.70,
+    mobileScale: 0.95,   // smoother buffer so blur looks “premium”
 
     fade: 0.22,
     glow: 0.25,
@@ -703,20 +700,20 @@
     band: 0.16,
     breakUp: 1.05,
 
-    // Desktop composite blur (unchanged look)
+    // Desktop composite blur (unchanged)
     blurBase: 10,
     blurDetail: 4,
     blurGlow: 14,
 
-    // ✅ Mobile-only blend tuning (higher quality “melt” between ribbons)
-    mobileBlurBase: 14,      // stronger base blend (still crisp due to high mobileScale)
-    mobileBlurDetail: 6,     // slightly more smoothing in the detail pass
-    mobileBlurGlow: 16,      // bloom blend
-    mobileEdgeFeather: 1.35, // blur applied to the solid ribbon fill (buffer space)
-    mobileBandMul: 1.18,     // thickness for “solid” feel
-    mobileWispMul: 0.35,     // optional texture strokes, kept low to avoid dots
+    // ✅ Mobile blending (stronger “melt”)
+    mobileBlurBase: 20,        // main blend (this is the big one)
+    mobileBlurDetail: 10,      // soften separation
+    mobileBlurGlow: 18,        // bloom blend
+    mobileDetailAlpha: 0.22,   // IMPORTANT: lower detail alpha so layers merge
+    mobileEdgeFeather: 2.4,    // blur on the ribbon fill (buffer space)
+    mobileBandMul: 1.22,       // slightly thicker = more overlap = more blend
+    mobileWispMul: 0.10,       // keep wisps very subtle (avoid “strokes”)
 
-    // interaction
     mx:0, my:0, px:0, py:0
   };
 
@@ -724,14 +721,12 @@
     S.w = Math.floor(window.innerWidth);
     S.h = Math.floor(window.innerHeight);
 
-    // Main canvas DPR
     canvas.width  = Math.floor(S.w * S.dpr);
     canvas.height = Math.floor(S.h * S.dpr);
     canvas.style.width  = S.w + "px";
     canvas.style.height = S.h + "px";
     ctx.setTransform(S.dpr,0,0,S.dpr,0,0);
 
-    // Sim buffer (no DPR)
     const simScale = isMobile ? S.mobileScale : S.scale;
     buf.width  = Math.floor(S.w * simScale);
     buf.height = Math.floor(S.h * simScale);
@@ -745,6 +740,9 @@
     btx.imageSmoothingEnabled = true;
     btx.imageSmoothingQuality = "high";
 
+    // ✅ extra safety: ignore touches on canvas for mobile
+    if (isMobile) canvas.style.pointerEvents = "none";
+
     btx.fillStyle = "rgba(0,0,0,1)";
     btx.fillRect(0,0,S.bw,S.bh);
     ctx.clearRect(0,0,S.w,S.h);
@@ -752,8 +750,7 @@
   window.addEventListener("resize", resize, { passive:true });
   resize();
 
-  // ✅ Desktop keeps pointer drift
-  // ✅ Mobile ignores interaction completely (prevents touch darkening / weird shifts)
+  // Desktop keeps pointer drift; mobile ignores all pointer input
   window.addEventListener("pointermove", (e)=>{
     if (isMobile) return;
     S.mx = (e.clientX / S.w) * 2 - 1;
@@ -788,10 +785,10 @@
     return yBase + wave * amp;
   }
 
-  // ✅ Mobile: continuous filled ribbon (solid, blends well, no dots)
+  // Mobile solid ribbon
   function drawSolidRibbon(L){
     const W = S.bw, H = S.bh;
-    const steps = 150;
+    const steps = 160;
 
     const sweep  = (Math.sin(S.t*0.55 + L.phase) * 0.5 + 0.5);
     const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
@@ -803,17 +800,16 @@
 
     for(let i=0;i<=steps;i++){
       const u = i/steps;
-
       const TAIL = 520;
-      const x = u*(W + TAIL*2) - TAIL + xShift; // ✅ no px drift on mobile
+      const x = u*(W + TAIL*2) - TAIL + xShift;  // ✅ no touch drift
       const yC = ribbonY(u, H*L.y, H*L.amp, L.phase);
 
       const tt = S.t*0.9 + L.phase + u*2.0;
       const wy = n2(u*3.0 - L.phase, tt*0.7);
-      const thick = band * (0.78 + 0.22*(wy*0.5+0.5));
+      const thick = band * (0.80 + 0.20*(wy*0.5+0.5));
 
-      top[i] = { x, y: yC - thick*0.55 };
-      bot[i] = { x, y: yC + thick*0.55 };
+      top[i] = { x, y: yC - thick*0.56 };
+      bot[i] = { x, y: yC + thick*0.56 };
     }
 
     const c1 = (Math.sin(S.t*0.30 + L.tint)*0.5 + 0.5);
@@ -823,13 +819,13 @@
     const gg = Math.floor(243 - 18*c1);
     const bb = Math.floor(164 + 34*c1);
 
-    const a = clamp(0.030 * S.density * L.strength, 0.014, 0.095);
+    const a = clamp(0.032 * S.density * L.strength, 0.016, 0.11);
 
     btx.save();
     btx.globalCompositeOperation = "lighter";
     btx.globalAlpha = a;
 
-    // ✅ “melt” the fill edges so ribbons blend together nicely
+    // ✅ heavy edge feather so layers “melt” into each other
     btx.filter = `blur(${S.mobileEdgeFeather}px)`;
     btx.fillStyle = `rgba(${rr},${gg},${bb},1)`;
 
@@ -843,7 +839,7 @@
     btx.filter = "none";
     btx.restore();
 
-    // optional wisps (kept subtle, solid strokes)
+    // ultra-subtle wisp (optional)
     const wA = a * S.mobileWispMul;
     if (wA > 0.0005){
       btx.save();
@@ -852,7 +848,7 @@
       btx.lineCap = "round";
       btx.lineJoin = "round";
       btx.strokeStyle = `rgba(${rr},${gg},${bb},1)`;
-      btx.lineWidth = Math.max(2, band * 0.18);
+      btx.lineWidth = Math.max(2, band * 0.14);
 
       btx.beginPath();
       btx.moveTo(top[0].x, (top[0].y + bot[0].y)*0.5);
@@ -868,10 +864,9 @@
     S.t += S.speed;
 
     if (isMobile) {
-      // ✅ Mobile: no interaction
+      // ✅ Mobile: NO interaction at all
       S.mx = S.my = S.px = S.py = 0;
     } else {
-      // Desktop drift stays
       S.px += (S.mx - S.px) * 0.03;
       S.py += (S.my - S.py) * 0.03;
     }
@@ -890,10 +885,8 @@
     ];
 
     if (isMobile) {
-      // ✅ Mobile: solid ribbons only
       for(const L of layers) drawSolidRibbon(L);
     } else {
-      // ✅ Desktop: your original puff pipeline (unchanged)
       btx.globalCompositeOperation = "lighter";
 
       for(const L of layers){
@@ -947,31 +940,28 @@
 
     btx.globalCompositeOperation = "source-over";
 
-    // composite to main
     ctx.globalCompositeOperation = "source-over";
     ctx.clearRect(0,0,S.w,S.h);
 
-    // ✅ mobile uses slightly stronger blend passes
+    // ✅ mobile stronger blur + lower detail alpha for true “blend”
     const baseBlur   = isMobile ? S.mobileBlurBase   : S.blurBase;
     const detailBlur = isMobile ? S.mobileBlurDetail : S.blurDetail;
     const glowBlur   = isMobile ? S.mobileBlurGlow   : S.blurGlow;
+    const detailAlpha = isMobile ? S.mobileDetailAlpha : 0.55;
 
-    // base pass
     ctx.save();
     ctx.filter = `blur(${baseBlur}px)`;
     ctx.globalAlpha = 1;
     ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
     ctx.restore();
 
-    // detail pass
     ctx.save();
     ctx.filter = `blur(${detailBlur}px)`;
     ctx.globalCompositeOperation = "lighter";
-    ctx.globalAlpha = 0.55;
+    ctx.globalAlpha = detailAlpha;
     ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
     ctx.restore();
 
-    // glow pass
     ctx.save();
     ctx.filter = `blur(${glowBlur}px)`;
     ctx.globalCompositeOperation = "lighter";
@@ -987,7 +977,6 @@
   gsap.ticker.fps(60);
   gsap.ticker.add(step);
 
-  // Reduced motion
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     gsap.ticker.remove(step);
     for(let i=0;i<20;i++) step();

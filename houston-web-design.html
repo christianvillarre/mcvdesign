@@ -675,11 +675,11 @@
   const buf = document.createElement("canvas");
   const btx = buf.getContext("2d", { alpha: true });
 
-  // ✅ Post buffer (mobile uses this as the “melted” source)
+  // Post buffer (mobile uses this as the “melted” source)
   const post = document.createElement("canvas");
   const ptx  = post.getContext("2d", { alpha: true });
 
-  // ✅ Melt buffer (mobile-only downsample → blur → upsample to kill circles)
+  // Melt buffer (mobile-only downsample → blur → upsample to kill circles)
   const melt = document.createElement("canvas");
   const mtx  = melt.getContext("2d", { alpha: true });
 
@@ -691,8 +691,8 @@
     // slow drift
     speed: 0.0046,
 
-    // ✅ smoothness / pixel control
-    scale: 0.70,   // desktop baseline (kept)
+    // desktop baseline (kept)
+    scale: 0.70,
     fade: 0.22,
     glow: 0.25,
     density: 0.66,
@@ -715,7 +715,7 @@
   // --- Mobile detection ---
   const IS_MOBILE = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // keep your desktop values as baseline (restored on desktop)
+  // keep desktop values as baseline (restored on desktop)
   const DESKTOP = {
     dprMax: 2,
     scale: S.scale,
@@ -724,31 +724,43 @@
     blurGlow: S.blurGlow
   };
 
-  // mobile overrides (ONLY mobile changes)
-// mobile overrides (ONLY mobile changes)
-const MOBILE = {
-  dprMax: 3,
+  // ✅ mobile overrides (ONLY mobile changes)
+  const MOBILE = {
+    dprMax: 3,
 
-  // keep enough buffer detail for blur to blend smoothly
-  scale: 1.05,
+    // ✅ "scale down" the *effect size* on mobile (not width)
+    // This compresses vertical thickness + motion so it reads smaller.
+    heightMul: 0.70,  // overall vertical compression (0.60–0.85)
+    ampMul: 0.62,     // wave amplitude (0.55–0.80)
+    bandMul: 0.56,    // ribbon thickness (0.45–0.70)
 
-  // blur (you can keep these high)
-  blurBaseMul: 3.2,
-  blurDetailMul: 2.4,
-  blurGlowMul: 3.2,
+    // buffer resolution (keep high so blur has data)
+    scale: 1.05,
 
-  // ✅ these two matter most for “visible circles”
-  puffSizeMul: 0.78,   // smaller stamps
-  alphaMul: 0.52,      // more transparent stamps
+    // blur multipliers
+    blurBaseMul: 3.2,
+    blurDetailMul: 2.4,
+    blurGlowMul: 3.2,
 
-  // ✅ stronger stamp killer (smaller = more melt)
-  meltScale: 0.32
-};
+    // stamp killers (circles)
+    puffSizeMul: 0.72, // smaller stamps
+    alphaMul: 0.42,    // more transparent stamps
+
+    // stamp killer pipeline
+    meltScale: 0.26,   // smaller = more melt (0.20–0.35)
+
+    // ✅ reduce inner “beads” on mobile
+    a2Mul: 0.42,       // multiplies inner wisps (0.30–0.55)
+    sideMul1: 0.24,    // side puff alpha
+    sideMul2: 0.22
+  };
+
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
   function resize() {
-    const vw = window.visualViewport?.width ?? window.innerWidth;
-    const vh = window.visualViewport?.height ?? window.innerHeight;
+    // ✅ DO NOT use visualViewport on mobile (it changes while scrolling and causes fades/resets)
+    const vw = IS_MOBILE ? window.innerWidth  : (window.visualViewport?.width  ?? window.innerWidth);
+    const vh = IS_MOBILE ? window.innerHeight : (window.visualViewport?.height ?? window.innerHeight);
 
     S.w = Math.floor(vw);
     S.h = Math.floor(vh);
@@ -759,19 +771,19 @@ const MOBILE = {
     const scale = IS_MOBILE ? MOBILE.scale : DESKTOP.scale;
 
     // Main canvas uses DPR
-    canvas.width = Math.floor(S.w * S.dpr);
+    canvas.width  = Math.floor(S.w * S.dpr);
     canvas.height = Math.floor(S.h * S.dpr);
-    canvas.style.width = S.w + "px";
+    canvas.style.width  = S.w + "px";
     canvas.style.height = S.h + "px";
     ctx.setTransform(S.dpr, 0, 0, S.dpr, 0, 0);
 
     // Sim buffer
-    buf.width = Math.floor(S.w * scale);
+    buf.width  = Math.floor(S.w * scale);
     buf.height = Math.floor(S.h * scale);
     btx.setTransform(1, 0, 0, 1, 0, 0);
 
     // Post buffer matches sim
-    post.width = buf.width;
+    post.width  = buf.width;
     post.height = buf.height;
     ptx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -786,13 +798,13 @@ const MOBILE = {
 
     // blur tuning (ONLY mobile changes)
     if (IS_MOBILE) {
-      S.blurBase = Math.round(DESKTOP.blurBase * MOBILE.blurBaseMul);
+      S.blurBase   = Math.round(DESKTOP.blurBase   * MOBILE.blurBaseMul);
       S.blurDetail = Math.round(DESKTOP.blurDetail * MOBILE.blurDetailMul);
-      S.blurGlow = Math.round(DESKTOP.blurGlow * MOBILE.blurGlowMul);
+      S.blurGlow   = Math.round(DESKTOP.blurGlow   * MOBILE.blurGlowMul);
     } else {
-      S.blurBase = DESKTOP.blurBase;
+      S.blurBase   = DESKTOP.blurBase;
       S.blurDetail = DESKTOP.blurDetail;
-      S.blurGlow = DESKTOP.blurGlow;
+      S.blurGlow   = DESKTOP.blurGlow;
     }
 
     // quality hints
@@ -813,18 +825,22 @@ const MOBILE = {
     ctx.clearRect(0, 0, S.w, S.h);
   }
 
+  // ✅ IMPORTANT: DO NOT listen to visualViewport resize (causes “fade” during mobile scroll)
   window.addEventListener("resize", resize, { passive: true });
-  window.visualViewport?.addEventListener("resize", resize, { passive: true });
   resize();
 
-  window.addEventListener(
-    "pointermove",
-    (e) => {
-      S.mx = (e.clientX / S.w) * 2 - 1;
-      S.my = (e.clientY / S.h) * 2 - 1;
-    },
-    { passive: true }
-  );
+  // ✅ mobile: avoid scroll causing drift by not changing mx/my while scrolling
+  // we still allow touch movement, but "scroll" itself won't jitter the vapor.
+  let pointerActive = false;
+  window.addEventListener("pointerdown", () => (pointerActive = true), { passive: true });
+  window.addEventListener("pointerup",   () => (pointerActive = false), { passive: true });
+  window.addEventListener("pointercancel", () => (pointerActive = false), { passive: true });
+
+  window.addEventListener("pointermove", (e) => {
+    if (IS_MOBILE && !pointerActive) return; // ✅ ignore scroll-driven pointermove on mobile
+    S.mx = (e.clientX / S.w) * 2 - 1;
+    S.my = (e.clientY / S.h) * 2 - 1;
+  }, { passive: true });
 
   // organic-ish fast noise
   function n2(x, y) {
@@ -885,17 +901,24 @@ const MOBILE = {
       const sweep = Math.sin(S.t * 0.55 + L.phase) * 0.5 + 0.5;
       const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
 
-      // ✅ increase overlap on mobile (less stamp visibility)
-      const steps = IS_MOBILE ? 190 : 120;
+      const steps = IS_MOBILE ? 200 : 120;
+
+      // ✅ mobile-only vertical compression
+      const ampMul  = IS_MOBILE ? MOBILE.ampMul : 1;
+      const bandMul = IS_MOBILE ? MOBILE.bandMul : 1;
+      const hMul    = IS_MOBILE ? MOBILE.heightMul : 1;
 
       for (let i = 0; i <= steps; i++) {
         const u = i / steps;
 
         const TAIL = 520;
         const x = u * (W + TAIL * 2) - TAIL + xShift + S.px * 16;
-        const yC = ribbonY(u, H * L.y, H * L.amp, L.phase) + S.py * 12;
 
-        const band = S.band * H;
+        const yBase = H * L.y;
+        const yRaw  = ribbonY(u, yBase, H * L.amp * ampMul, L.phase) + S.py * 12;
+        const yC    = yBase + (yRaw - yBase) * hMul;
+
+        const band = (S.band * H) * bandMul;
 
         const tt = S.t * 0.9 + L.phase + u * 2.0;
         const wx = n2(tt * 0.8, u * 4.0 + L.phase);
@@ -904,22 +927,22 @@ const MOBILE = {
         const jx = wx * band * 0.36 * S.breakUp;
         const jy = wy * band * 0.30 * S.breakUp;
 
-        // ✅ Mobile color lock: ignore L.tint on phones so ribbons don’t turn blue
+        // ✅ Mobile color lock (reduces blue)
         const tint = IS_MOBILE ? 0 : L.tint;
 
         const c1 = Math.sin(S.t * 0.30 + tint + u * 2.1) * 0.5 + 0.5;
         const c2 = Math.cos(S.t * 0.24 - tint + u * 1.7) * 0.5 + 0.5;
 
         // ✅ Stable mint palette (mobile tighter so it can’t shift cyan)
-        const gBoost = (IS_MOBILE ? 10 : 18) * (c2 - 0.5);
-        const bBoost = (IS_MOBILE ? 4 : 10) * (c1 - 0.5);
+        const gBoost = (IS_MOBILE ? 8 : 18) * (c2 - 0.5);
+        const bBoost = (IS_MOBILE ? 0 : 10) * (c1 - 0.5);
 
         const baseR = 84;
         const baseG = 243;
         const baseB = 164;
 
-        const A = `rgba(${baseR}, ${clamp(baseG + gBoost, 225, 255)}, ${clamp(baseB + bBoost, 150, 175)}, {a})`;
-        const B = `rgba(${clamp(baseR - 10, 60, 90)}, ${clamp(baseG - 55 + gBoost, 160, 215)}, ${clamp(baseB - 35 + bBoost, 120, 155)}, {a})`;
+        const A = `rgba(${baseR}, ${clamp(baseG + gBoost, 232, 255)}, ${clamp(baseB + bBoost, 160, 170)}, {a})`;
+        const B = `rgba(${clamp(baseR - 12, 60, 90)}, ${clamp(baseG - 60 + gBoost, 170, 215)}, ${clamp(baseB - 30 + bBoost, 130, 150)}, {a})`;
 
         const end = 0.35 + 0.65 * (1 - Math.pow(Math.abs(u - 0.5) * 2, 2.2));
         const sizeMul = IS_MOBILE ? MOBILE.puffSizeMul : 1;
@@ -933,24 +956,21 @@ const MOBILE = {
           L.strength *
           (0.40 + 0.60 * end);
 
-        // ✅ Mobile reduces stamp intensity
         const a1 = IS_MOBILE ? a1Base * MOBILE.alphaMul : a1Base;
-        
-
         puff(x, yC, r1, A, B, a1);
 
-        // PASS 2: inner wisps
+        // PASS 2: inner wisps (reduced on mobile)
         const r2 = clamp(r1 * 0.40, 20, 88);
-        const a2 = a1 * 0.78;
+        const a2 = IS_MOBILE ? a1 * MOBILE.a2Mul : a1 * 0.78;
 
         puff(x + jx, yC + jy, r2, B, A, a2);
 
         const off = (wy * 0.5 + 0.5) * band * 0.90;
-        puff(x - jx * 0.55, yC + off * 0.32, r2 * 0.78, A, B, a2 * 0.50);
-        puff(x + jx * 0.45, yC - off * 0.30, r2 * 0.72, B, A, a2 * 0.46);
+        puff(x - jx * 0.55, yC + off * 0.32, r2 * 0.78, A, B, IS_MOBILE ? a2 * MOBILE.sideMul1 : a2 * 0.50);
+        puff(x + jx * 0.45, yC - off * 0.30, r2 * 0.72, B, A, IS_MOBILE ? a2 * MOBILE.sideMul2 : a2 * 0.46);
       }
 
-      // super soft background volume
+      // super soft background volume (mobile: mint-only)
       const hx = W * 0.5 + Math.sin(S.t * 0.28 + L.phase) * W * 0.12 + S.px * 10;
       const hy = H * L.y + Math.cos(S.t * 0.26 - L.phase) * H * 0.10 + S.py * 8;
       puff(
@@ -958,7 +978,7 @@ const MOBILE = {
         hy,
         Math.hypot(W, H) * 0.22,
         "rgba(84,243,164,{a})",
-        "rgba(170,110,255,{a})",
+        IS_MOBILE ? "rgba(84,243,164,{a})" : "rgba(170,110,255,{a})",
         0.009 * S.density
       );
     }
@@ -969,7 +989,7 @@ const MOBILE = {
     let SRC = buf;
 
     if (IS_MOBILE) {
-      // 1) Downsample buf into melt (blends circle edges)
+      // 1) Downsample buf into melt
       mtx.globalCompositeOperation = "source-over";
       mtx.clearRect(0, 0, melt.width, melt.height);
       mtx.filter = "none";
@@ -977,21 +997,21 @@ const MOBILE = {
       mtx.drawImage(buf, 0, 0, W, H, 0, 0, melt.width, melt.height);
 
       // 2) Blur the small image (strong + cheap)
-      mtx.filter = `blur(${Math.max(10, S.blurBase * 0.9)}px)`;
+      mtx.filter = `blur(${Math.max(16, S.blurBase * 0.95)}px)`;
       mtx.globalAlpha = 1;
       mtx.drawImage(melt, 0, 0);
 
-      // 3) Upsample into post with heavy blur = vapor
+      // 3) Upsample into post with heavier blur
       ptx.globalCompositeOperation = "source-over";
       ptx.clearRect(0, 0, W, H);
 
-      ptx.filter = `blur(${Math.max(18, S.blurBase * 1.35)}px)`;
+      ptx.filter = `blur(${Math.max(24, S.blurBase * 1.65)}px)`;
       ptx.globalAlpha = 1;
       ptx.drawImage(melt, 0, 0, melt.width, melt.height, 0, 0, W, H);
 
       // extra smoothing pass
-      ptx.filter = `blur(${Math.max(10, S.blurDetail * 1.6)}px)`;
-      ptx.globalAlpha = 0.9;
+      ptx.filter = `blur(${Math.max(14, S.blurDetail * 2.1)}px)`;
+      ptx.globalAlpha = 0.92;
       ptx.drawImage(melt, 0, 0, melt.width, melt.height, 0, 0, W, H);
 
       ptx.filter = "none";
@@ -1035,7 +1055,6 @@ const MOBILE = {
   gsap.ticker.fps(60);
   gsap.ticker.add(step);
 
-  // Reduced motion
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     gsap.ticker.remove(step);
     for (let i = 0; i < 20; i++) step();

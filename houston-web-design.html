@@ -3,130 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Houston Web Design</title>
+  <link rel="stylesheet" href="styles.css"/>
 
-  <title>Houston Web Design Company | Custom Websites That Convert – MCVDesign</title>
-  <meta name="description" content="MCVDesign is a Houston web design company building custom, high-performance websites for small businesses, service companies, and industrial brands. Strategy-driven design that converts." />
-
-  <!-- ✅ Canonical (update to your real domain) -->
-  <link rel="canonical" href="https://YOURDOMAIN.com/houston-web-design" />
-
-  <link rel="icon" type="image/png" href="images/favicon.jpg"/>
-
-  <!-- ✅ LocalBusiness + Service Schema (update placeholders) -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@graph":[
-      {
-        "@type":"ProfessionalService",
-        "@id":"https://YOURDOMAIN.com/#business",
-        "name":"MCVDesign",
-        "url":"https://YOURDOMAIN.com/",
-        "areaServed":[
-          {"@type":"City","name":"Houston"},
-          {"@type":"City","name":"Cypress"},
-          {"@type":"City","name":"Katy"},
-          {"@type":"City","name":"Sugar Land"},
-          {"@type":"City","name":"The Woodlands"},
-          {"@type":"City","name":"Pearland"}
-        ],
-        "address":{
-          "@type":"PostalAddress",
-          "addressLocality":"Houston",
-          "addressRegion":"TX",
-          "addressCountry":"US"
-        },
-        "contactPoint":{
-          "@type":"ContactPoint",
-          "contactType":"sales",
-          "url":"https://YOURDOMAIN.com/inquiry.html"
-        },
-        "sameAs":[
-          "https://www.instagram.com/YOURHANDLE",
-          "https://www.linkedin.com/company/YOURHANDLE"
-        ]
-      },
-      {
-        "@type":"Service",
-        "@id":"https://YOURDOMAIN.com/houston-web-design#service",
-        "name":"Houston Web Design",
-        "serviceType":"Web design and website development",
-        "provider":{"@id":"https://YOURDOMAIN.com/#business"},
-        "areaServed":{"@type":"City","name":"Houston"},
-        "url":"https://YOURDOMAIN.com/houston-web-design"
-      },
-      {
-        "@type":"FAQPage",
-        "@id":"https://YOURDOMAIN.com/houston-web-design#faq",
-        "mainEntity":[
-          {
-            "@type":"Question",
-            "name":"How much does web design cost in Houston?",
-            "acceptedAnswer":{
-              "@type":"Answer",
-              "text":"Pricing depends on scope (pages, custom design, integrations, copy, and SEO needs). Most projects fall into a range based on complexity. If you share your goals and examples you like, we can send a clear estimate and timeline."
-            }
-          },
-          {
-            "@type":"Question",
-            "name":"How long does a website take to build?",
-            "acceptedAnswer":{
-              "@type":"Answer",
-              "text":"Timelines vary by scope. Smaller sites are typically faster; larger builds with custom sections, motion, copywriting, and SEO structure take longer. After a short discovery, we provide a realistic timeline with milestones."
-            }
-          },
-          {
-            "@type":"Question",
-            "name":"Do you redesign existing websites?",
-            "acceptedAnswer":{
-              "@type":"Answer",
-              "text":"Yes. Website redesign is one of the best ways to improve clarity, performance, and conversions—especially if your current site is slow, outdated, or not generating leads."
-            }
-          },
-          {
-            "@type":"Question",
-            "name":"Do you help with SEO?",
-            "acceptedAnswer":{
-              "@type":"Answer",
-              "text":"Yes. We build SEO-ready structure (headings, internal linking, speed, semantic markup) and can support ongoing SEO depending on your goals."
-            }
-          },
-          {
-            "@type":"Question",
-            "name":"What platforms do you build on?",
-            "acceptedAnswer":{
-              "@type":"Answer",
-              "text":"We can build custom-coded sites and also work with modern platforms depending on what fits your business, editing needs, and performance goals."
-            }
-          }
-        ]
-      }
-    ]
-  }
-  </script>
-
-  <!-- ✅ Page-only styles (scoped) -->
   <style>
-    /* =========================
-       HOUSTON SEO PAGE (SCOPED)
-       Won't affect other pages
-    ========================= */
-    html, body {
-  margin: 0;
-  padding: 0;
-  background: #000;   /* so even if anything shows, it's black */
-}
-    .seo-houston-page{
-      background:#000;
-      color:#fff;
-      min-height:100vh;
-      position:relative;
-      overflow:hidden;
-      font-family: 'Funnel Display', sans-serif;
-    }
+    html, body { margin:0; padding:0; background:#000; }
+    body{ overflow-x:hidden; font-family: system-ui, sans-serif; color:#fff; }
 
-    /* subtle corner glow like your .main::before */
-    .seo-houston-page::before{
+    /* Background glow */
+    body::before{
       content:"";
       position:fixed;
       inset:0;
@@ -134,29 +19,36 @@
       background:
         radial-gradient(circle at top left, rgba(84,243,164,0.22) 0, transparent 38vw),
         radial-gradient(circle at top right, rgba(84,243,164,0.22) 0, transparent 38vw);
-      opacity: 0.9;
+      opacity:0.9;
       z-index:0;
     }
 
-    .seo-wrap{
+    .wrap{
       position:relative;
       z-index:1;
-      width:min(1200px, 92vw);
+      width:min(85vw, 92vw);
       margin:0 auto;
     }
 
-    .seo-hero{
-      padding: 16vh 0 7vh;
+    /* HERO */
+    .hero{
+      height:100vh;
+      display:flex;
+      align-items:center;
+      position:relative;
+      z-index:1;
     }
 
-    .seo-grid-hero{
-      display:grid;
-      grid-template-columns: 1.25fr 0.75fr;
-      gap: clamp(1.5rem, 3.5vw, 4rem);
-      align-items:start;
+    .hero-grid{
+      display: grid;
+      grid-template-columns: 1.4fr 0.6fr;
+      gap: 1.25rem;
+      align-items: start;
+      width: 100%;
     }
 
-    .seo-kicker{
+
+    .kicker{
       font-size: 11px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -164,18 +56,16 @@
       margin-bottom: 1rem;
     }
 
-    .seo-title{
+    .title{
       font-size: clamp(3.1rem, 5.6vw, 8rem);
       line-height: 0.88;
       font-weight: 600;
       letter-spacing: -0.02em;
-      margin: 0;
+      margin:0;
     }
-
-    .seo-title .accent{ color:#54f3a4; }
     .accent{ color:#54f3a4; }
 
-    .seo-lede{
+    .lede{
       margin-top: 1.3rem;
       font-size: clamp(1.2rem, 1.9vw, 1.65rem);
       font-weight: 200;
@@ -184,19 +74,14 @@
       max-width: 66ch;
     }
 
-    .seo-local-proof{
+    .proof{
       margin-top: 1.15rem;
       font-size: 1rem;
       color: rgba(255,255,255,0.65);
       line-height: 1.35;
     }
-    .seo-local-proof strong{
-      color: rgba(255,255,255,0.88);
-      font-weight: 600;
-    }
 
-    /* CTA panel */
-    .seo-panel{
+    .panel{
       border: 1px solid rgba(255,255,255,0.16);
       border-radius: 18px;
       background: rgba(255,255,255,0.03);
@@ -206,45 +91,37 @@
       align-content:start;
     }
 
-    .seo-panel .seo-panel-title{
+    .panel-title{
       font-size: 1rem;
       letter-spacing: 0.10em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.6);
-      margin: 0;
-    }
-
-    .seo-panel p{
       margin:0;
-      font-size: 1.05rem;
-      color: rgba(255,255,255,0.78);
-      line-height: 1.35;
-      font-weight: 200;
+    }
+    .availability{
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin: .85rem 0 1.25rem;
+      font-size: .85rem;
+      color: rgba(255,255,255,0.72);
     }
 
-    .seo-nap{
-      border-top: 1px solid rgba(255,255,255,0.14);
-      padding-top: 0.85rem;
-      margin-top: 0.25rem;
-      display: grid;
-      gap: 0.35rem;
-      font-size: 0.98rem;
-      color: rgba(255,255,255,0.78);
-    }
-    .seo-nap .label{
-      font-size: 0.85rem;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.55);
+    .availability .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #54f3a4;
+      box-shadow: 0 0 12px rgba(84,243,164,.55);
     }
 
-    /* button style inspired by your pill + arrow */
-    .seo-btn{
+    /* Button */
+    .btn{
       display:inline-flex;
       align-items:center;
       justify-content:space-between;
       gap: 1rem;
-      width: 100%;
+      width: 300px;
       padding: 0 1.2rem;
       height: 64px;
       border-radius: 999px;
@@ -260,11 +137,11 @@
       isolation:isolate;
     }
 
-    .seo-btn::before{
+    .btn::before{
       content:"";
       position:absolute;
-      width: 120px;
-      height: 120px;
+      width: 300px;
+      height: 300px;
       left: 50%;
       top: 50%;
       transform: translate(-50%,-50%) scale(0);
@@ -273,11 +150,10 @@
       z-index:-1;
       transition: transform 0.65s ease;
     }
+    .btn:hover::before{ transform: translate(-50%,-50%) scale(1); }
+    .btn:hover{ color:#000; }
 
-    .seo-btn:hover::before{ transform: translate(-50%,-50%) scale(1); }
-    .seo-btn:hover{ color:#000; }
-
-    .seo-btn .seo-arrow{
+    .arrow{
       width: 38px;
       height: 38px;
       border-radius: 999px;
@@ -288,77 +164,75 @@
       flex: 0 0 auto;
       transition: transform .25s ease;
     }
-
-    .seo-btn:hover .seo-arrow{
+    .btn:hover .arrow{
       transform: translate(2px, -2px);
+      background: white;
+    }
+    .arrow svg{ width:16px; height:16px; stroke:#ffffff; }
+    .btn:hover .arrow svg{ stroke:#000000; }
+
+    /* ===== OVERLAY SHEET =====
+       This is the magic:
+       - It sits on top of the hero in layout (margin-top:-100vh)
+       - But starts visually below the fold (transform: translateY(100vh))
+       - After it slides to 0, it scrolls normally forever
+    */
+    .sheet{
+      position:relative;
+      z-index:2;
+      margin-top: -100vh;
+      transform: translateY(100vh);
+      will-change: transform;
       background:#000;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 -40px 120px rgba(0,0,0,0.65);
     }
 
-    .seo-btn:hover .seo-arrow svg{ stroke:#fff; }
-
-    .seo-arrow svg{
-      width: 16px;
-      height: 16px;
-      stroke:#000;
+    .divider{
+      width:100%;
+      border:0;
+      border-top:1px solid rgba(255,255,255,0.14);
+      margin:0;
     }
 
-    .seo-mini{
-      font-size: 0.95rem;
-      color: rgba(255,255,255,0.65);
-    }
+    /*.section{ padding: clamp(3rem, 7vw, 6rem) 0; }*/
 
-    .seo-mini a{
-      color:#fff;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      opacity: 0.9;
-    }
-
-    .seo-divider{
-      width: 100%;
-      border: none;
-      border-top: 1px solid rgba(255,255,255,0.14);
-      margin: 0;
-    }
-
-    /* Value strip */
-    .seo-strip{ padding: 2.5rem 0 1.5rem; }
-    .seo-strip-grid{
+    .strip{ padding: 2.5rem 0 1.5rem; }
+    .strip-grid{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
     }
-    .seo-chip{
+    .chip{
       border: 1px solid rgba(255,255,255,0.14);
       border-radius: 16px;
       padding: 1.25rem;
       background: rgba(255,255,255,0.02);
+      
     }
-    .seo-chip .k{
+    .chip .k{
       font-size: 0.85rem;
       letter-spacing: 0.10em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.6);
       margin-bottom: 0.55rem;
     }
-    .seo-chip .v{
+    .chip .v{
       font-size: clamp(1.5rem, 2.2vw, 2.4rem);
       line-height: 1;
       font-weight: 600;
     }
 
-    /* Sections */
-    .seo-section{ padding: clamp(3rem, 7vw, 6rem) 0; }
-
-    .seo-h2{
-      font-size: clamp(2.2rem, 3.2vw, 3.8rem);
+    .h2{
+      font-size: clamp(3.2rem, 6.2vw, 6.8rem);
       line-height: 0.95;
       font-weight: 600;
       margin: 0 0 1rem 0;
       letter-spacing: -0.01em;
+      padding: 0 2rem;
     }
 
-    .seo-copy{
+    .copy{
       font-size: clamp(1.1rem, 1.55vw, 1.4rem);
       font-weight: 200;
       color: rgba(255,255,255,0.78);
@@ -366,527 +240,657 @@
       max-width: 72ch;
     }
 
-    .seo-card-grid{
-      margin-top: 2.25rem;
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-    }
 
-    .seo-card{
-      border: 1px solid rgba(255,255,255,0.16);
-      border-radius: 18px;
-      background: transparent;
-      padding: 1.6rem;
-      min-height: 320px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      transition: transform .25s ease, background .25s ease, border-color .25s ease;
-    }
-
-    .seo-card:hover{
-      transform: translateY(-3px);
-      background: rgba(255,255,255,0.03);
-      border-color: rgba(84,243,164,0.28);
-    }
-
-    .seo-card .title{
-      font-size: clamp(1.7rem, 2.2vw, 2.6rem);
-      font-weight: 200;
-      color:#54f3a4;
-      line-height: 1.05;
-      margin: 0 0 1rem 0;
-    }
-
-    .seo-card .desc{
-      font-size: 1.05rem;
-      color: rgba(255,255,255,0.75);
-      font-weight: 200;
-      line-height: 1.35;
-      margin: 0 0 1rem 0;
-    }
-
-    .seo-list{
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display:grid;
-      gap: 0.4rem;
-      color: rgba(255,255,255,0.92);
-      font-weight: 600;
-    }
-
-    .seo-list li{
-      position:relative;
-      padding-left: 1.1rem;
-    }
-
-    .seo-list li::before{
-      content:"—";
-      position:absolute;
-      left:0;
-      opacity: 0.6;
-    }
-
-    /* Process */
-    .seo-process{
-      margin-top: 2rem;
-      display:grid;
-      gap: 1rem;
-      max-width: 900px;
-    }
-
-    .seo-step{
-      display:grid;
-      grid-template-columns: 80px 1fr;
-      gap: 1rem;
-      padding: 1.25rem 1.25rem;
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.02);
-    }
-
-    .seo-num{
-      color:#54f3a4;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      font-size: 1rem;
-      padding-top: 0.15rem;
-    }
-
-    .seo-step h3{
-      margin: 0 0 0.4rem 0;
-      font-size: 1.35rem;
-      font-weight: 600;
-    }
-
-    .seo-step p{
-      margin: 0;
-      color: rgba(255,255,255,0.78);
-      font-weight: 200;
-      line-height: 1.35;
-      font-size: 1.05rem;
-    }
-
-    /* FAQ */
-    .seo-faq{
-      margin-top: 2rem;
-      display:grid;
-      gap: 0.75rem;
-      max-width: 900px;
-    }
-
-    .faq-item{
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.02);
-      overflow:hidden;
-    }
-
-    .faq-item summary{
-      cursor: pointer;
-      list-style: none;
-      padding: 1.15rem 1.25rem;
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.92);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 1rem;
-    }
-
-    .faq-item summary::-webkit-details-marker{ display:none; }
-
-    .faq-plus{
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.04);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      flex: 0 0 auto;
-      color: rgba(255,255,255,0.8);
-      transition: transform .25s ease, background .25s ease, border-color .25s ease;
-    }
-
-    details[open] .faq-plus{
-      transform: rotate(45deg);
-      border-color: rgba(84,243,164,0.28);
-      background: rgba(84,243,164,0.08);
-      color:#54f3a4;
-    }
-
-    .faq-body{
-      padding: 0 1.25rem 1.15rem;
-      color: rgba(255,255,255,0.78);
-      font-weight: 200;
-      line-height: 1.35;
-      font-size: 1.05rem;
-    }
-
-    /* Final CTA block */
-    .seo-final{ padding: 0 0 clamp(3rem, 7vw, 6rem); }
-
-    .seo-final-box{
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 22px;
-      padding: clamp(1.4rem, 3vw, 3rem);
-      background: rgba(255,255,255,0.03);
-      display:grid;
-      gap: 1rem;
-    }
-
-    .seo-final-title{
-      margin: 0;
-      font-size: clamp(2.7rem, 5vw, 6rem);
-      line-height: 0.85;
-      font-weight: 600;
-    }
-
-    /* Responsive */
     @media (max-width: 980px){
-      .seo-grid-hero{ grid-template-columns: 1fr; }
-      .seo-strip-grid{ grid-template-columns: 1fr; }
-      .seo-card-grid{ grid-template-columns: 1fr; }
-      .seo-step{ grid-template-columns: 64px 1fr; }
-      .seo-hero{ padding-top: 13vh; }
+      .hero-grid{ grid-template-columns:1fr; }
+      .strip-grid{ grid-template-columns:1fr; }
+      .card-grid{ grid-template-columns:1fr; }
+      .hero{ padding: 8vh 0; height:auto; min-height:100vh; }
+      .sheet{ margin-top: 0; transform: translateY(0); } /* mobile fallback */
     }
+    /* MOBILE FIX — remove hero scrollbar */
+@media (max-width: 980px) {
+  .hero {
+    height: auto;          /* remove fixed height */
+    min-height: 100svh;    /* modern mobile viewport */
+    overflow: hidden;      /* no inner scroll */
+    margin-top: 2.5rem;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+  </style>
+    <style>
+
+    canvas#vapor{
+      position:fixed; inset:0;
+      width:100%; height:100%;
+      z-index:0;
+      display:block;
+      pointer-events:none;
+    }
+
+    /* ✅ very light vignette (not a dark “screen overlay”) */
+    .overlay{
+      position:fixed;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:
+        radial-gradient(
+          90% 90% at 50% 45%,
+          rgba(0,0,0,0) 0%,
+          rgba(0,0,0,.09) 72%,
+          rgba(0,0,0,.22) 100%
+        );
+    }
+    .proof-divider{
+  width:100%;
+  height: 1px;
+  margin: 1.25rem 0 0.75rem;
+  background: linear-gradient(
+    to right,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.05)
+  );
+}
+
+.chip img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.strip-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* Force placement on row 2 */
+.chip-4{ grid-column: 1 / 2; }   /* col 1 */
+.chip-5{ grid-column: 2 / 4; }   /* col 2-3 (2/3 width) */
+
+/* logo sizing */
+
+.chip-5{
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  overflow: hidden; /* IMPORTANT: clips the image */
+  max-height: 300px;
+}
+.stats {
+  padding: 6rem 2rem;
+  background: radial-gradient(circle at top, #0c0c0c, #000);
+}
+
+.stats-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 3rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-top{
+  display: inline-flex;
+  align-items: baseline;
+  gap: .12em;
+  line-height: 1;
+}
+
+.stat-number {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #10ffa3;
+  text-shadow: 0 0 25px rgba(16,255,163,0.15);
+}
+.stat-plus {
+  font-size: 2.72em;      /* ⬆ bigger, still secondary */
+  font-weight: 700;
+  color: #10ffa3;
+  transform: translateY(-0.06em);
+}
+
+.stat-range {
+  color: #7fdcff;
+  text-shadow: 0 0 20px rgba(127,220,255,0.15);
+}
+
+.stat-label {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
   </style>
 </head>
 
 <body>
-  <main class="seo-houston-page">
-
-    <!-- HERO -->
-    <section class="seo-hero">
-      <div class="seo-wrap">
-        <div class="seo-grid-hero">
-
-          <div>
-            <div class="seo-kicker">MCVDesign • Houston, Texas</div>
-
-            <h1 class="seo-title">
-              <span class="accent">Houston Web Design</span><br>
-              that’s Built to Convert
-            </h1>
-
-            <p class="seo-lede">
-              Custom websites for Houston businesses that need clarity, speed, and structure —
-              designed to earn trust fast, rank better, and turn visits into leads.
-            </p>
-
-            <!-- ✅ Local proof (E-E-A-T / local relevance) -->
-            <p class="seo-local-proof">
-              <strong>Based in Houston, TX.</strong> Serving Houston and nearby areas like
-              Cypress, Katy, The Heights, Downtown, Sugar Land, The Woodlands, and Pearland.
-              <br><br>
-              Ideal for small businesses, service companies, contractors, and industrial brands.
-            </p>
-          </div>
-
-          <!-- CTA PANEL + NAP -->
-          <aside class="seo-panel">
-            <p class="seo-panel-title">Start Here</p>
-            <p>
-              Tell us what you’re building and we’ll reply with next steps,
-              timeline, and a clear plan.
-            </p>
-
-            <a class="seo-btn" href="inquiry.html">
-              Start Your Project
-              <span class="seo-arrow" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M7 17L17 7"/>
-                  <path d="M7 7h10v10"/>
-                </svg>
-              </span>
-            </a>
-
-            <div class="seo-mini">
-              Want examples? <a href="work.html">View Work</a> • See <a href="services.html">Services</a>
-            </div>
-
-            <!-- ✅ NAP-lite -->
-            <div class="seo-nap">
-              <div class="label">Business</div>
-              <div><strong>MCVDesign</strong> — Houston, TX</div>
-              <div class="label" style="margin-top:0.35rem;">Contact</div>
-              <div><a href="inquiry.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Inquiry Form</a></div>
-            </div>
-          </aside>
-
-        </div>
+<canvas id="vapor"></canvas>
+  <div class="overlay"></div>
+<!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar__container">
+      <div class="navbar__left">
+        <a href="/" id="navbar__logo" class="logo">
+          <img class="logo1" src="images/logo2.png" alt="Logo" />
+        </a>
       </div>
-    </section>
 
-    <hr class="seo-divider" />
-
-    <!-- VALUE STRIP -->
-    <section class="seo-strip">
-      <div class="seo-wrap">
-        <div class="seo-strip-grid">
-          <div class="seo-chip">
-            <div class="k">Built for</div>
-            <div class="v">Speed</div>
-          </div>
-          <div class="seo-chip">
-            <div class="k">Built for</div>
-            <div class="v">SEO</div>
-          </div>
-          <div class="seo-chip">
-            <div class="k">Built for</div>
-            <div class="v">Leads</div>
-          </div>
-        </div>
+      <div class="navbar__right">
+        <a href="mailto:christian@mcvdesign.com" class="navbar__email">
+          christian@mcvdesign.com
+        </a>
+        <a href="inquiry.html">
+          <button class="navbar__inquiry">
+            Send Inquiry
+            <span class="inquiry-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                <path d="M7 17L17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
+            </span>
+          </button>
+        </a>
+        <div class="navbar__contact"><span></span></div>
       </div>
-    </section>
 
-    <!-- CARDS -->
-    <section class="seo-section">
-      <div class="seo-wrap">
-        <h2 class="seo-h2">Web design for Houston businesses that need results</h2>
-        <p class="seo-copy">
-          Houston is competitive. Your website has seconds to communicate trust.
-          We build modern, performance-first sites for small businesses, service companies,
-          contractors, and industrial brands that want a site that actually works.
-        </p>
-
-        <div class="seo-card-grid">
-
-          <article class="seo-card">
-            <div>
-              <h3 class="title">Websites That Feel Premium</h3>
-              <p class="desc">
-                Clean typography, intentional spacing, and modern motion — design that communicates trust quickly.
-              </p>
-              <ul class="seo-list">
-                <li>Custom design systems</li>
-                <li>Visual hierarchy</li>
-                <li>Brand consistency</li>
-              </ul>
-            </div>
-            <div style="margin-top:1.25rem;">
-              <a class="seo-btn" href="work.html">
-                View Work
-                <span class="seo-arrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7 17L17 7"/>
-                    <path d="M7 7h10v10"/>
-                  </svg>
-                </span>
-              </a>
-            </div>
-          </article>
-
-          <article class="seo-card">
-            <div>
-              <h3 class="title">Performance First</h3>
-              <p class="desc">
-                Fast-loading pages and clean structure so your site feels instant on mobile.
-              </p>
-              <ul class="seo-list">
-                <li>Mobile-first builds</li>
-                <li>Lightweight front-end</li>
-                <li>Better UX signals</li>
-              </ul>
-            </div>
-            <div style="margin-top:1.25rem;">
-              <a class="seo-btn" href="inquiry.html">
-                Get a Quote
-                <span class="seo-arrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7 17L17 7"/>
-                    <path d="M7 7h10v10"/>
-                  </svg>
-                </span>
-              </a>
-            </div>
-          </article>
-
-          <article class="seo-card">
-            <div>
-              <h3 class="title">SEO-Ready Structure</h3>
-              <p class="desc">
-                We build pages Google can understand — headings, internal links, and intent-driven sections.
-              </p>
-              <ul class="seo-list">
-                <li>Semantic markup</li>
-                <li>Clear sections</li>
-                <li>On-page fundamentals</li>
-              </ul>
-            </div>
-            <div style="margin-top:1.25rem;">
-              <a class="seo-btn" href="services.html">
-                Services
-                <span class="seo-arrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7 17L17 7"/>
-                    <path d="M7 7h10v10"/>
-                  </svg>
-                </span>
-              </a>
-            </div>
-          </article>
-
-        </div>
-
-        <!-- ✅ Internal links to future SEO pages (safe now; update when created) -->
-        <p class="seo-copy" style="margin-top:2.25rem;">
-          Looking for something specific? Explore
-          <a href="website-redesign-houston.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Website Redesign</a>,
-          <a href="small-business-web-design-houston.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Small Business Web Design</a>,
-          and <a href="industrial-web-design-houston.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Industrial Web Design</a>.
-        </p>
+      <div id="mobile-menu" class="navbar__toggle">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
       </div>
-    </section>
+    </div>
+  </nav>
 
-    <!-- PROCESS -->
-    <section class="seo-section" style="padding-top:0;">
-      <div class="seo-wrap">
-        <h2 class="seo-h2">Our process is simple and strategic</h2>
-        <p class="seo-copy">
-          We keep it clean: strategy → structure → design/build → launch.
-          No confusion, no random revisions, no bloated deliverables.
-        </p>
+  <!--DROPDOWN MENU-->
+  <div class="dropdown-menu" id="navDropdown">
+    <div class="dropdown-video-bg">
+      <video autoplay muted loop playsinline>
+        <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
+      </video>
+    </div>
 
-        <div class="seo-process">
-          <div class="seo-step">
-            <div class="seo-num">01</div>
-            <div>
-              <h3>Strategy</h3>
-              <p>We align goals, audience, and what your site needs to convert.</p>
-            </div>
-          </div>
+    <div class="dropdown-content">
+      <button class="close-menu" id="closeMenu">×</button>
+        <ul class="dropdown-links">
+          <li class="dropdown-mask">
+            <a href="/index.html" class="dropdown-link">Home</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/services.html" class="dropdown-link">Services</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/work.html" class="dropdown-link">Work</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/inquiry.html" class="dropdown-link">Contact</a>
+          </li>
+        </ul>
 
-          <div class="seo-step">
-            <div class="seo-num">02</div>
-            <div>
-              <h3>Structure</h3>
-              <p>We map pages, messaging, and calls-to-action for clarity and intent.</p>
-            </div>
-          </div>
 
-          <div class="seo-step">
-            <div class="seo-num">03</div>
-            <div>
-              <h3>Design + Build</h3>
-              <p>Custom design paired with solid front-end development and responsive QA.</p>
-            </div>
-          </div>
-
-          <div class="seo-step">
-            <div class="seo-num">04</div>
-            <div>
-              <h3>Launch</h3>
-              <p>Performance checks, on-page SEO setup, and final polish — then ship.</p>
-            </div>
-          </div>
-        </div>
+      <div class="dropdown-email">
+        <button class="navbar__email">
+          christian@mcvdesign.com
+        </button>
       </div>
-    </section>
 
-    <!-- ✅ FAQ (on-page + FAQ schema already included) -->
-    <section class="seo-section" style="padding-top:0;">
-      <div class="seo-wrap">
-        <h2 class="seo-h2">FAQ</h2>
-        <p class="seo-copy">
-          Quick answers to common questions Houston businesses ask when planning a new website.
-        </p>
-
-        <div class="seo-faq">
-
-          <details class="faq-item">
-            <summary>
-              How much does web design cost in Houston?
-              <span class="faq-plus">+</span>
-            </summary>
-            <div class="faq-body">
-              Pricing depends on scope (pages, custom design, integrations, copy, and SEO needs).
-              If you share your goals and examples you like, we can send a clear estimate and timeline.
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              How long does a website take to build?
-              <span class="faq-plus">+</span>
-            </summary>
-            <div class="faq-body">
-              Timelines vary by scope. Smaller sites are typically faster; larger builds with custom sections,
-              motion, copywriting, and SEO structure take longer. After a short discovery, we provide a realistic timeline.
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              Do you redesign existing websites?
-              <span class="faq-plus">+</span>
-            </summary>
-            <div class="faq-body">
-              Yes. Website redesign is one of the best ways to improve clarity, performance, and conversions—
-              especially if your current site is slow, outdated, or not generating leads.
-              See <a href="website-redesign-houston.html" style="color:#fff; text-decoration:underline; text-underline-offset:3px;">Website Redesign</a>.
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              Do you help with SEO?
-              <span class="faq-plus">+</span>
-            </summary>
-            <div class="faq-body">
-              Yes. We build SEO-ready structure (headings, internal linking, speed, semantic markup) and can support
-              ongoing SEO depending on your goals.
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              What platforms do you build on?
-              <span class="faq-plus">+</span>
-            </summary>
-            <div class="faq-body">
-              We can build custom-coded sites and also work with modern platforms depending on what fits your business,
-              editing needs, and performance goals.
-            </div>
-          </details>
-
-        </div>
+      <div class="dropdown-copyright"><h2>Copyright © 2025</h2></div>
+      <div class="social-button-container">
+        <button class="bottom-btn">LinkedIn</button>
+        <button class="bottom-btn">Instagram</button>
+        <button class="bottom-btn">Dribble</button>
+        <button class="bottom-btn">Behance</button>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- FINAL CTA -->
-    <section class="seo-final">
-      <div class="seo-wrap">
-        <div class="seo-final-box">
-          <h2 class="seo-final-title">
-            Ready for a website that actually <span class="accent">moves</span> your business?
-          </h2>
-          <p class="seo-copy" style="margin:0; max-width:72ch;">
-            Tell us what you’re building. We’ll reply with next steps, timeline, and a clear plan.
+  
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <!--<div class="kicker">MCVDesign • Houston, Texas</div>-->
+          <h1 class="title"><span class="accent">Houston Web Design</span><br>for Businesses That Gets More Leads</h1>
+          <div class="proof-divider"></div>
+          <p class="lede">
+            We design and build custom websites for Houston businesses that turn clarity, performance, and structure into a reliable lead engine.
           </p>
-          <a class="seo-btn" href="inquiry.html" style="max-width: 460px;">
+          <!--
+          <p class="proof">
+            <strong style="color:rgba(255,255,255,0.88)">Based in Houston, TX.</strong>
+            Serving Cypress, Katy, The Heights, Downtown, Sugar Land, The Woodlands, and Pearland.
+          </p>-->
+        </div>
+
+        <aside class="panel">
+          <p class="panel-title">Start Here</p>
+          <p style="margin:0; color:rgba(255,255,255,0.78); font-weight:200; line-height:1.35;">
+            Tell us what you’re building and we’ll reply with next steps, timeline, and a clear plan.
+          </p>
+
+          <div class="availability">
+            <span class="dot"></span>
+            <span>2 project slots available this month</span>
+          </div>
+
+          <a class="btn" href="#">
             Start Your Project
-            <span class="seo-arrow" aria-hidden="true">
+            <span class="arrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M7 17L17 7"/>
-                <path d="M7 7h10v10"/>
+                <path d="M7 17L17 7"/><path d="M7 7h10v10"/>
               </svg>
             </span>
           </a>
-
-          <!-- ✅ subtle NAP repeat (helps local trust, still minimal) -->
-          <div class="seo-mini" style="margin-top:0.25rem;">
-            MCVDesign • Houston, TX • <a href="inquiry.html">Contact</a>
-          </div>
-        </div>
+        </aside>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </main>
+  <!-- OVERLAY SHEET (in normal flow, so it keeps scrolling) -->
+  <section class="sheet" id="sheet">
+    <hr class="divider"/>
+    <div class="stats">
+  <div class="stats-grid">
+
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-number">10</span><span class="stat-plus">+</span>
+      </div>
+      <div class="stat-label">Years of Experience</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-number">150</span><span class="stat-plus">+</span>
+      </div>
+      <div class="stat-label">Design Projects Completed</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-number stat-range">7–14</span>
+      </div>
+      <div class="stat-label">Average Project Turnaround</div>
+    </div>
+
+  </div>
+</div>
+<!-- STRIP 
+    <section class="strip">
+      <div class="wrap">
+        <div class="strip-grid">
+            <div class="chip"><div class="k">Years of Experience</div><div class="v">10+</div></div>
+            <div class="chip"><div class="k">Design Projects Completed</div><div class="v">150+</div></div>
+            <div class="chip"><div class="k">Built for</div><div class="v">Lead Generation</div></div>
+
+          
+            <div class="chip chip-4">
+              <div class="k">Avg. Turnaround</div>
+              <div class="v">7–14 days</div>
+            </div>
+
+         
+            <div class="chip chip-5">
+              <div class="k">
+                <img src="images/stock2.jpg" alt="Unico website and lead generation work">
+              </div>
+            </div> 
+          </div>
+      </div>
+    </section>-->
+
+    <section class="section"> 
+     
+        <h2 class="h2">Design that defines your brand and drives real growth</h2>
+        <!--<p class="copy">
+          Houston is competitive, and your website has seconds to make an impression. Intentional design builds instant credibility and real business growth. We handle the design and structure, so you can focus on what you do best.
+        </p>--></section>
+
+        <section id="servicesBlock">
+        <div class="services">
+        <div class="services-container">
+          <div class="services-card">
+            <h3 class="card-title">Design</h3>
+            <div class="card-text">Our design services combine aesthetics and functionality to create digital products.</div>
+            <div class="card-text2">+ Branding<br>+ Website & E-commerce<br>+ Mobile & Web App<br>+ User Experience</div>
+            <hr class="card-divider">
+            <a href="inquiry.html">
+              <button class="button-design">
+                Learn More
+                <span class="inquiry-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                    <path d="M7 17L17 7" />
+                    <path d="M7 7h10v10" />
+                  </svg>
+                </span>
+              </button></a>
+          </div>
+
+          <div class="services-card">
+            <h3 class="card-title">Development</h3>
+            <div class="card-text">Our development solutions merge innovation and efficiency to engineer digital solutions.</div>
+            <div class="card-text2">+ Mobile & Web Apps<br>+ Web Development<br>+ Cross-Platform<br>+ Embedded Software</div>
+            <hr class="card-divider">
+            <a href="inquiry.html">
+              <button class="button-design">
+                Learn More
+                <span class="inquiry-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                    <path d="M7 17L17 7" />
+                    <path d="M7 7h10v10" />
+                  </svg>
+                </span>
+              </button></a>
+          </div>
+
+          <div class="services-card">
+            <h3 class="card-title">Growth</h3>
+            <div class="card-text">Versatile solutions tailored to your unique requirements, providing support across diverse domains.</div>
+            <div class="card-text2">+ Scoping<br>+ Consulting<br>+ Management<br>+ Support</div>
+            <hr class="card-divider">
+            <a href="inquiry.html">
+              <button class="button-design">
+                Learn More
+                <span class="inquiry-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                    <path d="M7 17L17 7" />
+                    <path d="M7 7h10v10" />
+                  </svg>
+                </span>
+              </button></a>
+          </div>
+
+        </div>
+     
+      </section>
+
+<section class="section"> <div class="wrap">
+        <!-- add a bunch of content so you can feel the continuous scroll -->
+        <div style="height:0vh"></div>
+        <h2 class="h2">More content below</h2>
+        <p class="copy">This keeps scrolling normally because the sheet is in document flow.</p>
+        <div style="height:20vh"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const hero  = document.querySelector("#hero");
+    const sheet = document.querySelector("#sheet");
+
+    // Desktop only (mobile fallback handled in CSS)
+    if (!window.matchMedia("(max-width: 980px)").matches) {
+      gsap.set(sheet, { y: window.innerHeight }); // matches the translateY(100vh) idea
+
+      gsap.to(sheet, {
+        y: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: hero,
+          start: "top top",
+          end: "+=70%",   // slide duration
+          scrub: 0.9,
+          pin: true,       // pins hero only during the slide
+          pinSpacing: true,
+          anticipatePin: 1
+        }
+      });
+
+      // refresh on resize so y uses updated vh
+      window.addEventListener("resize", () => ScrollTrigger.refresh());
+    }
+  </script>
+
+  <script>
+    const canvas = document.getElementById("vapor");
+    const ctx = canvas.getContext("2d", { alpha:true });
+
+    // Offscreen buffer (we render the sim here, then blur-composite to main)
+    const buf = document.createElement("canvas");
+    const btx = buf.getContext("2d", { alpha:true });
+
+    const S = {
+      w:0, h:0,
+      dpr: Math.max(1, Math.min(2, window.devicePixelRatio || 1)),
+      t:0,
+
+      // slow drift
+      speed: 0.0046,
+
+      // ✅ smoothness / pixel control
+      // Higher scale = less pixelation. We also blur composite, so this stays airy.
+      scale: 0.70,     // (0.65–0.85 recommended)
+      fade: 0.22,     // less fade = more presence
+        glow: 0.25,      // tiny bump (still subtle)
+    density: 0.66,   // stronger vapor overall
+
+      // across-screen band behavior
+      amp: 0.16,
+      drift: 0.16,
+      band: 0.16,
+      breakUp: 1.05,
+
+      // composite blur (kills pixel blocks)
+      blurBase: 10,    // main blur pass
+      blurDetail: 4,   // definition pass
+      blurGlow: 14,    // bloom pass
+
+      // mouse drift
+      mx:0, my:0, px:0, py:0
+    };
+
+    function resize(){
+      S.w = Math.floor(window.innerWidth);
+      S.h = Math.floor(window.innerHeight);
+
+      // Main canvas uses DPR for sharp UI layers
+      canvas.width  = Math.floor(S.w * S.dpr);
+      canvas.height = Math.floor(S.h * S.dpr);
+      canvas.style.width  = S.w + "px";
+      canvas.style.height = S.h + "px";
+      ctx.setTransform(S.dpr,0,0,S.dpr,0,0);
+
+      // ✅ Buffer does NOT use DPR (prevents sampling artifacts / “grid” pixels)
+      // Render buffer in its own pixel space
+      buf.width  = Math.floor(S.w * S.scale);
+      buf.height = Math.floor(S.h * S.scale);
+      btx.setTransform(1,0,0,1,0,0);
+
+      // store for step()
+      S.bw = buf.width;
+      S.bh = buf.height;
+
+      // Quality hints
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      btx.imageSmoothingEnabled = true;
+      btx.imageSmoothingQuality = "high";
+
+      // clear
+      btx.fillStyle = "rgba(0,0,0,1)";
+      btx.fillRect(0,0,S.bw,S.bh);
+      ctx.clearRect(0,0,S.w,S.h);
+    }
+    window.addEventListener("resize", resize, { passive:true });
+    resize();
+
+    window.addEventListener("pointermove", (e)=>{
+      S.mx = (e.clientX / S.w) * 2 - 1;
+      S.my = (e.clientY / S.h) * 2 - 1;
+    }, { passive:true });
+
+    const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+
+    // organic-ish fast noise
+    function n2(x,y){
+      return Math.sin(x*1.7 + Math.cos(y*1.3)) * Math.cos(y*1.5 + Math.sin(x*1.1));
+    }
+
+    // Airy puff (no bright white hotspot)
+    function puff(x,y,r, colA, colB, a){
+      const g = btx.createRadialGradient(x,y,0, x,y,r);
+      g.addColorStop(0.00, colA.replace("{a}", (0.52*a).toFixed(4)));
+      g.addColorStop(0.38, colB.replace("{a}", (0.46*a).toFixed(4)));
+      g.addColorStop(0.78, colA.replace("{a}", (0.15*a).toFixed(4)));
+      g.addColorStop(1.00, colA.replace("{a}", "0"));
+      btx.fillStyle = g;
+      btx.beginPath();
+      btx.arc(x,y,r,0,Math.PI*2);
+      btx.fill();
+    }
+
+    // Across-screen centerline
+    function ribbonY(u, yBase, amp, phase){
+      const t = S.t;
+      const f1 = Math.sin(t*0.95 + u*6.2 + phase);
+      const f2 = Math.sin(t*0.55 + u*13.0 - phase*0.7);
+      const f3 = Math.sin(t*1.35 + u*3.2);
+      const wave = f1*0.55 + f2*0.30 + f3*0.15;
+      return yBase + wave * amp;
+    }
+
+    function step(){
+      S.t += S.speed;
+
+      // mouse drift
+      S.px += (S.mx - S.px) * 0.03;
+      S.py += (S.my - S.py) * 0.03;
+
+      const W = S.bw;
+      const H = S.bh;
+
+      // fade buffer (trails)
+      btx.globalCompositeOperation = "source-over";
+      btx.fillStyle = `rgba(0,0,0,${S.fade})`;
+      btx.fillRect(0,0,W,H);
+
+      // draw vapor
+      btx.globalCompositeOperation = "lighter";
+
+      const layers = [
+        { y: 0.33, amp: S.amp*0.85, phase: 0.0,  drift:  0.14, tint: 0.0,  strength: 0.92 },
+        { y: 0.56, amp: S.amp*1.05, phase: 1.4,  drift: -0.10, tint: 1.3,  strength: 0.80 },
+        { y: 0.74, amp: S.amp*0.95, phase: 2.25, drift:  0.08, tint: 2.2,  strength: 0.70 }
+      ];
+
+      for(const L of layers){
+        const sweep  = (Math.sin(S.t*0.55 + L.phase) * 0.5 + 0.5);
+        const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
+
+        const steps = 120; // continuous bands across screen
+
+        for(let i=0;i<=steps;i++){
+          const u = i/steps;
+
+          const TAIL = 520; // <— bigger = longer ends
+          const x = u*(W + TAIL*2) - TAIL + xShift + S.px*16;
+          const yC = ribbonY(u, H*L.y, H*L.amp, L.phase) + S.py*12;
+
+          const band = (S.band * H);
+
+          const tt = S.t*0.9 + L.phase + u*2.0;
+          const wx = n2(tt*0.8, u*4.0 + L.phase);
+          const wy = n2(u*3.0 - L.phase, tt*0.7);
+
+          const jx = wx * band * 0.36 * S.breakUp;
+          const jy = wy * band * 0.30 * S.breakUp;
+
+          // soft color drift; includes #54f3a4 (mint) but avoids too much white
+          const c1 = (Math.sin(S.t*0.30 + L.tint + u*2.1)*0.5 + 0.5);
+          const c2 = (Math.cos(S.t*0.24 - L.tint + u*1.7)*0.5 + 0.5);
+
+          const A = `rgba(${Math.floor(84 + 22*c2)}, ${Math.floor(243 - 18*c1)}, ${Math.floor(164 + 34*c1)}, {a})`; // mint
+          const B = `rgba(${Math.floor(72 + 16*c1)}, ${Math.floor(155 + 120*c2)}, ${Math.floor(125 + 26*c2)}, {a})`;
+
+          const end = 0.35 + 0.65 * (1 - Math.pow(Math.abs(u-0.5)*2, 2.2));
+
+          // PASS 1: wide haze sheet (defines long band, still vapor)
+          const r1 = clamp(band * (1.18 + 0.35*Math.sin(tt)), 52, 220);
+          const a1 = (0.010 + 0.010*c1) * S.density * L.strength * (0.40 + 0.60*end);
+          puff(x, yC, r1, A, B, a1);
+
+          // PASS 2: wisps / inner turbulence
+          const r2 = clamp(r1*0.40, 20, 88);
+          const a2 = a1 * 0.78;
+          puff(x + jx, yC + jy, r2, B, A, a2);
+
+          const off = (wy * 0.5 + 0.5) * band * 0.90;
+          puff(x - jx*0.55, yC + off*0.32, r2*0.78, A, B, a2*0.50);
+          puff(x + jx*0.45, yC - off*0.30, r2*0.72, B, A, a2*0.46);
+        }
+
+        // super soft background volume (very low alpha)
+        const hx = W*0.5 + Math.sin(S.t*0.28 + L.phase)*W*0.12 + S.px*10;
+        const hy = H*L.y + Math.cos(S.t*0.26 - L.phase)*H*0.10 + S.py*8;
+        puff(hx, hy, Math.hypot(W,H)*0.22, "rgba(84,243,164,{a})", "rgba(170,110,255,{a})", 0.009*S.density);
+      }
+
+      btx.globalCompositeOperation = "source-over";
+
+      // ✅ Pixel-killing composite: blur the buffer as we upscale
+      ctx.globalCompositeOperation = "source-over";
+      ctx.clearRect(0,0,S.w,S.h);
+
+      // base pass (soft)
+      ctx.save();
+      ctx.filter = `blur(${S.blurBase}px)`;
+      ctx.globalAlpha = 1;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
+
+      // detail pass (less blur, still smooth)
+      ctx.save();
+      ctx.filter = `blur(${S.blurDetail}px)`;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 0.55;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
+
+      // glow pass (very soft)
+      ctx.save();
+      ctx.filter = `blur(${S.blurGlow}px)`;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = S.glow;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
+
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.filter = "none";
+    }
+
+    gsap.ticker.fps(60);
+    gsap.ticker.add(step);
+
+    // Reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.ticker.remove(step);
+      for(let i=0;i<20;i++) step();
+    }
+  </script>
+  <script src="app.js"></script>
 </body>
 </html>

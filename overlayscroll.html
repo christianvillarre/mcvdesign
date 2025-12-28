@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GSAP Overlay (Pin then Release)</title>
+
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0; height:100%; background:#000; color:#fff; font-family:system-ui,Segoe UI,Roboto,Arial}
+    :root{
+      --accent:#54f3a4;
+      --wrap:min(1100px,92vw);
+      --border:rgba(255,255,255,.14);
+      --muted:rgba(255,255,255,.75);
+    }
+
+    body::before{
+      content:"";
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(circle at top left, rgba(84,243,164,0.22) 0, transparent 38vw),
+        radial-gradient(circle at top right, rgba(84,243,164,0.22) 0, transparent 38vw);
+      opacity:.95;
+    }
+
+    .wrap{width:var(--wrap); margin:0 auto; position:relative; z-index:1}
+
+    /* Stage holds both hero + sheet stacked */
+    .stage{
+      position:relative;
+      height:100vh;            /* only one screen */
+      overflow:hidden;         /* hide sheet while it comes up */
+    }
+
+    .hero{
+      position:absolute;
+      inset:0;
+      display:grid;
+      align-items:center;
+      padding:10vh 0;
+      z-index:1;
+    }
+
+    .kicker{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.6); margin-bottom:14px;}
+    h1{margin:0; font-size:clamp(2.6rem, 6vw, 6rem); line-height:.9; letter-spacing:-.02em;}
+    .accent{color:var(--accent)}
+    .lede{margin-top:14px; max-width:60ch; color:var(--muted); font-weight:300; line-height:1.45; font-size:clamp(1.05rem, 1.7vw, 1.25rem);}
+
+    .sheet{
+      position:absolute;
+      inset:0;
+      z-index:2;               /* above hero */
+      background:#000;
+      border-top:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 -40px 120px rgba(0,0,0,.65);
+      transform: translateY(100%); /* start below */
+      will-change: transform;
+    }
+
+    .section{padding: clamp(2.5rem, 6vw, 5rem) 0;}
+    h2{margin:0 0 14px 0; font-size:clamp(1.9rem, 3.5vw, 3rem); line-height:1;}
+    .copy{margin:0; max-width:70ch; color:rgba(255,255,255,.78); font-weight:300; line-height:1.5; font-size:clamp(1.05rem, 1.6vw, 1.2rem);}
+
+    .cards{margin-top:22px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+    .card{border:1px solid var(--border); border-radius:18px; padding:18px; background:rgba(255,255,255,.02); min-height:160px;}
+    .card b{color:var(--accent)}
+
+    /* After stage, normal page continues */
+    .rest{
+      position:relative;
+      z-index:1;
+      background:#000;
+    }
+
+    @media(max-width:900px){
+      .cards{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- PINNED ONLY DURING OVERLAY -->
+  <section class="stage" id="overlayStage">
+    <div class="hero">
+      <div class="wrap">
+        <div class="kicker">GSAP Overlay</div>
+        <h1><span class="accent">Hero pins</span><br>only during overlay</h1>
+        <p class="lede">
+          Scroll: the sheet slides up over the hero. After it fully covers, pin ends and the page scrolls normally.
+        </p>
+      </div>
+    </div>
+
+    <div class="sheet" id="sheet">
+      <div class="wrap section">
+        <h2>Overlay section</h2>
+        <p class="copy">This is the “next section” sliding over the hero using GSAP + ScrollTrigger.</p>
+
+        <div class="cards">
+          <div class="card"><b>Speed</b><br><span style="color:rgba(255,255,255,.75)">Light + fast.</span></div>
+          <div class="card"><b>SEO</b><br><span style="color:rgba(255,255,255,.75)">Clean structure.</span></div>
+          <div class="card"><b>Leads</b><br><span style="color:rgba(255,255,255,.75)">Clear CTA.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NORMAL CONTENT AFTER -->
+  <main class="rest">
+    <section class="section">
+      <div class="wrap">
+        <h2>Normal scroll continues</h2>
+        <p class="copy">
+          After the overlay completes, you’re just scrolling regular sections.
+        </p>
+        <div style="height:80vh; margin-top:18px; border:1px solid var(--border); border-radius:18px; background:rgba(255,255,255,.02);"></div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <h2>More content</h2>
+        <p class="copy">No “locked” hero feeling, because the pin only lasted for the transition.</p>
+        <div style="height:90vh; margin-top:18px; border:1px solid var(--border); border-radius:18px; background:rgba(255,255,255,.02);"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const stage = document.querySelector("#overlayStage");
+    const sheet = document.querySelector("#sheet");
+
+    // Slide sheet over hero while stage is pinned
+    gsap.to(sheet, {
+      yPercent: -100, // from translateY(100%) to 0% in a way ScrollTrigger likes
+      ease: "none",
+      scrollTrigger: {
+        trigger: stage,
+        start: "top top",
+        end: "+=100%",   // how long the reveal lasts (try 80% or 140%)
+        scrub: true,
+        pin: true,
+        pinSpacing: true,
+        anticipatePin: 1
+      }
+    });
+  </script>
+</body>
+</html>

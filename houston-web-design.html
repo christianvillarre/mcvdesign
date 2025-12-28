@@ -675,9 +675,13 @@
   const buf = document.createElement("canvas");
   const btx = buf.getContext("2d", { alpha: true });
 
-  // ✅ Extra post buffer (mobile-only preblur to kill “circle stamps”)
+  // ✅ Post buffer (mobile uses this as the “melted” source)
   const post = document.createElement("canvas");
   const ptx  = post.getContext("2d", { alpha: true });
+
+  // ✅ Melt buffer (mobile-only downsample → blur → upsample to kill circles)
+  const melt = document.createElement("canvas");
+  const mtx  = melt.getContext("2d", { alpha: true });
 
   const S = {
     w: 0, h: 0,
@@ -711,7 +715,7 @@
   // --- Mobile detection ---
   const IS_MOBILE = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // keep your desktop values as baseline (we restore on desktop)
+  // keep your desktop values as baseline (restored on desktop)
   const DESKTOP = {
     dprMax: 2,
     scale: S.scale,
@@ -722,19 +726,19 @@
 
   // mobile overrides (ONLY mobile changes)
   const MOBILE = {
-    dprMax: 3,          // more pixels for blur on phones
-    scale: 0.92,        // higher buffer res reduces visible circles
-    blurBaseMul: 1.75,  // much blurrier/airier on mobile
+    dprMax: 3,
+    scale: 0.92,        // higher sim res to reduce stamps
+    blurBaseMul: 1.75,  // much blurrier on mobile
     blurDetailMul: 1.45,
     blurGlowMul: 1.85,
-    puffSizeMul: 0.88,  // slightly smaller puffs (reduces “zoomed blobs”)
-    alphaMul: 0.78      // reduces stamp intensity on mobile
+    puffSizeMul: 0.88,
+    alphaMul: 0.78,
+    meltScale: 0.55     // downsample amount (stamp killer)
   };
 
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
   function resize() {
-    // Use visualViewport when available (helps iOS address bar / zoom behavior)
     const vw = window.visualViewport?.width ?? window.innerWidth;
     const vh = window.visualViewport?.height ?? window.innerHeight;
 
@@ -744,7 +748,6 @@
     const dprMax = IS_MOBILE ? MOBILE.dprMax : DESKTOP.dprMax;
     S.dpr = Math.max(1, Math.min(dprMax, window.devicePixelRatio || 1));
 
-    // desktop stays exactly what you set originally
     const scale = IS_MOBILE ? MOBILE.scale : DESKTOP.scale;
 
     // Main canvas uses DPR
@@ -754,15 +757,21 @@
     canvas.style.height = S.h + "px";
     ctx.setTransform(S.dpr, 0, 0, S.dpr, 0, 0);
 
-    // Buffer canvas (sim space) does NOT use DPR
+    // Sim buffer
     buf.width = Math.floor(S.w * scale);
     buf.height = Math.floor(S.h * scale);
     btx.setTransform(1, 0, 0, 1, 0, 0);
 
-    // Post buffer matches sim space
+    // Post buffer matches sim
     post.width = buf.width;
     post.height = buf.height;
     ptx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // Melt buffer is downsampled on mobile only
+    const meltScale = IS_MOBILE ? MOBILE.meltScale : 1;
+    melt.width  = Math.max(1, Math.floor(buf.width  * meltScale));
+    melt.height = Math.max(1, Math.floor(buf.height * meltScale));
+    mtx.setTransform(1, 0, 0, 1, 0, 0);
 
     S.bw = buf.width;
     S.bh = buf.height;
@@ -778,23 +787,25 @@
       S.blurGlow = DESKTOP.blurGlow;
     }
 
-    // Quality hints
+    // quality hints
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
     btx.imageSmoothingEnabled = true;
     btx.imageSmoothingQuality = "high";
     ptx.imageSmoothingEnabled = true;
     ptx.imageSmoothingQuality = "high";
+    mtx.imageSmoothingEnabled = true;
+    mtx.imageSmoothingQuality = "high";
 
     // clear
     btx.fillStyle = "rgba(0,0,0,1)";
     btx.fillRect(0, 0, S.bw, S.bh);
     ptx.clearRect(0, 0, S.bw, S.bh);
+    mtx.clearRect(0, 0, melt.width, melt.height);
     ctx.clearRect(0, 0, S.w, S.h);
   }
 
   window.addEventListener("resize", resize, { passive: true });
-  // some mobile browsers resize via visualViewport changes
   window.visualViewport?.addEventListener("resize", resize, { passive: true });
   resize();
 
@@ -866,7 +877,9 @@
       const sweep = Math.sin(S.t * 0.55 + L.phase) * 0.5 + 0.5;
       const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
 
-      const steps = 120; // band resolution
+      // ✅ increase overlap on mobile (less stamp visibility)
+      const steps = IS_MOBILE ? 190 : 120;
+
       for (let i = 0; i <= steps; i++) {
         const u = i / steps;
 
@@ -886,7 +899,6 @@
         // ✅ Mobile color lock: ignore L.tint on phones so ribbons don’t turn blue
         const tint = IS_MOBILE ? 0 : L.tint;
 
-        // subtle drift drivers
         const c1 = Math.sin(S.t * 0.30 + tint + u * 2.1) * 0.5 + 0.5;
         const c2 = Math.cos(S.t * 0.24 - tint + u * 1.7) * 0.5 + 0.5;
 
@@ -913,7 +925,7 @@
           L.strength *
           (0.40 + 0.60 * end);
 
-        // ✅ Mobile reduces stamp intensity (keeps same shape)
+        // ✅ Mobile reduces stamp intensity
         const a1 = IS_MOBILE ? a1Base * MOBILE.alphaMul : a1Base;
 
         puff(x, yC, r1, A, B, a1);
@@ -944,21 +956,34 @@
 
     btx.globalCompositeOperation = "source-over";
 
-    // ✅ MOBILE PREBLUR: blur buf into post at sim resolution (kills visible circles)
+    // ✅ MOBILE “STAMP KILLER”: downsample → blur → upsample into post
     let SRC = buf;
+
     if (IS_MOBILE) {
+      // 1) Downsample buf into melt (blends circle edges)
+      mtx.globalCompositeOperation = "source-over";
+      mtx.clearRect(0, 0, melt.width, melt.height);
+      mtx.filter = "none";
+      mtx.globalAlpha = 1;
+      mtx.drawImage(buf, 0, 0, W, H, 0, 0, melt.width, melt.height);
+
+      // 2) Blur the small image (strong + cheap)
+      mtx.filter = `blur(${Math.max(10, S.blurBase * 0.9)}px)`;
+      mtx.globalAlpha = 1;
+      mtx.drawImage(melt, 0, 0);
+
+      // 3) Upsample into post with heavy blur = vapor
       ptx.globalCompositeOperation = "source-over";
       ptx.clearRect(0, 0, W, H);
 
-      // strong blur pass
-      ptx.filter = `blur(${Math.max(12, S.blurBase * 1.15)}px)`;
+      ptx.filter = `blur(${Math.max(18, S.blurBase * 1.35)}px)`;
       ptx.globalAlpha = 1;
-      ptx.drawImage(buf, 0, 0);
+      ptx.drawImage(melt, 0, 0, melt.width, melt.height, 0, 0, W, H);
 
-      // secondary softening
-      ptx.filter = `blur(${Math.max(7, S.blurDetail * 1.10)}px)`;
-      ptx.globalAlpha = 0.85;
-      ptx.drawImage(buf, 0, 0);
+      // extra smoothing pass
+      ptx.filter = `blur(${Math.max(10, S.blurDetail * 1.6)}px)`;
+      ptx.globalAlpha = 0.9;
+      ptx.drawImage(melt, 0, 0, melt.width, melt.height, 0, 0, W, H);
 
       ptx.filter = "none";
       ptx.globalAlpha = 1;

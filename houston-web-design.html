@@ -729,20 +729,20 @@
 const MOBILE = {
   dprMax: 3,
 
-  // keep enough buffer detail for blur to blend smoothly
-  scale: 1.05,
+  // keep buffer very high-res so blur has data
+  scale: 1.08,
 
-  // blur (you can keep these high)
-  blurBaseMul: 3.4,
-  blurDetailMul: 2.4,
-  blurGlowMul: 3.2,
+  // heavy but controlled blur
+  blurBaseMul: 3.6,
+  blurDetailMul: 2.6,
+  blurGlowMul: 3.4,
 
-  // ✅ these two matter most for “visible circles”
-  puffSizeMul: 0.78,   // smaller stamps
-  alphaMul: 0.52,      // more transparent stamps
+  // ✅ biggest wins for hiding circles
+  puffSizeMul: 0.70,   // noticeably smaller stamps
+  alphaMul: 0.44,      // much more transparent
 
-  // ✅ stronger stamp killer (smaller = more melt)
-  meltScale: 0.32
+  // ✅ strongest stamp killer
+  meltScale: 0.26      // very aggressive downsample → blur → upsample
 };
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
@@ -935,12 +935,13 @@ const MOBILE = {
 
         // ✅ Mobile reduces stamp intensity
         const a1 = IS_MOBILE ? a1Base * MOBILE.alphaMul : a1Base;
+        
 
         puff(x, yC, r1, A, B, a1);
 
         // PASS 2: inner wisps
         const r2 = clamp(r1 * 0.40, 20, 88);
-        const a2 = a1 * 0.78;
+        const a2 = IS_MOBILE ? a1 * 0.52 : a1 * 0.78;
 
         puff(x + jx, yC + jy, r2, B, A, a2);
 

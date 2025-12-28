@@ -732,15 +732,10 @@
     mobileSimLongSide: 980,   // try 900–1100; higher = smoother/heavier
 
     // ✅ Mobile: “melt” normalization (downsample → blur hard → upsample)
-    mobileMeltDown: 0.32,
-    mobileMeltBlur: 2,
-
-    // ✅ Mobile: soften detail pass so circles don’t reappear
-    mobileDetailAlpha: 0.30,
-
-    // ✅ Mobile: optional dither strength (0 to disable)
-    mobileDitherAlpha: 0.03,
-
+  mobileMeltDown: 0.62,     // don't go super low (0.32 is too mushy)
+mobileMeltBlur: 12,       // moderate melt (not foggy)
+mobileDetailAlpha: 0.24,  // keep detail but don’t bring back discs
+mobileDitherAlpha: 0.010, // tiny — should NOT look grainy
     mx:0, my:0, px:0, py:0
   };
 

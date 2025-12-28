@@ -729,22 +729,21 @@
 const MOBILE = {
   dprMax: 3,
 
-  // ✅ Higher sim/buffer res (reduces visible circles)
-  scale: 0.95,          // try 0.90–1.05
+  // buffer resolution (keep high so blur has data)
+  scale: 1.02,          // 0.95–1.10
 
-  // ✅ More blur on mobile composite
-  blurBaseMul: 2.25,    // try 2.0–2.8
-  blurDetailMul: 1.80,  // try 1.5–2.2
-  blurGlowMul: 2.20,    // try 1.8–2.7
+  // heavier composite blur
+  blurBaseMul: 3.75,    // 2.4–3.2
+  blurDetailMul: 2.25,  // 1.7–2.4
+  blurGlowMul: 3.85,    // 2.2–3.4
 
-  // ✅ Make puffs slightly smaller + less “stampy”
-  puffSizeMul: 0.84,    // try 0.78–0.90
-  alphaMul: 0.68,       // try 0.55–0.75
+  // reduce stamp feel
+  puffSizeMul: 0.78,    // 0.72–0.85
+  alphaMul: 0.58,       // 0.48–0.65
 
-  // ✅ Stronger stamp killer (smaller meltScale = more melt)
-  meltScale: 0.48       // try 0.40–0.55
+  // stamp killer (more melt)
+  meltScale: 0.40       // 0.34–0.48
 };
-
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
   function resize() {

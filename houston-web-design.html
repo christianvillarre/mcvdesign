@@ -675,11 +675,11 @@
   const buf = document.createElement("canvas");
   const btx = buf.getContext("2d", { alpha: true });
 
-  // ✅ Post buffer (mobile uses this as the “melted” source)
+  // Post buffer (mobile uses this as the “melted” source)
   const post = document.createElement("canvas");
   const ptx  = post.getContext("2d", { alpha: true });
 
-  // ✅ Melt buffer (mobile-only downsample → blur → upsample to kill circles)
+  // Melt buffer (mobile-only downsample → blur → upsample to kill circles)
   const melt = document.createElement("canvas");
   const mtx  = melt.getContext("2d", { alpha: true });
 
@@ -691,7 +691,7 @@
     // slow drift
     speed: 0.0046,
 
-    // ✅ smoothness / pixel control
+    // smoothness / pixel control
     scale: 0.70,   // desktop baseline (kept)
     fade: 0.22,
     glow: 0.25,
@@ -712,10 +712,10 @@
     mx: 0, my: 0, px: 0, py: 0
   };
 
-  // --- Mobile detection ---
+  // Mobile detection
   const IS_MOBILE = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // keep your desktop values as baseline (restored on desktop)
+  // Desktop baseline (restored on desktop)
   const DESKTOP = {
     dprMax: 2,
     scale: S.scale,
@@ -724,31 +724,32 @@
     blurGlow: S.blurGlow
   };
 
-  // mobile overrides (ONLY mobile changes)
-// mobile overrides (ONLY mobile changes)
-const MOBILE = {
-  dprMax: 3,
+  // ✅ Mobile overrides (ONLY mobile changes)
+  const MOBILE = {
+    dprMax: 3,
 
-  // keep enough buffer detail for blur to blend smoothly
-  scale: 1.15,
+    // keep enough buffer detail for blur to blend smoothly
+    scale: 1.05,
 
-  // blur (you can keep these high)
-  blurBaseMul: 3.2,
-  blurDetailMul: 2.4,
-  blurGlowMul: 3.2,
+    // blur
+    blurBaseMul: 3.2,
+    blurDetailMul: 2.4,
+    blurGlowMul: 3.2,
 
-  // ✅ these two matter most for “visible circles”
-  puffSizeMul: 0.98,   // smaller stamps
-  alphaMul: 0.72,      // more transparent stamps
+    // “visible circles” killers
+    puffSizeMul: 0.58,
+    alphaMul: 0.32,
 
-  // ✅ stronger stamp killer (smaller = more melt)
-  meltScale: 0.22
-};
+    // stamp killer
+    meltScale: 0.22
+  };
+
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
   function resize() {
-    const vw = window.visualViewport?.width ?? window.innerWidth;
-    const vh = window.visualViewport?.height ?? window.innerHeight;
+    // ✅ IMPORTANT: on mobile, DO NOT use visualViewport (it changes while scrolling)
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
     S.w = Math.floor(vw);
     S.h = Math.floor(vh);
@@ -759,19 +760,19 @@ const MOBILE = {
     const scale = IS_MOBILE ? MOBILE.scale : DESKTOP.scale;
 
     // Main canvas uses DPR
-    canvas.width = Math.floor(S.w * S.dpr);
+    canvas.width  = Math.floor(S.w * S.dpr);
     canvas.height = Math.floor(S.h * S.dpr);
-    canvas.style.width = S.w + "px";
+    canvas.style.width  = S.w + "px";
     canvas.style.height = S.h + "px";
     ctx.setTransform(S.dpr, 0, 0, S.dpr, 0, 0);
 
     // Sim buffer
-    buf.width = Math.floor(S.w * scale);
+    buf.width  = Math.floor(S.w * scale);
     buf.height = Math.floor(S.h * scale);
     btx.setTransform(1, 0, 0, 1, 0, 0);
 
     // Post buffer matches sim
-    post.width = buf.width;
+    post.width  = buf.width;
     post.height = buf.height;
     ptx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -786,13 +787,13 @@ const MOBILE = {
 
     // blur tuning (ONLY mobile changes)
     if (IS_MOBILE) {
-      S.blurBase = Math.round(DESKTOP.blurBase * MOBILE.blurBaseMul);
+      S.blurBase   = Math.round(DESKTOP.blurBase   * MOBILE.blurBaseMul);
       S.blurDetail = Math.round(DESKTOP.blurDetail * MOBILE.blurDetailMul);
-      S.blurGlow = Math.round(DESKTOP.blurGlow * MOBILE.blurGlowMul);
+      S.blurGlow   = Math.round(DESKTOP.blurGlow   * MOBILE.blurGlowMul);
     } else {
-      S.blurBase = DESKTOP.blurBase;
+      S.blurBase   = DESKTOP.blurBase;
       S.blurDetail = DESKTOP.blurDetail;
-      S.blurGlow = DESKTOP.blurGlow;
+      S.blurGlow   = DESKTOP.blurGlow;
     }
 
     // quality hints
@@ -813,18 +814,14 @@ const MOBILE = {
     ctx.clearRect(0, 0, S.w, S.h);
   }
 
+  // ✅ Only listen to normal window resize. (visualViewport resize causes “fade” on scroll on mobile)
   window.addEventListener("resize", resize, { passive: true });
-  window.visualViewport?.addEventListener("resize", resize, { passive: true });
   resize();
 
-  window.addEventListener(
-    "pointermove",
-    (e) => {
-      S.mx = (e.clientX / S.w) * 2 - 1;
-      S.my = (e.clientY / S.h) * 2 - 1;
-    },
-    { passive: true }
-  );
+  window.addEventListener("pointermove", (e) => {
+    S.mx = (e.clientX / S.w) * 2 - 1;
+    S.my = (e.clientY / S.h) * 2 - 1;
+  }, { passive: true });
 
   // organic-ish fast noise
   function n2(x, y) {
@@ -837,10 +834,10 @@ const MOBILE = {
   // Airy puff (no bright white hotspot)
   function puff(x, y, r, colA, colB, a) {
     const g = btx.createRadialGradient(x, y, 0, x, y, r);
-    g.addColorStop(0.0, colA.replace("{a}", (0.52 * a).toFixed(4)));
+    g.addColorStop(0.0,  colA.replace("{a}", (0.52 * a).toFixed(4)));
     g.addColorStop(0.38, colB.replace("{a}", (0.46 * a).toFixed(4)));
     g.addColorStop(0.78, colA.replace("{a}", (0.15 * a).toFixed(4)));
-    g.addColorStop(1.0, colA.replace("{a}", "0"));
+    g.addColorStop(1.0,  colA.replace("{a}", "0"));
     btx.fillStyle = g;
     btx.beginPath();
     btx.arc(x, y, r, 0, Math.PI * 2);
@@ -853,14 +850,14 @@ const MOBILE = {
     const f1 = Math.sin(t * 0.95 + u * 6.2 + phase);
     const f2 = Math.sin(t * 0.55 + u * 13.0 - phase * 0.7);
     const f3 = Math.sin(t * 1.35 + u * 3.2);
-    const wave = f1 * 0.55 + f2 * 0.3 + f3 * 0.15;
+    const wave = f1 * 0.55 + f2 * 0.30 + f3 * 0.15;
     return yBase + wave * amp;
   }
 
   function step() {
     S.t += S.speed;
 
-    // mouse drift (soft)
+    // mouse drift
     S.px += (S.mx - S.px) * 0.03;
     S.py += (S.my - S.py) * 0.03;
 
@@ -876,23 +873,22 @@ const MOBILE = {
     btx.globalCompositeOperation = "lighter";
 
     const layers = [
-      { y: 0.33, amp: S.amp * 0.85, phase: 0.0, drift: 0.14, tint: 0.0, strength: 0.92 },
-      { y: 0.56, amp: S.amp * 1.05, phase: 1.4, drift: -0.10, tint: 1.3, strength: 0.80 },
-      { y: 0.74, amp: S.amp * 0.95, phase: 2.25, drift: 0.08, tint: 2.2, strength: 0.70 }
+      { y: 0.33, amp: S.amp * 0.85, phase: 0.0,  drift:  0.14, tint: 0.0, strength: 0.92 },
+      { y: 0.56, amp: S.amp * 1.05, phase: 1.4,  drift: -0.10, tint: 1.3, strength: 0.80 },
+      { y: 0.74, amp: S.amp * 0.95, phase: 2.25, drift:  0.08, tint: 2.2, strength: 0.70 }
     ];
 
     for (const L of layers) {
-      const sweep = Math.sin(S.t * 0.55 + L.phase) * 0.5 + 0.5;
+      const sweep  = (Math.sin(S.t * 0.55 + L.phase) * 0.5 + 0.5);
       const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
 
-      // ✅ increase overlap on mobile (less stamp visibility)
       const steps = IS_MOBILE ? 190 : 120;
 
       for (let i = 0; i <= steps; i++) {
         const u = i / steps;
 
         const TAIL = 520;
-        const x = u * (W + TAIL * 2) - TAIL + xShift + S.px * 16;
+        const x  = u * (W + TAIL * 2) - TAIL + xShift + S.px * 16;
         const yC = ribbonY(u, H * L.y, H * L.amp, L.phase) + S.py * 12;
 
         const band = S.band * H;
@@ -904,27 +900,25 @@ const MOBILE = {
         const jx = wx * band * 0.36 * S.breakUp;
         const jy = wy * band * 0.30 * S.breakUp;
 
-        // ✅ Mobile color lock: ignore L.tint on phones so ribbons don’t turn blue
+        // ✅ Mobile color lock
         const tint = IS_MOBILE ? 0 : L.tint;
 
-        const c1 = Math.sin(S.t * 0.30 + tint + u * 2.1) * 0.5 + 0.5;
-        const c2 = Math.cos(S.t * 0.24 - tint + u * 1.7) * 0.5 + 0.5;
+        const c1 = (Math.sin(S.t * 0.30 + tint + u * 2.1) * 0.5 + 0.5);
+        const c2 = (Math.cos(S.t * 0.24 - tint + u * 1.7) * 0.5 + 0.5);
 
-        // ✅ Stable mint palette (mobile tighter so it can’t shift cyan)
-        const gBoost = (IS_MOBILE ? 10 : 18) * (c2 - 0.5);
-        const bBoost = (IS_MOBILE ? 4 : 10) * (c1 - 0.5);
+        // ✅ Stable mint palette (mobile: NO blue drift)
+        const gBoost = (IS_MOBILE ? 6 : 18) * (c2 - 0.5);
+        const bBoost = (IS_MOBILE ? 0 : 10) * (c1 - 0.5);
 
-        const baseR = 84;
-        const baseG = 243;
-        const baseB = 164;
+        const baseR = 84, baseG = 243, baseB = 164;
 
-        const A = `rgba(${baseR}, ${clamp(baseG + gBoost, 225, 255)}, ${clamp(baseB + bBoost, 150, 175)}, {a})`;
-        const B = `rgba(${clamp(baseR - 10, 60, 90)}, ${clamp(baseG - 55 + gBoost, 160, 215)}, ${clamp(baseB - 35 + bBoost, 120, 155)}, {a})`;
+        const A = `rgba(${baseR}, ${clamp(baseG + gBoost, 232, 255)}, ${clamp(baseB + bBoost, 160, 170)}, {a})`;
+        const B = `rgba(${clamp(baseR - 12, 60, 90)}, ${clamp(baseG - 60 + gBoost, 170, 215)}, ${clamp(baseB - 30 + bBoost, 130, 150)}, {a})`;
 
         const end = 0.35 + 0.65 * (1 - Math.pow(Math.abs(u - 0.5) * 2, 2.2));
         const sizeMul = IS_MOBILE ? MOBILE.puffSizeMul : 1;
 
-        // PASS 1: wide haze sheet
+        // PASS 1
         const r1 = clamp(band * (1.18 + 0.35 * Math.sin(tt)) * sizeMul, 52, 220);
 
         const a1Base =
@@ -933,65 +927,63 @@ const MOBILE = {
           L.strength *
           (0.40 + 0.60 * end);
 
-        // ✅ Mobile reduces stamp intensity
         const a1 = IS_MOBILE ? a1Base * MOBILE.alphaMul : a1Base;
-        
-
         puff(x, yC, r1, A, B, a1);
 
-        // PASS 2: inner wisps
+        // PASS 2 (inner wisps) ✅ reduced on mobile
         const r2 = clamp(r1 * 0.40, 20, 88);
-        const a2 = a1 * 0.78;
+        const a2 = IS_MOBILE ? a1 * 0.38 : a1 * 0.78;
 
         puff(x + jx, yC + jy, r2, B, A, a2);
 
         const off = (wy * 0.5 + 0.5) * band * 0.90;
-        puff(x - jx * 0.55, yC + off * 0.32, r2 * 0.78, A, B, a2 * 0.50);
-        puff(x + jx * 0.45, yC - off * 0.30, r2 * 0.72, B, A, a2 * 0.46);
+        puff(x - jx * 0.55, yC + off * 0.32, r2 * 0.78, A, B, IS_MOBILE ? a2 * 0.22 : a2 * 0.50);
+        puff(x + jx * 0.45, yC - off * 0.30, r2 * 0.72, B, A, IS_MOBILE ? a2 * 0.20 : a2 * 0.46);
       }
 
-      // super soft background volume
+      // super soft background volume (mobile: mint-only, no purple)
       const hx = W * 0.5 + Math.sin(S.t * 0.28 + L.phase) * W * 0.12 + S.px * 10;
       const hy = H * L.y + Math.cos(S.t * 0.26 - L.phase) * H * 0.10 + S.py * 8;
+
       puff(
         hx,
         hy,
         Math.hypot(W, H) * 0.22,
         "rgba(84,243,164,{a})",
-        "rgba(170,110,255,{a})",
+        IS_MOBILE ? "rgba(84,243,164,{a})" : "rgba(170,110,255,{a})",
         0.009 * S.density
       );
     }
 
     btx.globalCompositeOperation = "source-over";
 
-    // ✅ MOBILE “STAMP KILLER”: downsample → blur → upsample into post
+    // ✅ MOBILE “STAMP KILLER”
     let SRC = buf;
 
     if (IS_MOBILE) {
-      // 1) Downsample buf into melt (blends circle edges)
+      // 1) Downsample buf → melt
       mtx.globalCompositeOperation = "source-over";
       mtx.clearRect(0, 0, melt.width, melt.height);
       mtx.filter = "none";
       mtx.globalAlpha = 1;
       mtx.drawImage(buf, 0, 0, W, H, 0, 0, melt.width, melt.height);
 
-      // 2) Blur the small image (strong + cheap)
-      mtx.filter = `blur(${Math.max(10, S.blurBase * 0.9)}px)`;
+      // 2) Blur small image
+      mtx.filter = `blur(${Math.max(14, S.blurBase * 0.95)}px)`;
       mtx.globalAlpha = 1;
       mtx.drawImage(melt, 0, 0);
 
-      // 3) Upsample into post with heavy blur = vapor
+      // 3) Upsample → post with heavy blur
       ptx.globalCompositeOperation = "source-over";
       ptx.clearRect(0, 0, W, H);
 
-      ptx.filter = `blur(${Math.max(18, S.blurBase * 1.35)}px)`;
+      ptx.filter = `blur(${Math.max(22, S.blurBase * 1.55)}px)`;
       ptx.globalAlpha = 1;
       ptx.drawImage(melt, 0, 0, melt.width, melt.height, 0, 0, W, H);
 
       // extra smoothing pass
-      ptx.filter = `blur(${Math.max(10, S.blurDetail * 1.6)}px)`;
-      ptx.globalAlpha = 0.9;
+      ptx.filter = `blur(${Math.max(12, S.blurDetail * 2.0)}px)`;
+      ptx.globalAlpha = 0.92;
       ptx.drawImage(melt, 0, 0, melt.width, melt.height, 0, 0, W, H);
 
       ptx.filter = "none";

@@ -671,16 +671,15 @@
   const canvas = document.getElementById("vapor");
   const ctx = canvas.getContext("2d", { alpha:true });
 
-  // Offscreen buffer (simulation)
+  // Offscreen buffer
   const buf = document.createElement("canvas");
   const btx = buf.getContext("2d", { alpha:true });
 
-  // ✅ Mobile detection
+  // ✅ mobile detection (real devices)
   const mqMobile = window.matchMedia("(max-width: 980px), (hover: none) and (pointer: coarse)");
   let isMobile = mqMobile.matches;
   mqMobile.addEventListener?.("change", (e)=>{
     isMobile = e.matches;
-    if (isMobile) buildPuffTexture();
     resize();
   });
 
@@ -689,11 +688,12 @@
     dpr: Math.max(1, Math.min(2, window.devicePixelRatio || 1)),
     t:0,
 
-    // slow drift
     speed: 0.0046,
 
-    // Desktop baseline (your original values)
+    // base sim resolution
     scale: 0.70,
+    mobileScale: 0.90,
+
     fade: 0.22,
     glow: 0.25,
     density: 0.66,
@@ -707,13 +707,10 @@
     blurDetail: 4,
     blurGlow: 14,
 
-    // ✅ Mobile sim res (a little higher)
-    mobileScale: 0.92,
-
-    // ✅ Mobile stamping (IMPORTANT: lower gain + hard cap = no blob)
-    mobileStampGain: 6.0,    // was way too high before
-    mobileStampMaxA: 0.14,   // cap per-stamp alpha
-    mobileStampJitter: 0.14, // small stable rotation
+    // ✅ Mobile ribbon thickness & softness controls
+    mobileBandMul: 1.15,     // thicker ribbon to feel “solid”
+    mobileWispMul: 0.55,     // how much extra texture wisps add
+    mobileEdgeFeather: 0.75, // blur on the ribbon fill (in buf-space)
 
     mx:0, my:0, px:0, py:0
   };
@@ -722,14 +719,12 @@
     S.w = Math.floor(window.innerWidth);
     S.h = Math.floor(window.innerHeight);
 
-    // Main canvas DPR
     canvas.width  = Math.floor(S.w * S.dpr);
     canvas.height = Math.floor(S.h * S.dpr);
     canvas.style.width  = S.w + "px";
     canvas.style.height = S.h + "px";
     ctx.setTransform(S.dpr,0,0,S.dpr,0,0);
 
-    // Sim buffer (no DPR)
     const simScale = isMobile ? S.mobileScale : S.scale;
     buf.width  = Math.floor(S.w * simScale);
     buf.height = Math.floor(S.h * simScale);
@@ -743,7 +738,6 @@
     btx.imageSmoothingEnabled = true;
     btx.imageSmoothingQuality = "high";
 
-    // clear
     btx.fillStyle = "rgba(0,0,0,1)";
     btx.fillRect(0,0,S.bw,S.bh);
     ctx.clearRect(0,0,S.w,S.h);
@@ -762,67 +756,8 @@
     return Math.sin(x*1.7 + Math.cos(y*1.3)) * Math.cos(y*1.5 + Math.sin(x*1.1));
   }
 
-  // ✅ deterministic “random” (no flicker)
-  function hash01(a,b,c){
-    // stable [0,1)
-    const s = Math.sin(a*127.1 + b*311.7 + c*74.7) * 43758.5453123;
-    return s - Math.floor(s);
-  }
-
-  // ---------------------------
-  // ✅ MOBILE-ONLY puff texture
-  // ---------------------------
-  let puffTex = null;
-
-  function buildPuffTexture(){
-    if (!isMobile) return;
-
-    const size = 256;
-    puffTex = document.createElement("canvas");
-    puffTex.width = size;
-    puffTex.height = size;
-
-    const ptx = puffTex.getContext("2d", { alpha:true });
-    const img = ptx.createImageData(size, size);
-
-    const cx = size * 0.5, cy = size * 0.5;
-    const R = size * 0.5;
-
-    for (let y=0; y<size; y++){
-      for (let x=0; x<size; x++){
-        const dx = (x - cx) / R;
-        const dy = (y - cy) / R;
-        const r = Math.sqrt(dx*dx + dy*dy);
-
-        // soft falloff + noise baked into pixels (no runtime gradients => no rings)
-        let a = Math.max(0, 1 - Math.pow(r, 1.55));
-        const mid = Math.max(0, 1 - Math.abs(r - 0.55) / 0.55);
-        a *= (1 + (Math.random()*2-1) * 0.22 * mid);
-        a *= Math.max(0, 1 - Math.pow(r, 6.0));
-
-        const i = (y*size + x) * 4;
-        img.data[i+0] = 255;
-        img.data[i+1] = 255;
-        img.data[i+2] = 255;
-        img.data[i+3] = Math.floor(clamp(a,0,1) * 255);
-      }
-    }
-    ptx.putImageData(img, 0, 0);
-
-    // soften slightly
-    ptx.globalAlpha = 0.18;
-    for(let k=0;k<10;k++){
-      const ox = (Math.random()*2-1) * 2.0;
-      const oy = (Math.random()*2-1) * 2.0;
-      ptx.drawImage(puffTex, ox, oy);
-    }
-    ptx.globalAlpha = 1;
-  }
-
-  if (isMobile) buildPuffTexture();
-
-  // Desktop: original gradient puff
-  function puffGradient(x,y,r, colA, colB, a){
+  // Desktop puff (your exact original)
+  function puff(x,y,r, colA, colB, a){
     const g = btx.createRadialGradient(x,y,0, x,y,r);
     g.addColorStop(0.00, colA.replace("{a}", (0.52*a).toFixed(4)));
     g.addColorStop(0.38, colB.replace("{a}", (0.46*a).toFixed(4)));
@@ -834,61 +769,113 @@
     btx.fill();
   }
 
-  // Mobile: stamp puff (stable, not flickery)
-  function puffStamp(x,y,r, colA, colB, a, seed){
-    if (!puffTex) buildPuffTexture();
-    if (!puffTex) return;
-
-    // boost faint alpha, but keep it controlled
-    let A = a * S.mobileStampGain;
-    A = clamp(A, 0, S.mobileStampMaxA);
-    if (A <= 0.00005) return;
-
-    // stable jitter + stable tint selection (NO Math.random)
-    const h1 = hash01(x, y, seed);
-    const h2 = hash01(x+17.3, y-9.1, seed);
-
-    const rot = (h1*2 - 1) * S.mobileStampJitter;
-    const useA = h2 < 0.55;
-    const tint = (useA ? colA : colB).replace("{a}", "1");
-
-    const size = r * 2;
-
-    btx.save();
-    btx.translate(x, y);
-    btx.rotate(rot);
-
-    // 1) stamp alpha
-    btx.globalCompositeOperation = "source-over";
-    btx.globalAlpha = A;
-    btx.drawImage(puffTex, -r, -r, size, size);
-
-    // 2) colorize the alpha
-    btx.globalCompositeOperation = "source-in";
-    btx.globalAlpha = 1;
-    btx.fillStyle = tint;
-    btx.fillRect(-r, -r, size, size);
-
-    btx.restore();
-  }
-
-  function puff(x,y,r, colA, colB, a, seed){
-    if (isMobile) puffStamp(x,y,r,colA,colB,a,seed);
-    else puffGradient(x,y,r,colA,colB,a);
-  }
-
+  // Ribbon centerline
   function ribbonY(u, yBase, amp, phase){
     const t = S.t;
     const f1 = Math.sin(t*0.95 + u*6.2 + phase);
     const f2 = Math.sin(t*0.55 + u*13.0 - phase*0.7);
     const f3 = Math.sin(t*1.35 + u*3.2);
-    return yBase + (f1*0.55 + f2*0.30 + f3*0.15) * amp;
+    const wave = f1*0.55 + f2*0.30 + f3*0.15;
+    return yBase + wave * amp;
+  }
+
+  // ✅ MOBILE: draw a continuous filled ribbon (solid, not dots)
+  function drawSolidRibbon({
+    yFrac, ampFrac, phase, drift,
+    tint, strength
+  }){
+    const W = S.bw, H = S.bh;
+    const steps = 140;
+
+    const sweep  = (Math.sin(S.t*0.55 + phase) * 0.5 + 0.5);
+    const xShift = (sweep * 0.7 + 0.15) * W * drift;
+
+    // band thickness in buf-space
+    const band = (S.band * H) * S.mobileBandMul;
+
+    // Build top and bottom edges
+    const top = new Array(steps+1);
+    const bot = new Array(steps+1);
+
+    for(let i=0;i<=steps;i++){
+      const u = i/steps;
+
+      const TAIL = 520;
+      const x = u*(W + TAIL*2) - TAIL + xShift + S.px*16;
+
+      const yC = ribbonY(u, H*yFrac, H*ampFrac, phase) + S.py*12;
+
+      // turbulence to avoid “perfect strip”
+      const tt = S.t*0.9 + phase + u*2.0;
+      const wy = n2(u*3.0 - phase, tt*0.7);
+
+      // thickness variation along ribbon
+      const thick = band * (0.72 + 0.28*(wy*0.5+0.5));
+
+      top[i] = { x, y: yC - thick*0.55 };
+      bot[i] = { x, y: yC + thick*0.55 };
+    }
+
+    // soft color drift (same palette idea)
+    const c1 = (Math.sin(S.t*0.30 + tint)*0.5 + 0.5);
+    const c2 = (Math.cos(S.t*0.24 - tint)*0.5 + 0.5);
+
+    const r = Math.floor(84 + 22*c2);
+    const g = Math.floor(243 - 18*c1);
+    const b = Math.floor(164 + 34*c1);
+
+    // alpha (solid ribbon uses fill alpha instead of many dots)
+    const a = clamp(0.030 * S.density * strength, 0, 0.12);
+
+    btx.save();
+    btx.globalCompositeOperation = "lighter";
+    btx.globalAlpha = a;
+
+    // feather edges a bit (in buf-space)
+    btx.filter = `blur(${S.mobileEdgeFeather}px)`;
+    btx.fillStyle = `rgba(${r},${g},${b},1)`;
+
+    // fill polygon (top forward, bottom backward)
+    btx.beginPath();
+    btx.moveTo(top[0].x, top[0].y);
+    for(let i=1;i<=steps;i++) btx.lineTo(top[i].x, top[i].y);
+    for(let i=steps;i>=0;i--) btx.lineTo(bot[i].x, bot[i].y);
+    btx.closePath();
+    btx.fill();
+
+    btx.filter = "none";
+    btx.restore();
+
+    // ✅ add a couple of very soft “wisps” WITHOUT radial gradients
+    // Use thick stroked lines (solid -> blurred later)
+    const wispA = a * S.mobileWispMul;
+
+    btx.save();
+    btx.globalCompositeOperation = "lighter";
+    btx.globalAlpha = wispA;
+    btx.lineCap = "round";
+    btx.lineJoin = "round";
+
+    // a few offset strokes
+    for(let k=0;k<3;k++){
+      const off = (k-1) * band * 0.22;
+      btx.strokeStyle = `rgba(${r},${g},${b},1)`;
+      btx.lineWidth = Math.max(2, band * (0.22 - k*0.04));
+      btx.beginPath();
+      btx.moveTo(top[0].x, (top[0].y + bot[0].y)*0.5 + off);
+      for(let i=1;i<=steps;i++){
+        const yy = (top[i].y + bot[i].y)*0.5 + off;
+        btx.lineTo(top[i].x, yy);
+      }
+      btx.stroke();
+    }
+
+    btx.restore();
   }
 
   function step(){
     S.t += S.speed;
 
-    // mouse drift
     S.px += (S.mx - S.px) * 0.03;
     S.py += (S.my - S.py) * 0.03;
 
@@ -899,62 +886,76 @@
     btx.fillStyle = `rgba(0,0,0,${S.fade})`;
     btx.fillRect(0,0,W,H);
 
-    // accumulate vapor
-    btx.globalCompositeOperation = "lighter";
-
+    // desktop draws puffs; mobile draws solid ribbons
     const layers = [
-      { y: 0.33, amp: S.amp*0.85, phase: 0.0,  drift:  0.14, tint: 0.0,  strength: 0.92, seed: 11.0 },
-      { y: 0.56, amp: S.amp*1.05, phase: 1.4,  drift: -0.10, tint: 1.3,  strength: 0.80, seed: 22.0 },
-      { y: 0.74, amp: S.amp*0.95, phase: 2.25, drift:  0.08, tint: 2.2,  strength: 0.70, seed: 33.0 }
+      { y: 0.33, amp: S.amp*0.85, phase: 0.0,  drift:  0.14, tint: 0.0,  strength: 0.92 },
+      { y: 0.56, amp: S.amp*1.05, phase: 1.4,  drift: -0.10, tint: 1.3,  strength: 0.80 },
+      { y: 0.74, amp: S.amp*0.95, phase: 2.25, drift:  0.08, tint: 2.2,  strength: 0.70 }
     ];
 
-    for(const L of layers){
-      const sweep  = (Math.sin(S.t*0.55 + L.phase) * 0.5 + 0.5);
-      const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
-
-      const steps = 120;
-
-      for(let i=0;i<=steps;i++){
-        const u = i/steps;
-
-        const TAIL = 520;
-        const x = u*(W + TAIL*2) - TAIL + xShift + S.px*16;
-        const yC = ribbonY(u, H*L.y, H*L.amp, L.phase) + S.py*12;
-
-        const band = (S.band * H);
-
-        const tt = S.t*0.9 + L.phase + u*2.0;
-        const wx = n2(tt*0.8, u*4.0 + L.phase);
-        const wy = n2(u*3.0 - L.phase, tt*0.7);
-
-        const jx = wx * band * 0.36 * S.breakUp;
-        const jy = wy * band * 0.30 * S.breakUp;
-
-        const c1 = (Math.sin(S.t*0.30 + L.tint + u*2.1)*0.5 + 0.5);
-        const c2 = (Math.cos(S.t*0.24 - L.tint + u*1.7)*0.5 + 0.5);
-
-        const A = `rgba(${Math.floor(84 + 22*c2)}, ${Math.floor(243 - 18*c1)}, ${Math.floor(164 + 34*c1)}, {a})`;
-        const B = `rgba(${Math.floor(72 + 16*c1)}, ${Math.floor(155 + 120*c2)}, ${Math.floor(125 + 26*c2)}, {a})`;
-
-        const end = 0.35 + 0.65 * (1 - Math.pow(Math.abs(u-0.5)*2, 2.2));
-
-        const r1 = clamp(band * (1.18 + 0.35*Math.sin(tt)), 52, 220);
-        const a1 = (0.010 + 0.010*c1) * S.density * L.strength * (0.40 + 0.60*end);
-        puff(x, yC, r1, A, B, a1, L.seed + i*0.07);
-
-        const r2 = clamp(r1*0.40, 20, 88);
-        const a2 = a1 * 0.78;
-        puff(x + jx, yC + jy, r2, B, A, a2, L.seed + i*0.11);
-
-        const off = (wy * 0.5 + 0.5) * band * 0.90;
-        puff(x - jx*0.55, yC + off*0.32, r2*0.78, A, B, a2*0.50, L.seed + i*0.13);
-        puff(x + jx*0.45, yC - off*0.30, r2*0.72, B, A, a2*0.46, L.seed + i*0.17);
+    if (isMobile) {
+      // ✅ mobile: solid filled ribbons (no radial gradients)
+      for(const L of layers){
+        drawSolidRibbon({
+          yFrac: L.y,
+          ampFrac: L.amp,
+          phase: L.phase,
+          drift: L.drift,
+          tint: L.tint,
+          strength: L.strength
+        });
       }
+    } else {
+      // ✅ desktop: your original puffs (unchanged)
+      btx.globalCompositeOperation = "lighter";
 
-      // background volume (keep, but it's gentle due to alpha cap)
-      const hx = W*0.5 + Math.sin(S.t*0.28 + L.phase)*W*0.12 + S.px*10;
-      const hy = H*L.y + Math.cos(S.t*0.26 - L.phase)*H*0.10 + S.py*8;
-      puff(hx, hy, Math.hypot(W,H)*0.22, "rgba(84,243,164,{a})", "rgba(170,110,255,{a})", 0.009*S.density, L.seed + 99.9);
+      for(const L of layers){
+        const sweep  = (Math.sin(S.t*0.55 + L.phase) * 0.5 + 0.5);
+        const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
+
+        const steps = 120;
+
+        for(let i=0;i<=steps;i++){
+          const u = i/steps;
+
+          const TAIL = 520;
+          const x = u*(W + TAIL*2) - TAIL + xShift + S.px*16;
+          const yC = ribbonY(u, H*L.y, H*L.amp, L.phase) + S.py*12;
+
+          const band = (S.band * H);
+
+          const tt = S.t*0.9 + L.phase + u*2.0;
+          const wx = n2(tt*0.8, u*4.0 + L.phase);
+          const wy = n2(u*3.0 - L.phase, tt*0.7);
+
+          const jx = wx * band * 0.36 * S.breakUp;
+          const jy = wy * band * 0.30 * S.breakUp;
+
+          const c1 = (Math.sin(S.t*0.30 + L.tint + u*2.1)*0.5 + 0.5);
+          const c2 = (Math.cos(S.t*0.24 - L.tint + u*1.7)*0.5 + 0.5);
+
+          const A = `rgba(${Math.floor(84 + 22*c2)}, ${Math.floor(243 - 18*c1)}, ${Math.floor(164 + 34*c1)}, {a})`;
+          const B = `rgba(${Math.floor(72 + 16*c1)}, ${Math.floor(155 + 120*c2)}, ${Math.floor(125 + 26*c2)}, {a})`;
+
+          const end = 0.35 + 0.65 * (1 - Math.pow(Math.abs(u-0.5)*2, 2.2));
+
+          const r1 = clamp(band * (1.18 + 0.35*Math.sin(tt)), 52, 220);
+          const a1 = (0.010 + 0.010*c1) * S.density * L.strength * (0.40 + 0.60*end);
+          puff(x, yC, r1, A, B, a1);
+
+          const r2 = clamp(r1*0.40, 20, 88);
+          const a2 = a1 * 0.78;
+          puff(x + jx, yC + jy, r2, B, A, a2);
+
+          const off = (wy * 0.5 + 0.5) * band * 0.90;
+          puff(x - jx*0.55, yC + off*0.32, r2*0.78, A, B, a2*0.50);
+          puff(x + jx*0.45, yC - off*0.30, r2*0.72, B, A, a2*0.46);
+        }
+
+        const hx = W*0.5 + Math.sin(S.t*0.28 + L.phase)*W*0.12 + S.px*10;
+        const hy = H*L.y + Math.cos(S.t*0.26 - L.phase)*H*0.10 + S.py*8;
+        puff(hx, hy, Math.hypot(W,H)*0.22, "rgba(84,243,164,{a})", "rgba(170,110,255,{a})", 0.009*S.density);
+      }
     }
 
     btx.globalCompositeOperation = "source-over";
@@ -967,7 +968,7 @@
     ctx.save();
     ctx.filter = `blur(${S.blurBase}px)`;
     ctx.globalAlpha = 1;
-    ctx.drawImage(buf, 0,0,W,H, 0,0,S.w,S.h);
+    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
     ctx.restore();
 
     // detail pass
@@ -975,7 +976,7 @@
     ctx.filter = `blur(${S.blurDetail}px)`;
     ctx.globalCompositeOperation = "lighter";
     ctx.globalAlpha = 0.55;
-    ctx.drawImage(buf, 0,0,W,H, 0,0,S.w,S.h);
+    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
     ctx.restore();
 
     // glow pass
@@ -983,7 +984,7 @@
     ctx.filter = `blur(${S.blurGlow}px)`;
     ctx.globalCompositeOperation = "lighter";
     ctx.globalAlpha = S.glow;
-    ctx.drawImage(buf, 0,0,W,H, 0,0,S.w,S.h);
+    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
     ctx.restore();
 
     ctx.globalAlpha = 1;
@@ -994,7 +995,6 @@
   gsap.ticker.fps(60);
   gsap.ticker.add(step);
 
-  // Reduced motion
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     gsap.ticker.remove(step);
     for(let i=0;i<20;i++) step();

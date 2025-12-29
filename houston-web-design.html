@@ -668,232 +668,332 @@
   </script>
 
 <script>
-    const canvas = document.getElementById("vapor");
-    const ctx = canvas.getContext("2d", { alpha:true });
+  // ✅ Requires GSAP already loaded on the page
+  // Desktop: keeps your original radial-gradient "puff" look (unchanged)
+  // Mobile: replaces the "puffs" with a continuous filled ribbon (no concentric banding rings)
 
-    // Offscreen buffer (we render the sim here, then blur-composite to main)
-    const buf = document.createElement("canvas");
-    const btx = buf.getContext("2d", { alpha:true });
+  const canvas = document.getElementById("vapor");
+  const ctx = canvas.getContext("2d", { alpha: true });
 
-    const S = {
-      w:0, h:0,
-      dpr: Math.max(1, Math.min(2, window.devicePixelRatio || 1)),
-      t:0,
+  // Offscreen buffer (we render the sim here, then blur-composite to main)
+  const buf = document.createElement("canvas");
+  const btx = buf.getContext("2d", { alpha: true });
 
-      // slow drift
-      speed: 0.0046,
-
-      // ✅ smoothness / pixel control
-      // Higher scale = less pixelation. We also blur composite, so this stays airy.
-      scale: 0.70,     // (0.65–0.85 recommended)
-      fade: 0.22,     // less fade = more presence
-        glow: 0.25,      // tiny bump (still subtle)
-    density: 0.66,   // stronger vapor overall
-
-      // across-screen band behavior
-      amp: 0.16,
-      drift: 0.16,
-      band: 0.16,
-      breakUp: 1.05,
-
-      // composite blur (kills pixel blocks)
-      blurBase: 10,    // main blur pass
-      blurDetail: 4,   // definition pass
-      blurGlow: 14,    // bloom pass
-
-      // mouse drift
-      mx:0, my:0, px:0, py:0
-    };
-
-    function resize(){
-      S.w = Math.floor(window.innerWidth);
-      S.h = Math.floor(window.innerHeight);
-
-      // Main canvas uses DPR for sharp UI layers
-      canvas.width  = Math.floor(S.w * S.dpr);
-      canvas.height = Math.floor(S.h * S.dpr);
-      canvas.style.width  = S.w + "px";
-      canvas.style.height = S.h + "px";
-      ctx.setTransform(S.dpr,0,0,S.dpr,0,0);
-
-      // ✅ Buffer does NOT use DPR (prevents sampling artifacts / “grid” pixels)
-      // Render buffer in its own pixel space
-      buf.width  = Math.floor(S.w * S.scale);
-      buf.height = Math.floor(S.h * S.scale);
-      btx.setTransform(1,0,0,1,0,0);
-
-      // store for step()
-      S.bw = buf.width;
-      S.bh = buf.height;
-
-      // Quality hints
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-      btx.imageSmoothingEnabled = true;
-      btx.imageSmoothingQuality = "high";
-
-      // clear
-      btx.fillStyle = "rgba(0,0,0,1)";
-      btx.fillRect(0,0,S.bw,S.bh);
-      ctx.clearRect(0,0,S.w,S.h);
-    }
-    window.addEventListener("resize", resize, { passive:true });
+  // ✅ Mobile detection (real devices + small screens)
+  const mqMobile = window.matchMedia("(max-width: 980px), (hover: none) and (pointer: coarse)");
+  let isMobile = mqMobile.matches;
+  mqMobile.addEventListener?.("change", (e) => {
+    isMobile = e.matches;
     resize();
+  });
 
-    window.addEventListener("pointermove", (e)=>{
-      S.mx = (e.clientX / S.w) * 2 - 1;
-      S.my = (e.clientY / S.h) * 2 - 1;
-    }, { passive:true });
+  const S = {
+    w: 0, h: 0,
+    dpr: Math.max(1, Math.min(2, window.devicePixelRatio || 1)),
+    t: 0,
 
-    const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+    // slow drift
+    speed: 0.0046,
 
-    // organic-ish fast noise
-    function n2(x,y){
-      return Math.sin(x*1.7 + Math.cos(y*1.3)) * Math.cos(y*1.5 + Math.sin(x*1.1));
+    // ✅ sim resolution
+    scale: 0.70,        // desktop
+    mobileScale: 0.90,  // mobile (a bit higher so ribbon is smoother)
+
+    fade: 0.22,
+    glow: 0.25,
+    density: 0.66,
+
+    // across-screen band behavior
+    amp: 0.16,
+    drift: 0.16,
+    band: 0.16,
+    breakUp: 1.05,
+
+    // composite blur
+    blurBase: 10,
+    blurDetail: 4,
+    blurGlow: 14,
+
+    // ✅ Mobile ribbon “solidness”
+    mobileBandMul: 1.15,      // thickness multiplier (solid ribbon feel)
+    mobileEdgeFeather: 0.75,  // tiny blur in buffer space to soften edges
+    mobileWispMul: 0.55,      // optional extra strokes for texture
+
+    mx: 0, my: 0, px: 0, py: 0
+  };
+
+  function resize() {
+    S.w = Math.floor(window.innerWidth);
+    S.h = Math.floor(window.innerHeight);
+
+    // Main canvas uses DPR for sharp UI layers
+    canvas.width = Math.floor(S.w * S.dpr);
+    canvas.height = Math.floor(S.h * S.dpr);
+    canvas.style.width = S.w + "px";
+    canvas.style.height = S.h + "px";
+    ctx.setTransform(S.dpr, 0, 0, S.dpr, 0, 0);
+
+    // Buffer does NOT use DPR (prevents sampling artifacts)
+    const simScale = isMobile ? S.mobileScale : S.scale;
+    buf.width = Math.floor(S.w * simScale);
+    buf.height = Math.floor(S.h * simScale);
+    btx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // store for step()
+    S.bw = buf.width;
+    S.bh = buf.height;
+
+    // Quality hints
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    btx.imageSmoothingEnabled = true;
+    btx.imageSmoothingQuality = "high";
+
+    // clear
+    btx.fillStyle = "rgba(0,0,0,1)";
+    btx.fillRect(0, 0, S.bw, S.bh);
+    ctx.clearRect(0, 0, S.w, S.h);
+  }
+  window.addEventListener("resize", resize, { passive: true });
+  resize();
+
+  window.addEventListener("pointermove", (e) => {
+    S.mx = (e.clientX / S.w) * 2 - 1;
+    S.my = (e.clientY / S.h) * 2 - 1;
+  }, { passive: true });
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+  // organic-ish fast noise
+  function n2(x, y) {
+    return Math.sin(x * 1.7 + Math.cos(y * 1.3)) * Math.cos(y * 1.5 + Math.sin(x * 1.1));
+  }
+
+  // Desktop puff (your original)
+  function puff(x, y, r, colA, colB, a) {
+    const g = btx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0.00, colA.replace("{a}", (0.52 * a).toFixed(4)));
+    g.addColorStop(0.38, colB.replace("{a}", (0.46 * a).toFixed(4)));
+    g.addColorStop(0.78, colA.replace("{a}", (0.15 * a).toFixed(4)));
+    g.addColorStop(1.00, colA.replace("{a}", "0"));
+    btx.fillStyle = g;
+    btx.beginPath();
+    btx.arc(x, y, r, 0, Math.PI * 2);
+    btx.fill();
+  }
+
+  // Across-screen centerline
+  function ribbonY(u, yBase, amp, phase) {
+    const t = S.t;
+    const f1 = Math.sin(t * 0.95 + u * 6.2 + phase);
+    const f2 = Math.sin(t * 0.55 + u * 13.0 - phase * 0.7);
+    const f3 = Math.sin(t * 1.35 + u * 3.2);
+    const wave = f1 * 0.55 + f2 * 0.30 + f3 * 0.15;
+    return yBase + wave * amp;
+  }
+
+  // ✅ Mobile-only: continuous filled ribbon (solid, no dots, no banding rings)
+  function drawSolidRibbon(L) {
+    const W = S.bw, H = S.bh;
+    const steps = 140;
+
+    const sweep = (Math.sin(S.t * 0.55 + L.phase) * 0.5 + 0.5);
+    const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
+
+    const band = (S.band * H) * S.mobileBandMul;
+
+    const top = new Array(steps + 1);
+    const bot = new Array(steps + 1);
+
+    for (let i = 0; i <= steps; i++) {
+      const u = i / steps;
+
+      const TAIL = 520;
+      const x = u * (W + TAIL * 2) - TAIL + xShift + S.px * 16;
+      const yC = ribbonY(u, H * L.y, H * L.amp, L.phase) + S.py * 12;
+
+      // turbulence-driven thickness
+      const tt = S.t * 0.9 + L.phase + u * 2.0;
+      const wy = n2(u * 3.0 - L.phase, tt * 0.7);
+      const thick = band * (0.72 + 0.28 * (wy * 0.5 + 0.5));
+
+      top[i] = { x, y: yC - thick * 0.55 };
+      bot[i] = { x, y: yC + thick * 0.55 };
     }
 
-    // Airy puff (no bright white hotspot)
-    function puff(x,y,r, colA, colB, a){
-      const g = btx.createRadialGradient(x,y,0, x,y,r);
-      g.addColorStop(0.00, colA.replace("{a}", (0.52*a).toFixed(4)));
-      g.addColorStop(0.38, colB.replace("{a}", (0.46*a).toFixed(4)));
-      g.addColorStop(0.78, colA.replace("{a}", (0.15*a).toFixed(4)));
-      g.addColorStop(1.00, colA.replace("{a}", "0"));
-      btx.fillStyle = g;
+    // color drift (same palette family)
+    const c1 = (Math.sin(S.t * 0.30 + L.tint) * 0.5 + 0.5);
+    const c2 = (Math.cos(S.t * 0.24 - L.tint) * 0.5 + 0.5);
+
+    const rr = Math.floor(84 + 22 * c2);
+    const gg = Math.floor(243 - 18 * c1);
+    const bb = Math.floor(164 + 34 * c1);
+
+    // alpha tuned to your density/strength
+    const a = clamp(0.030 * S.density * L.strength, 0.012, 0.10);
+
+    btx.save();
+    btx.globalCompositeOperation = "lighter";
+    btx.globalAlpha = a;
+
+    // soften edges in buffer space
+    btx.filter = `blur(${S.mobileEdgeFeather}px)`;
+    btx.fillStyle = `rgba(${rr},${gg},${bb},1)`;
+
+    // fill polygon
+    btx.beginPath();
+    btx.moveTo(top[0].x, top[0].y);
+    for (let i = 1; i <= steps; i++) btx.lineTo(top[i].x, top[i].y);
+    for (let i = steps; i >= 0; i--) btx.lineTo(bot[i].x, bot[i].y);
+    btx.closePath();
+    btx.fill();
+
+    btx.filter = "none";
+    btx.restore();
+
+    // optional wisps (solid strokes, blurred later by main passes)
+    const wispA = a * S.mobileWispMul;
+    btx.save();
+    btx.globalCompositeOperation = "lighter";
+    btx.globalAlpha = wispA;
+    btx.lineCap = "round";
+    btx.lineJoin = "round";
+
+    for (let k = 0; k < 3; k++) {
+      const off = (k - 1) * band * 0.22;
+      btx.strokeStyle = `rgba(${rr},${gg},${bb},1)`;
+      btx.lineWidth = Math.max(2, band * (0.22 - k * 0.04));
       btx.beginPath();
-      btx.arc(x,y,r,0,Math.PI*2);
-      btx.fill();
+      btx.moveTo(top[0].x, (top[0].y + bot[0].y) * 0.5 + off);
+      for (let i = 1; i <= steps; i++) {
+        const yy = (top[i].y + bot[i].y) * 0.5 + off;
+        btx.lineTo(top[i].x, yy);
+      }
+      btx.stroke();
     }
+    btx.restore();
+  }
 
-    // Across-screen centerline
-    function ribbonY(u, yBase, amp, phase){
-      const t = S.t;
-      const f1 = Math.sin(t*0.95 + u*6.2 + phase);
-      const f2 = Math.sin(t*0.55 + u*13.0 - phase*0.7);
-      const f3 = Math.sin(t*1.35 + u*3.2);
-      const wave = f1*0.55 + f2*0.30 + f3*0.15;
-      return yBase + wave * amp;
-    }
+  function step() {
+    S.t += S.speed;
 
-    function step(){
-      S.t += S.speed;
+    // mouse drift
+    S.px += (S.mx - S.px) * 0.03;
+    S.py += (S.my - S.py) * 0.03;
 
-      // mouse drift
-      S.px += (S.mx - S.px) * 0.03;
-      S.py += (S.my - S.py) * 0.03;
+    const W = S.bw;
+    const H = S.bh;
 
-      const W = S.bw;
-      const H = S.bh;
+    // fade buffer (trails)
+    btx.globalCompositeOperation = "source-over";
+    btx.fillStyle = `rgba(0,0,0,${S.fade})`;
+    btx.fillRect(0, 0, W, H);
 
-      // fade buffer (trails)
-      btx.globalCompositeOperation = "source-over";
-      btx.fillStyle = `rgba(0,0,0,${S.fade})`;
-      btx.fillRect(0,0,W,H);
+    const layers = [
+      { y: 0.33, amp: S.amp * 0.85, phase: 0.0,  drift:  0.14, tint: 0.0,  strength: 0.92 },
+      { y: 0.56, amp: S.amp * 1.05, phase: 1.4,  drift: -0.10, tint: 1.3,  strength: 0.80 },
+      { y: 0.74, amp: S.amp * 0.95, phase: 2.25, drift:  0.08, tint: 2.2,  strength: 0.70 }
+    ];
 
-      // draw vapor
+    if (isMobile) {
+      // ✅ Mobile: solid ribbons (no radial gradients)
+      for (const L of layers) drawSolidRibbon(L);
+    } else {
+      // ✅ Desktop: original puff logic (unchanged)
       btx.globalCompositeOperation = "lighter";
 
-      const layers = [
-        { y: 0.33, amp: S.amp*0.85, phase: 0.0,  drift:  0.14, tint: 0.0,  strength: 0.92 },
-        { y: 0.56, amp: S.amp*1.05, phase: 1.4,  drift: -0.10, tint: 1.3,  strength: 0.80 },
-        { y: 0.74, amp: S.amp*0.95, phase: 2.25, drift:  0.08, tint: 2.2,  strength: 0.70 }
-      ];
-
-      for(const L of layers){
-        const sweep  = (Math.sin(S.t*0.55 + L.phase) * 0.5 + 0.5);
+      for (const L of layers) {
+        const sweep = (Math.sin(S.t * 0.55 + L.phase) * 0.5 + 0.5);
         const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
 
-        const steps = 120; // continuous bands across screen
+        const steps = 120;
 
-        for(let i=0;i<=steps;i++){
-          const u = i/steps;
+        for (let i = 0; i <= steps; i++) {
+          const u = i / steps;
 
-          const TAIL = 520; // <— bigger = longer ends
-          const x = u*(W + TAIL*2) - TAIL + xShift + S.px*16;
-          const yC = ribbonY(u, H*L.y, H*L.amp, L.phase) + S.py*12;
+          const TAIL = 520;
+          const x = u * (W + TAIL * 2) - TAIL + xShift + S.px * 16;
+          const yC = ribbonY(u, H * L.y, H * L.amp, L.phase) + S.py * 12;
 
           const band = (S.band * H);
 
-          const tt = S.t*0.9 + L.phase + u*2.0;
-          const wx = n2(tt*0.8, u*4.0 + L.phase);
-          const wy = n2(u*3.0 - L.phase, tt*0.7);
+          const tt = S.t * 0.9 + L.phase + u * 2.0;
+          const wx = n2(tt * 0.8, u * 4.0 + L.phase);
+          const wy = n2(u * 3.0 - L.phase, tt * 0.7);
 
           const jx = wx * band * 0.36 * S.breakUp;
           const jy = wy * band * 0.30 * S.breakUp;
 
-          // soft color drift; includes #54f3a4 (mint) but avoids too much white
-          const c1 = (Math.sin(S.t*0.30 + L.tint + u*2.1)*0.5 + 0.5);
-          const c2 = (Math.cos(S.t*0.24 - L.tint + u*1.7)*0.5 + 0.5);
+          const c1 = (Math.sin(S.t * 0.30 + L.tint + u * 2.1) * 0.5 + 0.5);
+          const c2 = (Math.cos(S.t * 0.24 - L.tint + u * 1.7) * 0.5 + 0.5);
 
-          const A = `rgba(${Math.floor(84 + 22*c2)}, ${Math.floor(243 - 18*c1)}, ${Math.floor(164 + 34*c1)}, {a})`; // mint
-          const B = `rgba(${Math.floor(72 + 16*c1)}, ${Math.floor(155 + 120*c2)}, ${Math.floor(125 + 26*c2)}, {a})`;
+          const A = `rgba(${Math.floor(84 + 22 * c2)}, ${Math.floor(243 - 18 * c1)}, ${Math.floor(164 + 34 * c1)}, {a})`;
+          const B = `rgba(${Math.floor(72 + 16 * c1)}, ${Math.floor(155 + 120 * c2)}, ${Math.floor(125 + 26 * c2)}, {a})`;
 
-          const end = 0.35 + 0.65 * (1 - Math.pow(Math.abs(u-0.5)*2, 2.2));
+          const end = 0.35 + 0.65 * (1 - Math.pow(Math.abs(u - 0.5) * 2, 2.2));
 
-          // PASS 1: wide haze sheet (defines long band, still vapor)
-          const r1 = clamp(band * (1.18 + 0.35*Math.sin(tt)), 52, 220);
-          const a1 = (0.010 + 0.010*c1) * S.density * L.strength * (0.40 + 0.60*end);
+          const r1 = clamp(band * (1.18 + 0.35 * Math.sin(tt)), 52, 220);
+          const a1 = (0.010 + 0.010 * c1) * S.density * L.strength * (0.40 + 0.60 * end);
           puff(x, yC, r1, A, B, a1);
 
-          // PASS 2: wisps / inner turbulence
-          const r2 = clamp(r1*0.40, 20, 88);
+          const r2 = clamp(r1 * 0.40, 20, 88);
           const a2 = a1 * 0.78;
           puff(x + jx, yC + jy, r2, B, A, a2);
 
           const off = (wy * 0.5 + 0.5) * band * 0.90;
-          puff(x - jx*0.55, yC + off*0.32, r2*0.78, A, B, a2*0.50);
-          puff(x + jx*0.45, yC - off*0.30, r2*0.72, B, A, a2*0.46);
+          puff(x - jx * 0.55, yC + off * 0.32, r2 * 0.78, A, B, a2 * 0.50);
+          puff(x + jx * 0.45, yC - off * 0.30, r2 * 0.72, B, A, a2 * 0.46);
         }
 
-        // super soft background volume (very low alpha)
-        const hx = W*0.5 + Math.sin(S.t*0.28 + L.phase)*W*0.12 + S.px*10;
-        const hy = H*L.y + Math.cos(S.t*0.26 - L.phase)*H*0.10 + S.py*8;
-        puff(hx, hy, Math.hypot(W,H)*0.22, "rgba(84,243,164,{a})", "rgba(170,110,255,{a})", 0.009*S.density);
+        const hx = W * 0.5 + Math.sin(S.t * 0.28 + L.phase) * W * 0.12 + S.px * 10;
+        const hy = H * L.y + Math.cos(S.t * 0.26 - L.phase) * H * 0.10 + S.py * 8;
+        puff(hx, hy, Math.hypot(W, H) * 0.22, "rgba(84,243,164,{a})", "rgba(170,110,255,{a})", 0.009 * S.density);
       }
-
-      btx.globalCompositeOperation = "source-over";
-
-      // ✅ Pixel-killing composite: blur the buffer as we upscale
-      ctx.globalCompositeOperation = "source-over";
-      ctx.clearRect(0,0,S.w,S.h);
-
-      // base pass (soft)
-      ctx.save();
-      ctx.filter = `blur(${S.blurBase}px)`;
-      ctx.globalAlpha = 1;
-      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
-      ctx.restore();
-
-      // detail pass (less blur, still smooth)
-      ctx.save();
-      ctx.filter = `blur(${S.blurDetail}px)`;
-      ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = 0.55;
-      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
-      ctx.restore();
-
-      // glow pass (very soft)
-      ctx.save();
-      ctx.filter = `blur(${S.blurGlow}px)`;
-      ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = S.glow;
-      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
-      ctx.restore();
-
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = "source-over";
-      ctx.filter = "none";
     }
 
-    gsap.ticker.fps(60);
-    gsap.ticker.add(step);
+    btx.globalCompositeOperation = "source-over";
 
-    // Reduced motion
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.ticker.remove(step);
-      for(let i=0;i<20;i++) step();
-    }
-  </script>
+    // composite to main
+    ctx.globalCompositeOperation = "source-over";
+    ctx.clearRect(0, 0, S.w, S.h);
+
+    // base pass
+    ctx.save();
+    ctx.filter = `blur(${S.blurBase}px)`;
+    ctx.globalAlpha = 1;
+    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+    ctx.restore();
+
+    // detail pass
+    ctx.save();
+    ctx.filter = `blur(${S.blurDetail}px)`;
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.55;
+    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+    ctx.restore();
+
+    // glow pass
+    ctx.save();
+    ctx.filter = `blur(${S.blurGlow}px)`;
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = S.glow;
+    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+    ctx.restore();
+
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.filter = "none";
+  }
+
+  gsap.ticker.fps(60);
+  gsap.ticker.add(step);
+
+  // Reduced motion
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    gsap.ticker.remove(step);
+    for (let i = 0; i < 20; i++) step();
+  }
+</script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -689,7 +689,7 @@
     speed: 0.0046,
 
     scale: 0.70,
-    mobileScale: 0.95,   // smoother buffer so blur looks “premium”
+    mobileScale: 0.98,  // higher = smoother, “premium” blur
 
     fade: 0.22,
     glow: 0.25,
@@ -700,19 +700,23 @@
     band: 0.16,
     breakUp: 1.05,
 
-    // Desktop composite blur (unchanged)
+    // desktop composite
     blurBase: 10,
     blurDetail: 4,
     blurGlow: 14,
 
-    // ✅ Mobile blending (stronger “melt”)
-    mobileBlurBase: 20,        // main blend (this is the big one)
-    mobileBlurDetail: 10,      // soften separation
-    mobileBlurGlow: 18,        // bloom blend
-    mobileDetailAlpha: 0.22,   // IMPORTANT: lower detail alpha so layers merge
-    mobileEdgeFeather: 2.4,    // blur on the ribbon fill (buffer space)
-    mobileBandMul: 1.22,       // slightly thicker = more overlap = more blend
-    mobileWispMul: 0.10,       // keep wisps very subtle (avoid “strokes”)
+    // ✅ mobile composite (much softer blend)
+    mobileBaseBlur: 26,     // main blend
+    mobileGlowBlur: 18,     // bloom
+    mobileDetailAlpha: 0.06, // essentially off (prevents edge re-appearance)
+
+    // ✅ mobile ribbon feather
+    mobileEdgeFeather: 3.4,
+    mobileBandMul: 1.30,
+
+    // ✅ mobile melt pass (buffer->buffer blur to fuse layers)
+    mobileMeltBlur: 6,      // blur applied when re-drawing buf onto itself
+    mobileMeltAlpha: 0.22,  // strength of that fusion
 
     mx:0, my:0, px:0, py:0
   };
@@ -740,9 +744,6 @@
     btx.imageSmoothingEnabled = true;
     btx.imageSmoothingQuality = "high";
 
-    // ✅ extra safety: ignore touches on canvas for mobile
-    if (isMobile) canvas.style.pointerEvents = "none";
-
     btx.fillStyle = "rgba(0,0,0,1)";
     btx.fillRect(0,0,S.bw,S.bh);
     ctx.clearRect(0,0,S.w,S.h);
@@ -750,7 +751,7 @@
   window.addEventListener("resize", resize, { passive:true });
   resize();
 
-  // Desktop keeps pointer drift; mobile ignores all pointer input
+  // Desktop only pointer drift (mobile ignores all interaction)
   window.addEventListener("pointermove", (e)=>{
     if (isMobile) return;
     S.mx = (e.clientX / S.w) * 2 - 1;
@@ -785,10 +786,10 @@
     return yBase + wave * amp;
   }
 
-  // Mobile solid ribbon
+  // ✅ Mobile solid ribbon (heavily feathered)
   function drawSolidRibbon(L){
     const W = S.bw, H = S.bh;
-    const steps = 160;
+    const steps = 170;
 
     const sweep  = (Math.sin(S.t*0.55 + L.phase) * 0.5 + 0.5);
     const xShift = (sweep * 0.7 + 0.15) * W * L.drift;
@@ -801,15 +802,15 @@
     for(let i=0;i<=steps;i++){
       const u = i/steps;
       const TAIL = 520;
-      const x = u*(W + TAIL*2) - TAIL + xShift;  // ✅ no touch drift
+      const x = u*(W + TAIL*2) - TAIL + xShift;
       const yC = ribbonY(u, H*L.y, H*L.amp, L.phase);
 
       const tt = S.t*0.9 + L.phase + u*2.0;
       const wy = n2(u*3.0 - L.phase, tt*0.7);
-      const thick = band * (0.80 + 0.20*(wy*0.5+0.5));
+      const thick = band * (0.82 + 0.18*(wy*0.5+0.5));
 
-      top[i] = { x, y: yC - thick*0.56 };
-      bot[i] = { x, y: yC + thick*0.56 };
+      top[i] = { x, y: yC - thick*0.58 };
+      bot[i] = { x, y: yC + thick*0.58 };
     }
 
     const c1 = (Math.sin(S.t*0.30 + L.tint)*0.5 + 0.5);
@@ -819,13 +820,14 @@
     const gg = Math.floor(243 - 18*c1);
     const bb = Math.floor(164 + 34*c1);
 
-    const a = clamp(0.032 * S.density * L.strength, 0.016, 0.11);
+    // slightly higher alpha, then we melt it later
+    const a = clamp(0.040 * S.density * L.strength, 0.020, 0.13);
 
     btx.save();
     btx.globalCompositeOperation = "lighter";
     btx.globalAlpha = a;
 
-    // ✅ heavy edge feather so layers “melt” into each other
+    // big feather
     btx.filter = `blur(${S.mobileEdgeFeather}px)`;
     btx.fillStyle = `rgba(${rr},${gg},${bb},1)`;
 
@@ -838,33 +840,13 @@
 
     btx.filter = "none";
     btx.restore();
-
-    // ultra-subtle wisp (optional)
-    const wA = a * S.mobileWispMul;
-    if (wA > 0.0005){
-      btx.save();
-      btx.globalCompositeOperation = "lighter";
-      btx.globalAlpha = wA;
-      btx.lineCap = "round";
-      btx.lineJoin = "round";
-      btx.strokeStyle = `rgba(${rr},${gg},${bb},1)`;
-      btx.lineWidth = Math.max(2, band * 0.14);
-
-      btx.beginPath();
-      btx.moveTo(top[0].x, (top[0].y + bot[0].y)*0.5);
-      for(let i=1;i<=steps;i++){
-        btx.lineTo(top[i].x, (top[i].y + bot[i].y)*0.5);
-      }
-      btx.stroke();
-      btx.restore();
-    }
   }
 
   function step(){
     S.t += S.speed;
 
     if (isMobile) {
-      // ✅ Mobile: NO interaction at all
+      // ✅ Mobile: absolutely no interaction
       S.mx = S.my = S.px = S.py = 0;
     } else {
       S.px += (S.mx - S.px) * 0.03;
@@ -885,8 +867,20 @@
     ];
 
     if (isMobile) {
+      // ✅ Mobile: draw ribbons
       for(const L of layers) drawSolidRibbon(L);
+
+      // ✅ Mobile MELT pass: re-draw buffer onto itself with blur to fuse layers
+      // (this is what makes them blend together)
+      btx.save();
+      btx.globalCompositeOperation = "lighter";
+      btx.globalAlpha = S.mobileMeltAlpha;
+      btx.filter = `blur(${S.mobileMeltBlur}px)`;
+      btx.drawImage(buf, 0, 0);
+      btx.restore();
+
     } else {
+      // Desktop puff pipeline (unchanged)
       btx.globalCompositeOperation = "lighter";
 
       for(const L of layers){
@@ -940,34 +934,54 @@
 
     btx.globalCompositeOperation = "source-over";
 
+    // composite to main
     ctx.globalCompositeOperation = "source-over";
     ctx.clearRect(0,0,S.w,S.h);
 
-    // ✅ mobile stronger blur + lower detail alpha for true “blend”
-    const baseBlur   = isMobile ? S.mobileBlurBase   : S.blurBase;
-    const detailBlur = isMobile ? S.mobileBlurDetail : S.blurDetail;
-    const glowBlur   = isMobile ? S.mobileBlurGlow   : S.blurGlow;
-    const detailAlpha = isMobile ? S.mobileDetailAlpha : 0.55;
+    if (isMobile) {
+      // ✅ Mobile: big base blur + tiny detail
+      ctx.save();
+      ctx.filter = `blur(${S.mobileBaseBlur}px)`;
+      ctx.globalAlpha = 1;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
 
-    ctx.save();
-    ctx.filter = `blur(${baseBlur}px)`;
-    ctx.globalAlpha = 1;
-    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
-    ctx.restore();
+      ctx.save();
+      ctx.filter = `blur(${12}px)`;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = S.mobileDetailAlpha;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
 
-    ctx.save();
-    ctx.filter = `blur(${detailBlur}px)`;
-    ctx.globalCompositeOperation = "lighter";
-    ctx.globalAlpha = detailAlpha;
-    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
-    ctx.restore();
+      ctx.save();
+      ctx.filter = `blur(${S.mobileGlowBlur}px)`;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = S.glow;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
 
-    ctx.save();
-    ctx.filter = `blur(${glowBlur}px)`;
-    ctx.globalCompositeOperation = "lighter";
-    ctx.globalAlpha = S.glow;
-    ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
-    ctx.restore();
+    } else {
+      // Desktop: original 3-pass composite
+      ctx.save();
+      ctx.filter = `blur(${S.blurBase}px)`;
+      ctx.globalAlpha = 1;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
+
+      ctx.save();
+      ctx.filter = `blur(${S.blurDetail}px)`;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 0.55;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
+
+      ctx.save();
+      ctx.filter = `blur(${S.blurGlow}px)`;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = S.glow;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.restore();
+    }
 
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";

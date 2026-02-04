@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Footer Hero Test (GSAP)</title>
+
+  <!-- GSAP -->
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root { --accent: #54f3a4; }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #050505;
+      color: rgba(255,255,255,0.92);
+    }
+
+    /* Just content so you can scroll to the hero */
+    .page-top {
+      min-height: 140vh;
+      display: grid;
+      place-items: center;
+      padding: 10vh 6vw;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .page-top h1{
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      letter-spacing: -0.03em;
+    }
+    .page-top p{
+      margin: 12px 0 0;
+      max-width: 60ch;
+      opacity: 0.8;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    /* =========================
+       FOOTER HERO (TEST)
+       ========================= */
+    .footer-hero{
+      position: relative;
+      height: 80vh;             /* ✅ bigger */
+      min-height: 640px;        /* ✅ bigger */
+      width: 100%;
+      overflow: hidden;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: #070707;
+      display: grid;
+      place-items: center;
+    }
+
+    .footer-hero__bg{
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .footer-hero__glow{
+      position: absolute;
+      inset: -14%;
+      background:
+        radial-gradient(980px 560px at 22% 18%, rgba(84,243,164,0.12), transparent 62%),
+        radial-gradient(1100px 640px at 78% 74%, rgba(255,255,255,0.06), transparent 58%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0));
+      filter: saturate(1.1);
+      opacity: 0.92;
+    }
+
+    /* ✅ Larger circle + stronger bottom fade */
+    .footer-hero__circle{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 40vw;
+  aspect-ratio: 1 / 1;   /* 🔒 guarantees a circle */
+      border-radius: 999px;
+
+      background:
+        radial-gradient(circle at 32% 28%,
+          rgba(84,243,164,0.95),
+          rgba(84,243,164,0.30) 56%,
+          rgba(84,243,164,0.10) 72%,
+          transparent 84%);
+
+      opacity: 0.98;
+      mix-blend-mode: screen;
+
+      /* 🚨 VERY aggressive upward fade */
+-webkit-mask-image: linear-gradient(to bottom,
+  rgba(0,0,0,1)    0%,
+  rgba(0,0,0,1)   18%,   /* solid only at the very top */
+  rgba(0,0,0,0.85) 32%,
+  rgba(0,0,0,0.55) 46%,
+  rgba(0,0,0,0.30) 58%,
+  rgba(0,0,0,0.15) 68%,
+  rgba(0,0,0,0.06) 78%,
+  rgba(0,0,0,0.02) 86%,
+  rgba(0,0,0,0)   100%);
+        mask-image: linear-gradient(to bottom,
+  rgba(0,0,0,1)    0%,
+  rgba(0,0,0,1)   18%,
+  rgba(0,0,0,0.85) 32%,
+  rgba(0,0,0,0.55) 46%,
+  rgba(0,0,0,0.30) 58%,
+  rgba(0,0,0,0.15) 68%,
+  rgba(0,0,0,0.06) 78%,
+  rgba(0,0,0,0.02) 86%,
+  rgba(0,0,0,0)   100%);
+    }
+
+    .footer-hero__inner{
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1180px;
+      padding: clamp(20px, 3vw, 52px);
+      display: grid;
+      place-items: center;
+    }
+
+    .footer-hero__card{
+      position: relative;
+      width: min(960px, 92vw);
+      min-height: 280px;
+      padding: clamp(26px, 4vw, 60px);
+      border-radius: 18px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow:
+        0 20px 70px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(255,255,255,0.04);
+      backdrop-filter: blur(10px);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .footer-hero__card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius: 20px;
+      background: radial-gradient(760px 300px at 50% 50%, rgba(84,243,164,0.24), transparent 64%);
+      opacity: 0;
+      transition: opacity 180ms ease;
+      pointer-events:none;
+    }
+    .footer-hero__card.is-hover::before{ opacity: 1; }
+
+    .footer-hero__text{
+      color: #fff;
+      font-size: clamp(1.6rem, 3vw, 2.7rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      text-align: center;
+      font-weight: 550;
+      will-change: transform, filter;
+    }
+
+    @media (max-width: 560px){
+      .footer-hero{ height: 70vh; min-height: 560px; }
+      .footer-hero__card{ min-height: 240px; }
+      .footer-hero__circle{
+        width: 160vw;
+        height: 160vw;
+      }
+    }
+
+    .page-bottom {
+      min-height: 140vh;
+      display: grid;
+      place-items: center;
+      padding: 10vh 6vw;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .page-bottom p{
+      margin: 0;
+      opacity: 0.7;
+      text-align: center;
+      max-width: 60ch;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="page-top">
+    <div>
+      <h1>Scroll down to the Footer Hero</h1>
+      <p>
+        Bigger section, circle travels farther down, and the bottom half fades to transparent/background.
+      </p>
+    </div>
+  </section>
+
+  <section class="footer-hero" aria-label="Footer call to action">
+    <div class="footer-hero__bg" aria-hidden="true">
+      <div class="footer-hero__circle"></div>
+      <div class="footer-hero__glow"></div>
+    </div>
+
+    <div class="footer-hero__inner">
+      <button type="button" class="footer-hero__card" id="footerHeroCard">
+        <span class="footer-hero__text" id="footerHeroText">
+          Ready to talk about your next project?
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <section class="page-bottom">
+    <p>More content after to confirm it’s scroll-by (no lock/pin).</p>
+  </section>
+
+  <script>
+  window.addEventListener("load", () => {
+    if (!window.gsap || !window.ScrollTrigger) return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const hero   = document.querySelector(".footer-hero");
+    const card   = document.getElementById("footerHeroCard");
+    const textEl = document.getElementById("footerHeroText");
+    const circle = document.querySelector(".footer-hero__circle");
+    const glow   = document.querySelector(".footer-hero__glow");
+
+    if (!hero || !card || !textEl || !circle || !glow) return;
+
+    // ---------------------------
+    // Text scramble
+    // ---------------------------
+    const originalText = textEl.textContent.trim();
+    const chars = "!<>-_\\/[]{}—=+*^?#________ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let scrambleRAF = null;
+
+    function scrambleToFinal(durationMs = 650) {
+      cancelAnimationFrame(scrambleRAF);
+      const start = performance.now();
+      const final = originalText;
+      const len = final.length;
+
+      function tick(now) {
+        const t = Math.min(1, (now - start) / durationMs);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const locked = Math.floor(eased * len);
+
+        let out = "";
+        for (let i = 0; i < len; i++) {
+          const ch = final[i];
+          if (ch === " ") { out += " "; continue; }
+          out += (i < locked) ? ch : chars[(Math.random() * chars.length) | 0];
+        }
+
+        textEl.textContent = out;
+        if (t < 1) scrambleRAF = requestAnimationFrame(tick);
+        else textEl.textContent = final;
+      }
+
+      scrambleRAF = requestAnimationFrame(tick);
+    }
+
+    // ---------------------------
+    // Hover
+    // ---------------------------
+    const hoverTl = gsap.timeline({ paused: true })
+      .to(card,   { scale: 1.04, duration: 0.25, ease: "power3.out" }, 0)
+      .to(textEl, { scale: 1.05, filter: "brightness(1.15)", duration: 0.25, ease: "power3.out" }, 0)
+      .to(card,   { boxShadow: "0 28px 90px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.06)", duration: 0.25, ease: "power3.out" }, 0);
+
+    card.addEventListener("mouseenter", () => {
+      hoverTl.play();
+      scrambleToFinal(700);
+      card.classList.add("is-hover");
+    });
+
+    card.addEventListener("mouseleave", () => {
+      hoverTl.reverse();
+      card.classList.remove("is-hover");
+      textEl.textContent = originalText;
+    });
+
+    card.addEventListener("click", () => {
+      window.location.href = "/inquiry.html";
+    });
+
+    // ---------------------------
+    // SCROLL-BY (NO PIN):
+    // Start higher, travel DOWN farther.
+    // ---------------------------
+    gsap.set(circle, {
+      xPercent: -50,
+      yPercent: -50,
+      y: -420,        // ✅ higher start
+      scale: 1.12,
+      willChange: "transform"
+    });
+
+    gsap.set(glow, {
+      y: -220,
+      scale: 1.04,
+      opacity: 0.92,
+      willChange: "transform, filter, opacity"
+    });
+
+    const showMarkers = false;
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: hero,
+        start: "top 90%",
+        end: "bottom 10%",
+        scrub: true,
+        invalidateOnRefresh: true,
+        markers: showMarkers
+      }
+    })
+    .to(circle, {
+      y: 520,         // ✅ goes lower
+      scale: 1.32,
+      ease: "none"
+    }, 0)
+    .to(glow, {
+      y: 220,
+      x: -34,
+      scale: 1.12,
+      filter: "saturate(1.4) contrast(1.1)",
+      ease: "none"
+    }, 0)
+    .to(card, {
+      y: -18,
+      ease: "none"
+    }, 0);
+
+    // Optional: gentle “alive” motion (doesn't affect scroll)
+    gsap.to(circle, {
+      x: "+=16",
+      duration: 4.8,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1
+    });
+  });
+  </script>
+</body>
+</html>

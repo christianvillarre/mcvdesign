@@ -1684,10 +1684,10 @@ a {
 /* === FOOTER (clean, full width) === */
 .site-footer{
   width: 100%;
-  background: #000;
+  background: transparent;
   color: #fff;
   padding: clamp(2.5rem, 6vw, 5rem) 0;
-  border-top: 1px solid rgba(255,255,255,0.12);
+ 
 }
 .footer-inner{
   width: 95vw;

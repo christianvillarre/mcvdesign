@@ -48,269 +48,346 @@
 <!-- End Matomo Code -->
 </head>
 <body>
-  <div id="bgGrid" aria-hidden="true"></div>
+  <canvas id="bgGridCanvas" aria-hidden="true"></canvas>
   <style>
     /* Background grid overlay (safe: doesn't change your layout) */
-#bgGrid{
+#bgGridCanvas{
   position: fixed;
-  left: 0;
-  top: 0;
+  inset: 0;
   width: 100%;
-  height: var(--gridH, 100vh); /* ✅ JS will set this */
+  height: var(--gridH, 100vh);
   pointer-events: none;
   z-index: -1;
   background: #fff;
-  overflow: hidden;
-}
-/* the grid itself */
-#bgGrid .grid{
-  position: absolute;
-  inset: 0;
-  display: grid;
-  gap: 6px;                    /* grid spacing */
-  padding: 10px;
+  display: block;
 }
 
-/* each square */
-#bgGrid .cell{
-  width: 18px;                 /* ✅ grid feel */
-  height: 18px;
-  background: transparent;     /* keep clean */
-  border: 1px solid rgba(0,0,0,0.08);
-  
-  transform: translateZ(0);
-  transition: background 220ms ease, transform 220ms ease, border-color 220ms ease;
-  will-change: background, transform;
-}
-
-/* flipped state */
-#bgGrid .cell.on{
-  background: #54f3a4;         /* ✅ your green */
-  border-color: rgba(0,0,0,0.04);
-  transform: rotateY(180deg);
-}
 
 
   </style>
-  <script>
+<script>
 (() => {
-  const root = document.getElementById("bgGrid");
-  if (!root) return;
+  const canvas = document.getElementById("bgGridCanvas");
+  if (!canvas) return;
 
-  const GREEN_CLASS = "on";
+  const ctx = canvas.getContext("2d", { alpha: false });
   const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-  // must match CSS
-  const CELL_SIZE = 18;
-  const GAP = 6;
-  const PAD = 10;
+  // match your look
+  const CELL = 18;
+  const GAP  = 6;
+  const PAD  = 10;
 
-  // effect (desktop)
-  const DESKTOP_SPARKS = 6;
-  const DESKTOP_RADIUS = 55;
-  const DESKTOP_LINGER = 380;
+  const BORDER_RGBA = "rgba(0,0,0,0.08)";
+  const GREEN = "#54f3a4";
+  const BG = "#ffffff";
 
-  // effect (mobile) - more sensitive + bigger
-  const TOUCH_SPARKS   = 10;   // bigger burst
-  const TOUCH_RADIUS   = 95;   // wider area
-  const TOUCH_LINGER   = 420;
+  // effect tuning (keep feel, reduce work)
+  const DESKTOP_RADIUS = 75;
+  const DESKTOP_LINGER = 420;
 
-  // perf
-  const TOUCH_INTERVAL_MS = 45;     // ✅ lower = more responsive (but heavier)
-  const DESKTOP_INTERVAL_MS = 16;
-  const MAX_ACTIVE = isCoarse ? 140 : 700;
+  const TOUCH_RADIUS   = 95;
+  const TOUCH_LINGER   = 360;
 
-  let gridEl, cells = [];
-  let cols = 0, rows = 0;
+  const MAX_ACTIVE = isCoarse ? 120 : 420;
 
-  // ✅ lock dimensions on mobile so URL bar doesn't cause rebuilds
+  // ✅ randomized linger per tile (tweak these)
+  const LINGER_MIN = 140;  // ms
+  const LINGER_MAX = 700;  // ms
+  const randLinger = () => LINGER_MIN + Math.random() * (LINGER_MAX - LINGER_MIN);
+
+  // grid
+  let cols = 0, rows = 0, total = 0;
+  let cellX = null, cellY = null;
+
+  // state arrays (fast)
+  let expire = null;      // ms timestamp when it turns off
+  let flipEnd = null;     // ms timestamp when flip ends
+  let on = null;          // 0/1
+
+  // ✅ per-tile linger "personality" (how long it stays on)
+  let lingerTile = null;
+
+  // active list (avoid scanning all cells)
+  let active = [];
+  let activeSet = new Set();
+  let needsFullRedraw = true;
+
+  // mobile viewport lock
   let lockedW = 0, lockedH = 0;
 
-  function getStableViewport() {
+  function getStableViewport(){
     const vv = window.visualViewport;
-    const w = Math.round(vv?.width  ?? window.innerWidth);
+    const w = Math.round(vv?.width ?? window.innerWidth);
     const h = Math.round(vv?.height ?? window.innerHeight);
     return { w, h };
   }
 
-  // ✅ lock to the "largest" height we see shortly after load (fills to bottom)
-  function lockMobileViewportMax() {
+  function lockMobileViewportMax(){
     const first = getStableViewport();
     lockedW = first.w;
     lockedH = first.h;
 
     const start = performance.now();
-    function sample() {
+    function sample(){
       const v = getStableViewport();
-      lockedW = v.w;                     // width stays stable
-      lockedH = Math.max(lockedH, v.h);  // take max height seen
+      lockedW = v.w;
+      lockedH = Math.max(lockedH, v.h);
 
-      if (performance.now() - start < 900) {
+      if (performance.now() - start < 700) {
         requestAnimationFrame(sample);
       } else {
-        root.style.setProperty("--gridH", lockedH + "px");
+        document.documentElement.style.setProperty("--gridH", lockedH + "px");
+        resizeAndBuild(lockedW, lockedH);
       }
     }
     requestAnimationFrame(sample);
   }
 
-  function build(usingW, usingH){
-    root.innerHTML = "";
-    gridEl = document.createElement("div");
-    gridEl.className = "grid";
-    root.appendChild(gridEl);
+  function resizeAndBuild(wCss, hCss){
+    // size canvas to device pixels
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    canvas.style.height = getComputedStyle(canvas).height;
+    const hPx = Math.round(parseFloat(getComputedStyle(canvas).height) * dpr);
+    const wPx = Math.round(wCss * dpr);
 
-    const w = usingW;
-    const h = usingH;
+    canvas.width = wPx;
+    canvas.height = hPx;
 
-    cols = Math.floor((w - PAD * 2 + GAP) / (CELL_SIZE + GAP));
-    rows = Math.floor((h - PAD * 2 + GAP) / (CELL_SIZE + GAP));
+    cols = Math.floor((wCss - PAD * 2 + GAP) / (CELL + GAP));
+    rows = Math.floor((hCss - PAD * 2 + GAP) / (CELL + GAP));
+    total = cols * rows;
 
-    gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL_SIZE}px)`;
+    cellX = new Float32Array(total);
+    cellY = new Float32Array(total);
+    expire = new Float64Array(total);
+    flipEnd = new Float64Array(total);
+    on = new Uint8Array(total);
 
-    const total = cols * rows;
-    cells = new Array(total);
+    // ✅ init per-tile linger array
+    lingerTile = new Float32Array(total);
 
-    for (let i = 0; i < total; i++){
-      const c = document.createElement("div");
-      c.className = "cell";
-      gridEl.appendChild(c);
-      cells[i] = c;
+    // precompute top-left of each cell in device pixels
+    const step = (CELL + GAP) * dpr;
+    const pad = PAD * dpr;
+
+    let i = 0;
+    for (let r = 0; r < rows; r++){
+      for (let c = 0; c < cols; c++){
+        cellX[i] = pad + c * step;
+        cellY[i] = pad + r * step;
+        i++;
+      }
     }
+
+    active.length = 0;
+    activeSet.clear();
+
+    needsFullRedraw = true;
+    drawAll();
   }
 
-  function idxFromXY(x, y){
-    const gx = (x - PAD) / (CELL_SIZE + GAP);
-    const gy = (y - PAD) / (CELL_SIZE + GAP);
-    const cx = Math.floor(gx);
-    const cy = Math.floor(gy);
+  function idxFromXY(xCss, yCss){
+    const cx = Math.floor((xCss - PAD) / (CELL + GAP));
+    const cy = Math.floor((yCss - PAD) / (CELL + GAP));
     if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return -1;
     return cy * cols + cx;
   }
 
-  // ✅ single RAF cleanup loop instead of per-cell setTimeout spam
-  const active = new Map(); // el -> expireTime
+  function drawAll(){
+    const w = canvas.width, h = canvas.height;
+    ctx.fillStyle = BG;
+    ctx.fillRect(0, 0, w, h);
 
-  function markOn(el, now, linger){
-    if (!active.has(el) && active.size >= MAX_ACTIVE){
-      const oldest = active.keys().next().value;
-      if (oldest){
-        oldest.classList.remove(GREEN_CLASS);
-        active.delete(oldest);
-      }
+    ctx.strokeStyle = BORDER_RGBA;
+    ctx.lineWidth = 1;
+
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const cw  = CELL * dpr;
+
+    for (let i = 0; i < total; i++){
+      const x0 = Math.round(cellX[i]);
+      const y0 = Math.round(cellY[i]);
+      ctx.strokeRect(x0 + 0.5, y0 + 0.5, cw, cw);
     }
-    if (!el.classList.contains(GREEN_CLASS)) el.classList.add(GREEN_CLASS);
-    active.set(el, now + linger);
+
+    drawActive(performance.now());
+    needsFullRedraw = false;
   }
 
-  function cleanup(now){
-    for (const [el, exp] of active){
-      if (now >= exp){
-        el.classList.remove(GREEN_CLASS);
-        active.delete(el);
-      }
-    }
-    requestAnimationFrame(cleanup);
-  }
-  requestAnimationFrame(cleanup);
+  function drawCell(i, now){
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const cw  = CELL * dpr;
 
-  function spark(x, y, sparks, radius, linger){
+    const x0 = Math.round(cellX[i]);
+    const y0 = Math.round(cellY[i]);
+    const xs = x0 + 0.5;
+    const ys = y0 + 0.5;
+
+    // clear slightly outside to kill old border pixels
+    ctx.fillStyle = BG;
+    ctx.fillRect(x0 - 1, y0 - 1, cw + 2, cw + 2);
+
+    // --- fill ---
+    if (on[i]) {
+      const fe = flipEnd[i];
+      let sx = 1;
+      if (now < fe){
+        const t = 1 - (fe - now) / 140;
+        sx = Math.abs(Math.cos(t * Math.PI));
+        sx = Math.max(0.08, sx);
+      }
+
+      ctx.save();
+      ctx.translate(x0 + cw/2, y0 + cw/2);
+      ctx.scale(sx, 1);
+      ctx.translate(-cw/2, -cw/2);
+
+      ctx.fillStyle = GREEN;
+      ctx.fillRect(0, 0, cw, cw);
+
+      ctx.restore();
+    }
+
+    // --- border LAST ---
+    ctx.strokeStyle = BORDER_RGBA;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(xs, ys, cw, cw);
+  }
+
+  function drawActive(now){
+    for (let k = 0; k < active.length; k++){
+      drawCell(active[k], now);
+    }
+  }
+
+  function markOn(i, now, baseLinger){
+    if (i < 0) return;
+
+    if (!on[i]){
+      if (active.length >= MAX_ACTIVE) return;
+
+      on[i] = 1;
+      active.push(i);
+      activeSet.add(i);
+      flipEnd[i] = now + 140;
+
+      // ✅ assign a random linger the moment this tile turns on
+      lingerTile[i] = randLinger();
+    }
+
+    // ✅ keep your "feel" but vary per tile:
+    // baseLinger still matters, random just multiplies the flavor.
+    // If you want PURE random only, replace with: expire[i] = now + lingerTile[i];
+    expire[i] = now + Math.max(80, baseLinger * 0.35 + lingerTile[i]);
+  }
+
+  function spark(xCss, yCss, radius, linger){
     const now = performance.now();
+    const picks = isCoarse ? 6 : 4;
 
-    for (let i = 0; i < sparks; i++){
+    for (let p = 0; p < picks; p++){
       const a = Math.random() * Math.PI * 2;
       const r = Math.random() * radius;
-      const px = x + Math.cos(a) * r;
-      const py = y + Math.sin(a) * r;
-
-      const idx = idxFromXY(px, py);
-      if (idx < 0) continue;
-
-      const el = cells[idx];
-      if (!el) continue;
-
-      markOn(el, now, linger);
+      const px = xCss + Math.cos(a) * r;
+      const py = yCss + Math.sin(a) * r;
+      markOn(idxFromXY(px, py), now, linger);
     }
+
+    requestPaint();
   }
 
-  // ✅ throttle so touchmove doesn’t hitch the page
-  let lastTouch = 0;
-  let lastDesk  = 0;
+  let raf = 0;
+  function requestPaint(){
+    if (raf) return;
+    raf = requestAnimationFrame(tick);
+  }
 
-  function sparkTouch(x, y){
+  function tick(){
+    raf = 0;
     const now = performance.now();
-    if (now - lastTouch < TOUCH_INTERVAL_MS) return;
-    lastTouch = now;
-    spark(x, y, TOUCH_SPARKS, TOUCH_RADIUS, TOUCH_LINGER);
+
+    if (needsFullRedraw) drawAll();
+    else drawActive(now);
+
+    let w = 0;
+    for (let k = 0; k < active.length; k++){
+      const i = active[k];
+      if (on[i] && now >= expire[i]){
+        on[i] = 0;
+        activeSet.delete(i);
+        drawCell(i, now);
+      } else {
+        active[w++] = i;
+      }
+    }
+    active.length = w;
+
+    if (active.length) requestPaint();
   }
 
-  function sparkDesktop(x, y){
-    const now = performance.now();
-    if (now - lastDesk < DESKTOP_INTERVAL_MS) return;
-    lastDesk = now;
-    spark(x, y, DESKTOP_SPARKS, DESKTOP_RADIUS, DESKTOP_LINGER);
+  // input: coalesce to 1 per frame
+  let pending = null;
+  let inputRAF = 0;
+
+  function queueSpark(x, y, radius, linger){
+    pending = { x, y, radius, linger };
+    if (inputRAF) return;
+    inputRAF = requestAnimationFrame(() => {
+      inputRAF = 0;
+      if (!pending) return;
+      const p = pending;
+      pending = null;
+      spark(p.x, p.y, p.radius, p.linger);
+    });
   }
 
-  // ✅ INIT
+  // init sizing
   if (isCoarse){
     lockMobileViewportMax();
-    build((lockedW || getStableViewport().w), (lockedH || getStableViewport().h));
+    const v = getStableViewport();
+    document.documentElement.style.setProperty("--gridH", (lockedH || v.h) + "px");
+    resizeAndBuild(lockedW || v.w, lockedH || v.h);
   } else {
-    const { w, h } = getStableViewport();
-    root.style.setProperty("--gridH", "100vh");
-    build(w, h);
+    const v = getStableViewport();
+    document.documentElement.style.setProperty("--gridH", "100vh");
+    resizeAndBuild(v.w, v.h);
   }
 
-  // ✅ Resize handling:
-  // - Desktop: rebuild normally
-  // - Mobile: ONLY rebuild if width changes (orientation). Ignore height changes (URL bar)
+  // resize handling
   let rTO;
-  function onResize(){
+  window.addEventListener("resize", () => {
     clearTimeout(rTO);
     rTO = setTimeout(() => {
-      const { w, h } = getStableViewport();
-
+      const v = getStableViewport();
       if (isCoarse){
-        if (Math.abs(w - lockedW) > 12){
+        if (Math.abs(v.w - lockedW) > 12){
           lockMobileViewportMax();
-          build(lockedW || w, lockedH || h);
         }
         return;
       }
-
-      build(w, h);
+      resizeAndBuild(v.w, v.h);
     }, 150);
-  }
-
-  window.addEventListener("resize", onResize, { passive: true });
-  window.addEventListener("orientationchange", () => {
-    if (isCoarse){
-      setTimeout(() => {
-        lockMobileViewportMax();
-        const v = getStableViewport();
-        build(lockedW || v.w, lockedH || v.h);
-      }, 250);
-    }
   }, { passive: true });
 
-  // desktop pointer trail
+  // events
   window.addEventListener("pointermove", (e) => {
     if (isCoarse) return;
-    sparkDesktop(e.clientX, e.clientY);
+    queueSpark(e.clientX, e.clientY, DESKTOP_RADIUS, DESKTOP_LINGER);
   }, { passive: true });
 
-  // ✅ mobile: spark during scroll (touchmove) without scroll-locking
   window.addEventListener("touchstart", (e) => {
     const t = e.touches && e.touches[0];
     if (!t) return;
-    sparkTouch(t.clientX, t.clientY);
+    queueSpark(t.clientX, t.clientY, TOUCH_RADIUS, TOUCH_LINGER);
   }, { passive: true });
 
   window.addEventListener("touchmove", (e) => {
     const t = e.touches && e.touches[0];
     if (!t) return;
-    sparkTouch(t.clientX, t.clientY);
+    queueSpark(t.clientX, t.clientY, TOUCH_RADIUS, TOUCH_LINGER);
   }, { passive: true });
+
 })();
 </script>
  <nav class="navbar">
@@ -1608,21 +1685,26 @@ const splitIndex = rawText.indexOf("our");
 const charsA = chars.slice(0, splitIndex);
 const charsB = chars.slice(splitIndex);
 //SELECTED WORK FADE ONLY
-gsap.from(".text0", {
-  y: 60,
-  opacity: 0,
-  duration: 0.9,
-  ease: "power3.out",
-  delay: 0.5
-});
+// ✅ HERO: keep hidden until GSAP reveals it
+gsap.set(".first-section", { autoAlpha: 0 });
 
-// ✅ fade in on load (whole line)
-gsap.from(text, {
-  y: 100,
-  opacity: 0,
-  duration: 1,
-  ease: "power3.out",
-  delay: 0.8
+// split text (you already do this above)
+const heroTL = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+// optional: wait for fonts so sizing never shifts
+(document.fonts?.ready || Promise.resolve()).then(() => {
+  heroTL
+    // reveal container first (visibility + opacity)
+    .to(".first-section", { autoAlpha: 1, duration: 0.01 })
+    // animate in Selected Work
+    .from(".text0", { y: 60, opacity: 0, duration: 0.9 }, 0)
+    // animate in the headline
+    .from(".text1 .char", {
+      y: 80,
+      opacity: 0,
+      stagger: 0.015,
+      duration: 1.0
+    }, 0.15);
 });
 
 // --- dissolve function ---

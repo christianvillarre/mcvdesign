@@ -1,0 +1,6 @@
+# Force HTTPS
+http://mcvdesign.com/* https://mcvdesign.com/:splat 301!
+http://www.mcvdesign.com/* https://mcvdesign.com/:splat 301!
+
+# Force non-www
+https://www.mcvdesign.com/* https://mcvdesign.com/:splat 301!

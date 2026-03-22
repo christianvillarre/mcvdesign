@@ -1,0 +1,2838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJ18RLBWPT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GJ18RLBWPT');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Development Services | MCVDesign – Houston Web Design & Creative Studio</title>
+  <meta name="description" content="Explore MCVDesign services, including web design, branding, graphics, and digital content for businesses in Houston and beyond.">
+  <link rel="icon" type="image/jpg" href="images/favicon.jpg"/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="canonical" href="https://mcvdesign.com/service">
+
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/Draggable.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/InertiaPlugin.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden; /* ✅ Prevent horizontal scroll */
+      background: #000000;
+      font-family: 'Funnel Display', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    .glow { color: #54f3a4; }
+
+    .intro {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      background: #000000;
+      color: white;
+      position: relative;
+      overflow: visible;
+      z-index:1;
+    }
+    .navbar {
+      z-index: 9999;
+    }
+    .intro::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top left, rgba(84, 243, 164, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at top right, rgba(84, 243, 164, 0.1) 0%, transparent 20%);
+      opacity: var(--corner-opacity, 1);
+      transition: opacity 0.4s ease, background 0.3s ease;
+      z-index: 0;
+    }
+
+    .intro-content {
+      padding-left: 0rem;
+      padding-bottom: 4rem;
+      width: 90vw;
+      position: relative;
+      z-index: 1;
+    }
+    .intro-content h1 {
+      font-size: clamp(1.5rem, 2vw, 1.9rem);
+      margin: 0;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 0;
+      color:#a6a6a6;
+    }
+
+    .intro-content h2 {
+      font-size: clamp(4rem, 8vw, 11rem);
+      margin: 0;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 5.5rem;
+    }
+
+    .intro-content p {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      margin: 0;
+      font-weight: 400;
+      width: 60vw;
+    }
+
+    /* ✅ IMPORTANT: do NOT force height:100vh globally on mobile.
+       Use svh so the address bar show/hide doesn't shift layout and trigger pin glitches */
+    section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8rem;
+      color: white;
+      background: transparent;
+      z-index:0;
+    }
+
+    .circle-section {
+      background: transparent;
+      position: relative;
+      overflow: visible;
+    }
+
+    .circle-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      width: 70vw;
+      height: 70vh;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 1;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    circle {
+      fill: black;
+      stroke-width: 1;
+      border:none;
+    }
+
+    .background-ring { stroke: #333; }
+
+    .progress-ring {
+      stroke: #54f3a4;
+      filter: drop-shadow(0 0 8px rgba(84, 243, 164, var(--glow, 0.2)));
+      transition: filter 0.3s ease;
+    }
+
+    .text-layer {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8rem;
+      color: white;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+      text-align: center;
+    }
+
+    .percent-counter {
+      font-size: 3rem;
+      top: calc(50% + 6rem);
+    }
+
+    .paragraph {
+      position: fixed;
+      bottom: 4rem;
+      left: 4rem;
+      width: 600px;
+      font-size: 1.8rem;
+      color: #e3e3e3;
+      line-height: 1.6;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .circle-title {
+      position: absolute;
+      top: 6rem;
+      right: 4rem;
+      max-width: 600px;
+      font-size: 4rem;
+      color: #e9e9e9;
+      line-height: 1.3;
+      opacity: 1;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+   
+
+   
+  </style>
+
+  <style>
+    @media (max-width: 768px) {
+
+      /* ✅ Stabilize viewport height on mobile */
+      section { min-height: 100svh; height: auto; }
+      .intro { min-height: 100svh; height: auto; }
+
+      .intro-content h1 {
+      font-size: clamp(1.2rem, 1vw, 1.5rem);
+      margin: 0;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 0;
+      color:#a6a6a6;
+    }
+
+      .intro-content h2 {
+        font-size: clamp(3.5rem, 7vw, 6rem);
+        margin: 0;
+        font-weight: 400;
+        line-height: 1;
+        margin-bottom: 1.5rem;
+      }
+
+      .intro-content p {
+        font-size: clamp(1.5rem, 4vw, 1.5rem);
+        margin: 0;
+        font-weight: 400;
+        width: 90vw;
+        margin-bottom: 3rem;
+      }
+
+      .circle-wrapper {
+        width: 90vw;
+        height: 90vw;
+      }
+
+      .circle-container {
+        width: 70vmin;
+        height: 70vmin;
+        opacity: 0;
+        position: fixed;
+      }
+
+      .text-layer {
+        font-size: clamp(4.5rem, 7vw, 5rem);
+      }
+
+      .percent-counter {
+        font-size: 1.8rem;
+        top: calc(50% + 4rem);
+      }
+
+      .paragraph {
+        font-size: 1.2rem;
+        width: 90vw;
+        left: 5vw;
+        bottom: 2rem;
+      }
+
+      .circle-title {
+        font-size: 2rem;
+        right: 2rem;
+        top: 7rem;
+        max-width: 90vw;
+      }
+
+      .scroll-text {
+        font-size: clamp(2.8rem, 12vw, 10rem);
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar__container">
+      <div class="navbar__left">
+        <a href="/" id="navbar__logo" class="logo">
+          <img class="logo1" src="images/logo2.png" alt="Logo" />
+        </a>
+      </div>
+
+      <div class="navbar__right">
+        <a href="mailto:christian@mcvdesign.com" class="navbar__email">
+          christian@mcvdesign.com
+        </a>
+        <a href="inquiry.html">
+          <button class="navbar__inquiry">
+            Send Inquiry
+            <span class="inquiry-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                <path d="M7 17L17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
+            </span>
+          </button>
+        </a>
+        <div class="navbar__contact"><span></span></div>
+      </div>
+
+      <div id="mobile-menu" class="navbar__toggle">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+    </div>
+  </nav>
+
+  <!--DROPDOWN MENU-->
+  <div class="dropdown-menu" id="navDropdown">
+    <div class="dropdown-video-bg">
+      <video autoplay muted loop playsinline>
+        <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
+      </video>
+    </div>
+
+    <div class="dropdown-content">
+      <button class="close-menu" id="closeMenu">×</button>
+        <ul class="dropdown-links">
+          <li class="dropdown-mask">
+            <a href="/index.html" class="dropdown-link">Home</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/services.html" class="dropdown-link">Services</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/work.html" class="dropdown-link">Work</a>
+          </li>
+          <li class="dropdown-mask">
+            <a href="/inquiry.html" class="dropdown-link">Contact</a>
+          </li>
+        </ul>
+
+
+      <div class="dropdown-email">
+        <button class="navbar__email">
+          christian@mcvdesign.com
+        </button>
+      </div>
+
+      <div class="dropdown-copyright"><h2>Copyright © 2026</h2></div>
+      <div class="social-button-container">
+        <button class="bottom-btn">LinkedIn</button>
+        <button class="bottom-btn">Instagram</button>
+        <button class="bottom-btn">Dribble</button>
+        <button class="bottom-btn">Behance</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <section class="intro">
+    <div class="services-video-bg">
+      <video autoplay muted loop playsinline preload="auto" poster="/images/video-poster.jpg">
+        <source src="https://vmqlladebjzniwevemsg.supabase.co/storage/v1/object/public/videos/donut9.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="intro-content">
+      <h1>Houston Web Design Services</h1>
+      <h2><span class="glow">A complete</span> digital product lifecycle.</h2>
+      <p>Houston web design and graphic design services from concept to launch — including branding, UX/UI, websites, and custom web apps.</p>
+    </div>
+  </section>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const v = document.querySelector(".services-video-bg video");
+  if (!v) return;
+
+  v.muted = true;          // autoplay requirement
+  v.playsInline = true;
+
+  const tryPlay = async () => {
+    try { await v.play(); } catch(e) {}
+  };
+
+  v.addEventListener("loadedmetadata", tryPlay, { once:true });
+  v.addEventListener("canplay",        tryPlay, { once:true });
+
+  // safety in case events are missed
+  setTimeout(tryPlay, 250);
+});
+</script>
+  <style>
+    .services-video-bg {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      
+      overflow: visible;
+      
+    }
+
+    .services-video-bg video {
+      width: 100%;
+      height: 100%;
+      margin-left: 50vw;
+      scale: 1;
+      object-fit: cover;
+      opacity: 1;
+      pointer-events: none;
+      
+    }
+
+    @media (max-width: 768px) {
+      .services-video-bg {
+        height: 60vh;
+        bottom: auto;
+        top: 0;
+      }
+
+      .services-video-bg video {
+        width: 100%;
+        height: 100%;
+        margin-left: 0;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0.95;
+        scale: 1.5;
+        transform:translateY(-50%);
+      }
+    }
+  </style>
+
+  <script>
+    gsap.from(".intro-content h2", {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.3
+    });
+
+    gsap.from(".intro-content p", {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.6
+    });
+  </script>
+
+  <!-- Circle Section -->
+  <section class="circle-section">
+    <div class="circle-wrapper">
+      <svg viewBox="0 0 100 100">
+        <circle class="background-ring" cx="50" cy="50" r="40" />
+        <circle class="progress-ring" cx="50" cy="50" r="40" />
+      </svg>
+    </div>
+
+    <div class="circle-container">
+      <div class="circle2">
+        <div class="dot" data-angle="0"></div>
+        <div class="dot" data-angle="0"></div>
+        <div class="dot" data-angle="90"></div>
+        <div class="dot" data-angle="180"></div>
+        <div class="dot" data-angle="270"></div>
+      </div>
+    </div>
+
+    <style>
+      .circle-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60vmin;
+        height: 60vmin;
+        z-index: 10;
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      .circle2 {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: none;
+      }
+
+      .dot {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: white;
+        transform: translate(-50%, -50%);
+        transition: background-color 0.3s ease;
+      }
+
+      .dot.active {
+        background-color: #54f3a4;
+      }
+
+      
+
+      @media (min-width: 768px) and (max-width: 1024px) {
+        .circle-container {
+          width: 78vmin;
+          height: 78vmin;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .dot { transform: translate(-50%, -50%) scale(0.8); }
+
+        .circle-container {
+          width: 80vmin;
+          height: 80vmin;
+        }
+
+        .circle2 { border: none; }
+      }
+    </style>
+
+    <div class="text-layer" id="text0">Draft</div>
+    <div class="text-layer" id="text1">Design</div>
+    <div class="text-layer" id="text2">Build</div>
+    <div class="text-layer" id="text3">Launch</div>
+    <div class="text-layer percent-counter" id="percentText">0%</div>
+
+    <div class="circle-title" id="circleTitle">Project Lifecycle</div>
+
+    <div class="paragraph" id="para0">
+      1 / Defining requirements and setting boundaries to ensure a clear project vision. Identifying constraints like budget and timeline helps manage expectations.
+    </div>
+    <div class="paragraph" id="para1">
+      2 / Structuring workflows, assigning tasks, and setting milestones create an efficient roadmap. A well-defined plan reduces risks and enhances coordination.
+    </div>
+    <div class="paragraph" id="para2">
+      3 / Developing, testing, and refining the solution ensure a high-quality product. Iterative improvements and feedback loops drive efficiency and reliability.
+    </div>
+    <div class="paragraph" id="para3">
+      4 / Deploying the final product and ensuring a smooth transition mark project success. Post-launch support and monitoring help maintain performance.
+    </div>
+  </section>
+
+  <!-- ✅ FIXED GSAP / ScrollTrigger -->
+<script>
+  window.addEventListener("load", () => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ✅ prevent mobile URL bar resize refresh loops
+    ScrollTrigger.config({
+      ignoreMobileResize: true,
+      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
+    });
+
+    // ✅ If this script ever runs twice, kill ONLY circle-section triggers first.
+    ScrollTrigger.getAll().forEach(t => {
+      if (t.vars && t.vars.trigger === ".circle-section") t.kill();
+    });
+    if (window.__dotST) { window.__dotST.kill(); window.__dotST = null; }
+
+    const ring = document.querySelector(".progress-ring");
+    if (!ring) return;
+
+    const radius = ring.r.baseVal.value;
+    const circumference = 2 * Math.PI * radius;
+    ring.style.strokeDasharray = circumference;
+    ring.style.strokeDashoffset = circumference;
+
+    let currentText = null;
+    function showText(id) {
+      if (currentText === id) return;
+
+      gsap.killTweensOf(".text-layer");
+      gsap.killTweensOf(".paragraph");
+      gsap.set(".text-layer", { autoAlpha: 0 });
+      gsap.set(".paragraph", { autoAlpha: 0 });
+
+      if (id) {
+        gsap.fromTo(`#${id}`,
+          { autoAlpha: 0, scale: 0.9, filter: "blur(4px)" },
+          { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" }
+        );
+        gsap.to(`#${id.replace("text","para")}`, { autoAlpha: 1, duration: 1, ease: "power2.out" });
+      }
+
+      currentText = id;
+    }
+
+    const strokeTween = gsap.to(ring, {
+      strokeDashoffset: circumference,
+      ease: "power2.out",
+      duration: 0.3,
+      paused: true
+    });
+
+    // -----------------------------
+    // DOTS (keep your existing behavior)
+    // -----------------------------
+    const circleEl = document.querySelector(".circle2");
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    const targetAngles = [0, 0, 90, 180, 270];
+
+    function getBase() {
+      const r = circleEl.offsetWidth / 2;
+      return { baseRadius: r, cx: r, cy: r };
+    }
+
+    function placeDot(dot, deg, baseRadius, cx, cy) {
+      const rad = (deg - 90) * Math.PI / 180;
+      let rr = baseRadius - 20;
+      if (deg === 0 || deg === 270) rr = baseRadius - 18;
+      const x = cx + rr * Math.cos(rad);
+      const y = cy + rr * Math.sin(rad);
+      dot.style.left = `${x}px`;
+      dot.style.top  = `${y}px`;
+    }
+
+    function initDotST() {
+      if (!circleEl || !dots.length) return;
+
+      const { baseRadius, cx, cy } = getBase();
+      if (baseRadius <= 0) return;
+
+      dots.forEach(dot => placeDot(dot, 0, baseRadius, cx, cy));
+
+      if (window.__dotST) window.__dotST.kill();
+
+      window.__dotST = ScrollTrigger.create({
+        trigger: ".circle-section",
+        start: "top top",
+        end: "+=1000",          // ✅ match pin distance
+        scrub: true,
+        invalidateOnRefresh: true,
+        onUpdate: self => {
+          const p = self.progress;
+          dots.forEach((dot, i) => placeDot(dot, targetAngles[i] * p, baseRadius, cx, cy));
+        }
+      });
+    }
+
+    initDotST();
+
+    // ✅ Fade in container at pin start (fine)
+    gsap.fromTo(".circle-container", { opacity: 0 }, {
+      opacity: 1,
+      duration: 0.5,
+      ease: "power2.out",
+      immediateRender: false,
+      scrollTrigger: {
+        trigger: ".circle-section",
+        start: "top top",
+        end: "top top",
+        toggleActions: "play none none reverse"
+      }
+    });
+
+    // -----------------------------
+    // ✅ PIN (the actual scroll lock)
+    // Key changes:
+    // - remove anticipatePin (it can “pre-grab” on mobile)
+    // - pinType fixed on mobile
+    // - pinReparent helps iOS sometimes
+    // -----------------------------
+    ScrollTrigger.matchMedia({
+
+      "(max-width: 768px)": () => {
+        ScrollTrigger.create({
+          trigger: ".circle-section",
+          start: "top top",      // ✅ remove seam offset for consistency
+          end: "+=4000",
+          scrub: 2,
+          pin: true,
+          pinType: "fixed",
+          pinReparent: true,
+          anticipatePin: 0,      // ✅ IMPORTANT: stop pre-grab
+          invalidateOnRefresh: true,
+
+          onUpdate: self => {
+            const p = self.progress;
+
+            strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+            strokeTween.invalidate().restart();
+
+            const thresholds = [
+              [0, 0.01],[1, 0.01],[2, 0.25],[3, 0.5],[4, 0.75]
+            ];
+            thresholds.forEach(([i, t]) => {
+              if (p >= t) dots[i]?.classList.add("active");
+              else dots[i]?.classList.remove("active");
+            });
+
+            if (p >= 0.75) showText("text3");
+            else if (p >= 0.5) showText("text2");
+            else if (p >= 0.25) showText("text1");
+            else if (p >= 0.01) showText("text0");
+            else showText(null);
+
+            document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
+          }
+        });
+      },
+
+      "(min-width: 769px)": () => {
+        ScrollTrigger.create({
+          trigger: ".circle-section",
+          start: "top top",
+          end: "+=4000",
+          scrub: 2,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+
+          onUpdate: self => {
+            const p = self.progress;
+
+            strokeTween.vars.strokeDashoffset = circumference * (1 - p);
+            strokeTween.invalidate().restart();
+
+            const thresholds = [
+              [0, 0.01],[1, 0.01],[2, 0.25],[3, 0.5],[4, 0.75]
+            ];
+            thresholds.forEach(([i, t]) => {
+              if (p >= t) dots[i]?.classList.add("active");
+              else dots[i]?.classList.remove("active");
+            });
+
+            if (p >= 0.75) showText("text3");
+            else if (p >= 0.5) showText("text2");
+            else if (p >= 0.25) showText("text1");
+            else if (p >= 0.01) showText("text0");
+            else showText(null);
+
+            document.getElementById("percentText").textContent = `${Math.round(p * 100)}%`;
+          }
+        });
+      }
+    });
+
+    // ✅ refresh once after everything is laid out
+    ScrollTrigger.refresh();
+
+    // ✅ only rebuild on true orientation changes (not address bar)
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => {
+        initDotST();
+        ScrollTrigger.refresh();
+      }, 400);
+    });
+  });
+</script>
+
+
+<section class="spacer spacer-top"></section>
+<section class="scroll-text-section" id="scrollContainer">
+  <div class="scroll-track" id="scrollTrack">
+    <div class="scroll-text-wrapper">
+      <div class="scroll-text" id="scrollText">
+        Our Services
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="spacer spacer-bottom"></section>
+<style>
+/* BALL CAUSING SCROLLBAR ON MOBILE */
+html,
+body{
+  width: 100%;
+  overflow-x: clip;
+}
+
+[data-scroll-container],
+.main,
+#smooth-wrapper,
+#smooth-content{
+  width: 100%;
+  overflow-x: clip;
+}
+/* BALL CAUSING SCROLLBAR ON MOBILE */
+
+
+/* ---- SCROLL TEXT ---- */
+.scroll-text-section{
+  /* override your global section{min-height:100vh} */
+  min-height: 0 !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start !important;
+  overflow: hidden;
+
+  width: 100%;
+  padding: 0;
+  cursor: grab;
+}
+
+.scroll-text-section:active{ cursor: grabbing; }
+
+.scroll-track{
+  display: inline-block;
+  white-space: nowrap;
+  min-width: max-content;
+  transform: translateX(0);
+}
+
+.scroll-text-wrapper{
+  position: relative;
+  display: inline-block;
+}
+.scroll-text{
+  font-size: clamp(1.8rem, 6vw, 7rem);
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  padding: 0 1rem;
+  position: relative;
+}
+.scroll-text::after{
+  content: "•";
+  color: #54f3a4;          /* blue dot */
+  margin-left: 2rem;      /* space between text & dot */
+  margin-right: 2rem;     /* space before next text */
+  display: inline-block;
+  font-size: 0.8em;       /* slightly smaller than text */
+  vertical-align: middle;
+}
+/* ---- GIF PILL ---- */
+.gif-pill{
+  display: inline-flex;
+  align-items: center;
+  height: 1em;
+  aspect-ratio: 1 / 1;
+  border-radius: 0.35em;
+  overflow: hidden;
+  border: 2px solid #fff;
+  background: #000;
+  flex-shrink: 0;
+}
+
+.gif-pill img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* ---- SPACERS ---- */
+section.spacer{
+  min-height: 0 !important;  /* cancels global section min-height */
+  height: 0;
+  display: block;
+  background: transparent;
+}
+
+section.spacer-top{
+  border-bottom: 2px solid #fff;
+  margin: 1.25rem 0 5.75rem;
+}
+
+section.spacer-bottom{
+  border-top: 2px solid #fff;
+  margin: 6.75rem 0 2.25rem;
+}
+
+
+/* ---- MOBILE ---- */
+@media (max-width: 768px){
+
+  .scroll-text-section{
+    height: 10vh;
+    min-height: 72px;              /* prevents tiny height */
+    display: flex;
+    align-items: center;            /* true vertical center */
+    justify-content: flex-start;
+    padding-top: 0;                 /* remove baseline drift */
+    padding-bottom: 0;
+  }
+
+  .scroll-track{
+    display: flex;                  /* better centering than inline-block */
+    align-items: center;
+    will-change: transform;
+  }
+
+  .scroll-text{
+    line-height: 1;                 /* stops “sitting low” */
+    padding: 0 0.75rem;             /* slightly closer */
+    font-size: 3rem;
+  }
+
+  .scroll-text::after{
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+    section.spacer-top{
+    border-bottom-color: #646464;
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  section.spacer-bottom{
+    border-top-color: #646464;
+    margin: 1.25rem 0 0.75rem;
+  }
+}
+</style>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+const track = document.getElementById("scrollTrack");
+
+let direction = -1; // -1 = left, +1 = right
+let speedDesktop = 120;
+let speedMobile  = 55;     // ✅ slower on mobile
+let speed = speedDesktop;
+
+let x = 0;
+let lastTime = performance.now();
+let loopWidth = 0;
+
+// ✅ build: group A + group B (B is exact clone of A)
+// then we wrap by loopWidth (width of A) -> perfect seamless
+function buildLoop() {
+  // pick the first element as the "seed" (your .scroll-text-wrapper)
+  const seed = track.children[0];
+  if (!seed) return;
+
+  // keep a clean copy of the seed's HTML (including your ::after dot, etc.)
+  const seedHTML = seed.outerHTML;
+
+  // clear track and rebuild two identical groups
+  track.innerHTML = "";
+
+  const groupA = document.createElement("div");
+  groupA.className = "scroll-group";
+  groupA.style.display = "inline-flex";
+  groupA.style.whiteSpace = "nowrap";
+  groupA.style.alignItems = "center";
+
+  // keep appending until groupA fills past viewport width
+  track.appendChild(groupA);
+
+  // add first item
+  groupA.insertAdjacentHTML("beforeend", seedHTML);
+
+  // keep adding until wide enough (2x viewport is safe)
+  // NOTE: groupA.scrollWidth updates live
+  while (groupA.scrollWidth < window.innerWidth * 1.5) {
+    groupA.insertAdjacentHTML("beforeend", seedHTML);
+  }
+
+  // clone groupA -> groupB
+  const groupB = groupA.cloneNode(true);
+
+  // append both
+  track.appendChild(groupA);
+  track.appendChild(groupB);
+
+  // ✅ exact wrap distance (width of one group)
+  loopWidth = groupA.scrollWidth;
+
+  // ✅ reset x into valid range so no snap after rebuild
+  x = gsap.utils.wrap(-loopWidth, 0, x);
+
+  // set immediately
+  gsap.set(track, { x });
+
+  // ✅ update speed based on viewport
+  speed = window.matchMedia("(max-width: 768px)").matches ? speedMobile : speedDesktop;
+}
+
+function animate(now) {
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+
+  // if not ready yet, keep trying
+  if (!loopWidth) {
+    requestAnimationFrame(animate);
+    return;
+  }
+
+  x += direction * speed * dt;
+
+  // ✅ perfect seamless wrap
+  x = gsap.utils.wrap(-loopWidth, 0, x);
+
+  gsap.set(track, { x });
+  requestAnimationFrame(animate);
+}
+
+// ---- CHANGE DIRECTION ON SCROLL (with small deadzone to avoid flicker) ----
+let lastScrollY = window.scrollY;
+
+window.addEventListener("scroll", () => {
+  const y = window.scrollY;
+  const dy = y - lastScrollY;
+
+  if (Math.abs(dy) > 2) {
+    direction = dy > 0 ? +1 : -1;
+    lastScrollY = y;
+  }
+}, { passive: true });
+
+// ---- INIT ----
+window.addEventListener("load", () => {
+  buildLoop();
+  requestAnimationFrame(animate);
+});
+
+window.addEventListener("resize", () => {
+  // wait a tick so mobile browser settles layout
+  clearTimeout(window.__loopResizeTimer);
+  window.__loopResizeTimer = setTimeout(buildLoop, 150);
+});
+</script>
+<section class="design-section" id="design">
+  <div class="design-wrap">
+
+    <!-- LEFT -->
+    <div class="design-left">
+      <div class="inline-heading">
+  
+     <p class="wipe-copy">Design that builds instant credibility and makes your brand feel intentional and trustworthy.
+      </p>
+</div>
+      <!-- ✅ DESIGN BOX (drop-in replacement for an <img>) -->
+      <!-- Paste this where your image tag was -->
+      <div class="service-design-box themed theme-design mode-morph" data-mode="morph" aria-label="Design animation" >
+          <div class="design-frames"></div>
+
+        <!--<div class="sys-dot" aria-hidden="true"></div>-->
+
+        <div class="word" aria-label="DESIGN">
+          <div class="word-line">
+            <span>D</span><span>E</span><span>S</span><span>I</span><span>G</span><span>N</span>
+          </div>
+        </div>
+
+        <div class="caption" aria-hidden="true">
+          <div class="cap-left">
+            <span class="cap-dot"></span>
+            <span>Visual System</span>
+          </div>
+          <span>01</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="design-right">
+      <div class="design-accordion">
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Logos</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Simple, memorable marks built to work everywhere — web, print, signage, and small sizes.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Branding</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Color, typography, voice, and layout systems that keep your brand consistent across every touchpoint.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Websites</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Modern, fast sites built for conversions, SEO, and smooth UX.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>UX / UI</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Wireframes to polished interfaces focused on usability, hierarchy, and flow.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Motion</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Micro-interactions and animation that bring your brand to life without distraction.</p>
+          </div>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="design-section" id="development">
+  <div class="design-wrap">
+
+    <!-- LEFT -->
+    <div class="design-left">
+      <div class="inline-heading">
+      
+           <p class="wipe-copy">Development focused on speed, reliability, and long term stability.
+        </p>
+        </div>
+      <!-- ✅ DEVELOPMENT BOX (drop-in replacement for an <img>) -->
+      <div class="service-development-box themed theme-development mode-squarepath"
+          data-mode="squarepath"
+          aria-label="Development animation">
+
+        <!-- square path -->
+        <svg class="track-svg"
+     viewBox="0 0 100 100"
+     preserveAspectRatio="xMidYMid meet"
+     aria-hidden="true">
+  <path class="track-path"
+    d="
+      M20,10
+      H80
+      Q90,10 90,20
+      V80
+      Q90,90 80,90
+      H20
+      Q10,90 10,80
+      V20
+      Q10,10 20,10
+      Z
+    "
+  />
+</svg>
+
+
+
+        <!-- path runner -->
+        <div class="runner" aria-hidden="true"></div>
+
+        <!-- word -->
+        <div class="word" aria-label="DEVELOPMENT">
+          <div class="word-line">
+            <span>D</span><span>E</span><span>V</span><span>E</span><span>L</span>
+            <span>O</span><span>P</span><span>M</span><span>E</span><span>N</span><span>T</span>
+          </div>
+        </div>
+
+        <!-- caption -->
+        <div class="caption" aria-hidden="true">
+          <div class="cap-left">
+            <span class="cap-dot"></span>
+            <span>Build & Motion</span>
+          </div>
+          <span>02</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="design-right">
+      <div class="design-accordion">
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Frontend</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Pixel-perfect UI with smooth interactions, responsiveness, and accessibility baked in.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Backend</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>APIs, databases, and logic that stay reliable under real traffic and business needs.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Performance</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Speed audits and optimization to improve Core Web Vitals and load times.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>CMS / Headless</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Structured content systems that are easy for your team to manage.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Integrations</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Payments, booking, CRM, analytics, and third-party services connected cleanly.</p>
+          </div>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="design-section" id="growth">
+  <div class="design-wrap">
+
+    <!-- LEFT -->
+    <div class="design-left">
+      
+      <div class="inline-heading">
+      
+           <p class="wipe-copy">Growth that turns a good site into a lead engine through SEO, conversion strategy, and iteration.
+       </p>
+        </div>
+
+      <!-- ✅ GROWTH BOX (drop-in replacement for an <img>) -->
+      <div class="service-growth-box themed theme-growth" aria-label="Growth animation">
+        
+
+        <div class="growth-tunnel" aria-hidden="true"></div>
+
+        <div class="word" aria-label="GROWTH">
+          <div class="word-line">
+            <span>G</span><span>R</span><span>O</span><span>W</span><span>T</span><span>H</span>
+          </div>
+        </div>
+
+        <div class="caption" aria-hidden="true">
+          <div class="cap-left">
+            <span class="cap-dot"></span>
+            <span>Iteration & Scale</span>
+          </div>
+          <span>03</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="design-right">
+      <div class="design-accordion">
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>SEO</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Technical and on-page SEO that improves rankings and drives qualified traffic.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Conversion</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Layout, CTA, and trust optimization that increases inquiries and leads.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Analytics</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>GA4, event tracking, and funnels to guide data-driven decisions.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Content</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Landing pages and service content aligned with real search intent.</p>
+          </div>
+        </button>
+
+        <button class="acc-item" type="button" aria-expanded="false">
+          <div class="acc-head">
+            <h3>Paid Media</h3>
+            <span class="acc-plus"></span>
+          </div>
+          <div class="acc-body">
+            <p>Targeted campaigns that support SEO and generate high-quality leads.</p>
+          </div>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+<style>
+  
+/* ---------- container (responsive width, ~500px tall) ----------
+
+
+BOX ANIMATIONS GSAP SHAPES*/
+.service-design-box{
+  width: 100%;
+ 
+  height: 500px;             /* ✅ requested */
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,0.03);
+  box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* subtle premium glaze */
+.service-design-box::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 700px at 30% 20%, rgba(255,255,255,.06), transparent 55%),
+    radial-gradient(800px 550px at 80% 70%, rgba(255,255,255,.05), transparent 60%),
+    linear-gradient(to bottom, rgba(255,255,255,.03), transparent 40%, rgba(255,255,255,.02));
+  mix-blend-mode: screen;
+  opacity: .65;
+}
+
+/* ---------- theme (Design green) ---------- */
+.theme-design{
+  --c1: rgba(16,255,163,.24);
+  --c2: rgba(16,255,163,.08);
+  --c3: rgba(255,255,255,.18);
+}
+
+/* ---------- text ---------- */
+.service-design-box .word{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  z-index: 5;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-weight: 800;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: clamp(28px, 5vw, 56px);
+  color: #fff;
+}
+.service-design-box .word-line{
+  display:inline-flex;
+  gap: 0.02em;
+  white-space: nowrap;
+  padding: 0 16px;
+}
+.service-design-box .word span{
+  display:inline-block;
+  transform: translateY(18px);
+  opacity:0;
+  filter: blur(6px);
+}
+
+/* ---------- shapes ---------- */
+.service-design-box .shapes{
+  position:absolute;
+  inset:0;
+  z-index:2;
+}
+.service-design-box .shape{
+  position:absolute;
+  border-radius: 999px;
+  border: 1px solid var(--c1);
+  background: var(--c2);
+  box-shadow: 0 25px 60px rgba(0,0,0,.55);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.service-design-box .shape--ring{
+  background: transparent;
+  box-shadow: none;
+  border-width: 1px;
+}
+.service-design-box .shape--bar{
+  border-radius: 18px;
+  border-color: var(--c3);
+  background: rgba(255,255,255,.05);
+}
+
+/* ---------- bouncing system dot ---------- */
+.service-design-box .sys-dot{
+  position:absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(16,255,163,.95);
+  box-shadow:
+    0 0 0 6px rgba(16,255,163,.12),
+    0 0 18px rgba(16,255,163,.45);
+  z-index: 4;
+  pointer-events:none;
+  will-change: transform;
+}
+
+/* ---------- caption ---------- */
+.service-design-box .caption{
+  position:absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  z-index: 6;
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.62);
+}
+.service-design-box .cap-left{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.service-design-box .cap-dot{
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.55);
+  box-shadow: 0 0 0 5px rgba(255,255,255,.08);
+}
+
+
+
+/* =========================
+   DEVELOPMENT BOX (CSS)
+   Drop-in like your Design box
+========================= */
+
+.service-development-box{
+  width: 100%;
+  height: 500px;          /* ✅ requested */
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,0.03);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* premium glaze */
+.service-development-box::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 700px at 30% 20%, rgba(255,255,255,.06), transparent 55%),
+    radial-gradient(800px 550px at 80% 70%, rgba(255,255,255,.05), transparent 60%),
+    linear-gradient(to bottom, rgba(255,255,255,.03), transparent 40%, rgba(255,255,255,.02));
+  mix-blend-mode: screen;
+  opacity: .65;
+}
+
+/* theme (Development blue) */
+.theme-development{
+  --track: rgba(120,140,255,.55);
+  --trackGlow: rgba(120,140,255,.22);
+  --runner: rgba(120,140,255,.95);
+  --runnerGlow: rgba(120,140,255,.55);
+}
+
+/* shared text layout (matches your Design box) */
+.service-development-box .word{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  z-index: 5;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-weight: 800;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: clamp(22px, 4.2vw, 44px);
+  color: #fff;
+}
+.service-development-box .word-line{
+  display:inline-flex;
+  gap: 0.02em;
+  white-space: nowrap;
+  padding: 0 16px;
+  text-align:center;
+}
+.service-development-box .word span{
+  display:inline-block;
+  transform: translateY(18px);
+  opacity:0;
+  filter: blur(6px);
+}
+
+/* caption (same style as Design box) */
+.service-development-box .caption{
+  position:absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  z-index: 6;
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.62);
+}
+.service-development-box .cap-left{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.service-development-box .cap-dot{
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.55);
+  box-shadow: 0 0 0 5px rgba(255,255,255,.08);
+}
+
+
+/* square path */
+.service-development-box .track-svg{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  height: 84%;          /* 👈 controls size */
+  width: auto;          /* 👈 prevents warping */
+
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  pointer-events: none;
+}
+.service-development-box .track-path{
+  fill:none;
+  stroke: var(--track);
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 12px var(--trackGlow));
+}
+
+/* runner that follows the square path */
+.service-development-box .runner{
+  position:absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--runner);
+  z-index: 4;
+  box-shadow:
+    0 0 0 7px rgba(120,140,255,.14),
+    0 0 22px var(--runnerGlow);
+  pointer-events:none;
+  will-change: transform;
+}
+
+/* fast bouncing dot (free-floating) */
+.service-development-box .dev-dot{
+  position:absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(120,140,255,.95);
+  box-shadow:
+    0 0 0 6px rgba(120,140,255,.12),
+    0 0 18px rgba(120,140,255,.45);
+  z-index: 4;
+  pointer-events:none;
+  will-change: transform;
+}
+
+/* =========================
+   GROWTH BOX (CSS)
+   width:100% height:500px
+========================= */
+.service-growth-box{
+  width: 100%;
+  height: 500px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,0.03);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.service-growth-box::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 700px at 30% 20%, rgba(255,255,255,.06), transparent 55%),
+    radial-gradient(800px 550px at 80% 70%, rgba(255,255,255,.05), transparent 60%),
+    linear-gradient(to bottom, rgba(255,255,255,.03), transparent 40%, rgba(255,255,255,.02));
+  mix-blend-mode: screen;
+  opacity: .65;
+}
+
+/* theme (Growth amber/orange) */
+.theme-growth{
+  --g1: rgba(255,186,84,.28);
+  --g2: rgba(255,186,84,.10);
+  --g3: rgba(255,255,255,.18);
+  --dot: rgba(255,186,84,.95);
+}
+
+/* text (matches your other boxes) */
+.service-growth-box .word{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  z-index: 5;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-weight: 800;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: clamp(22px, 4.2vw, 44px);
+  color: #fff;
+}
+.service-growth-box .word-line{
+  display:inline-flex;
+  gap: 0.02em;
+  white-space: nowrap;
+  padding: 0 16px;
+  text-align:center;
+}
+.service-growth-box .word span{
+  display:inline-block;
+  transform: translateY(18px);
+  opacity:0;
+  filter: blur(6px);
+}
+
+/* caption */
+.service-growth-box .caption{
+  position:absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  z-index: 6;
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.62);
+}
+.service-growth-box .cap-left{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.service-growth-box .cap-dot{
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.55);
+  box-shadow: 0 0 0 5px rgba(255,255,255,.08);
+}
+
+/* =========================
+   GROWTH: SQUARE TUNNEL (CSS ONLY)
+========================= */
+#growth .service-growth-box .growth-tunnel{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+/* Create multiple outlines via box-shadow trick? (not for outlines)
+   We'll do real elements injected once by JS (cheap) + CSS animation. */
+#growth .service-growth-box .tunnel-square{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(12vmin, 90px);
+  height:min(12vmin, 90px);
+  transform: translate(-50%, -50%) scale(0.05);
+  transform-origin:center;
+  border: 1px solid rgba(255,186,84,.55);
+  box-shadow: 0 0 18px rgba(255,186,84,.12);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: tunnelGrow 2.8s linear infinite;
+}
+
+@keyframes tunnelGrow{
+  0%   { transform: translate(-50%, -50%) scale(0.05); opacity: 0; }
+  10%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(6.0); opacity: 0; }
+}
+/* DOT GRID (center square only) */
+#design .design-frames{
+  position: relative;
+  width: 520px;
+  height: 520px;
+  border-radius: 22px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+#design .df-frame{
+  position: absolute;
+  inset: 14%;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.09);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset;
+  opacity: 0;
+  transform: translateZ(0) scale(0.86) rotate(0.6deg);
+  animation: dfPulse 3.0s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+
+
+@keyframes dfPulse{
+  0%{
+    opacity: 0;
+    border-color: rgba(255,255,255,0.09);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset;
+    transform: scale(0.84) rotate(0.6deg);
+  }
+
+  20%{ opacity: 1; }
+
+  70%{
+    opacity: 1;
+    border-color:#54f3a4;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05) inset;
+    transform: scale(1.06) rotate(-0.6deg);
+  }
+
+  85%{
+    border-color:#54f3a475;
+    box-shadow:
+      0 0 0 1px rgba(16,255,163,0.20),
+      0 0 20px rgba(16,255,163,0.12);
+  }
+
+  100%{
+    opacity: 0;
+    border-color:#54f3a43a;
+    box-shadow:
+      0 0 0 1px rgba(16,255,163,0.30),
+      0 0 28px rgba(16,255,163,0.18);
+    transform: scale(1.14) rotate(-1.0deg);
+  }
+}
+
+@media (max-width: 520px){
+  #design .design-frames{ width: 480px; height: 480px; }
+}
+
+
+
+@media (max-width: 520px){
+  #design .design-frames{ width: 480px; height: 480px; }
+}
+/* center the design frames container */
+#design .service-design-box{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
+<script>
+(() => {
+  const box = document.querySelector("#growth .service-growth-box");
+  const tunnel = box?.querySelector(".growth-tunnel");
+  if (!box || !tunnel) return;
+
+  // ✅ init guard (prevents duplicates if script runs twice)
+  if (tunnel.dataset.inited === "1") return;
+  tunnel.dataset.inited = "1";
+
+  const COUNT = 10;          // more frames = smoother tunnel
+  const STAGGER = 0.22;      // spacing between squares
+  const DURATION = 2.8;      // must match CSS keyframe duration
+
+  tunnel.innerHTML = "";
+  for (let i = 0; i < COUNT; i++) {
+    const s = document.createElement("div");
+    s.className = "tunnel-square";
+    s.style.animationDelay = `${i * STAGGER}s`;
+    s.style.animationDuration = `${DURATION}s`;
+    tunnel.appendChild(s);
+  }
+
+  // ✅ pause CSS animations when out of view
+  const squares = Array.from(tunnel.children);
+
+  function setPlayState(state){
+    squares.forEach(el => el.style.animationPlayState = state);
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    const on = entries.some(e => e.isIntersecting);
+    setPlayState(on ? "running" : "paused");
+  }, { threshold: 0.15 });
+
+  io.observe(box);
+
+  // start paused until it enters view
+  setPlayState("paused");
+})();
+</script>
+<script>
+(() => {
+  const box = document.querySelector("#design .service-design-box");
+  const wrap = box?.querySelector(".design-frames");
+  if (!box || !wrap) return;
+
+  if (wrap.dataset.inited === "1") return;
+  wrap.dataset.inited = "1";
+
+  const COUNT = 10;
+  const STAGGER = 0.22;
+  const DURATION = 3.0;
+
+  wrap.innerHTML = "";
+  for (let i = 0; i < COUNT; i++) {
+    const f = document.createElement("div");
+    f.className = "df-frame";
+    f.style.animationDelay = `${i * STAGGER}s`;
+    f.style.animationDuration = `${DURATION}s`;
+    // optional: tiny inset variance so it feels more organic
+    f.style.inset = `${14 + i * 0.35}%`;
+    wrap.appendChild(f);
+  }
+
+  const frames = Array.from(wrap.children);
+  const setPlay = (state) => frames.forEach(el => el.style.animationPlayState = state);
+
+  const io = new IntersectionObserver((entries) => {
+    const on = entries.some(e => e.isIntersecting);
+    setPlay(on ? "running" : "paused");
+  }, { threshold: 0.15 });
+
+  io.observe(box);
+  setPlay("paused");
+})();
+</script>
+<script>
+(() => {
+  // target THIS box only
+  const box = document.querySelector(".service-design-box");
+  if (!box) return;
+
+  const shapes = box.querySelectorAll(".shape");
+  const word   = box.querySelector(".word");
+  const letters= word ? word.querySelectorAll("span") : [];
+  const dot    = box.querySelector(".sys-dot");
+
+  // intro
+  gsap.set(shapes, { opacity: 0, scale: 0.82, y: 22, rotate: -8 });
+  gsap.set(letters, { opacity: 0, y: 16, filter: "blur(6px)" });
+
+  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+  tl.to(shapes, { opacity: 1, duration: 0.6, stagger: 0.08 }, 0);
+  tl.to(shapes, { scale: 1, y: 0, rotate: 0, duration: 1.0, stagger: 0.08 }, 0);
+  tl.to(letters, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7, stagger: 0.06 }, 0.2);
+
+  // orbit + breathe
+  tl.call(() => {
+    shapes.forEach((el, i) => {
+      gsap.killTweensOf(el);
+
+      const drift = (8 + i * 2) * 1.05;
+
+      gsap.to(el, {
+        x: (i % 2 ? drift : -drift),
+        y: (i % 3 ? -drift : drift),
+        duration: 3.2 + i * 0.3,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+
+      gsap.to(el, {
+        rotate: i % 2 ? 10 : -10,
+        duration: 4.5 + i * 0.35,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+
+      gsap.to(el, {
+        scale: 1.05 - i * 0.01,
+        duration: 2.4 + i * 0.2,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+
+      gsap.to(el, {
+        opacity: 0.75,
+        duration: 2.8 + i * 0.2,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+    });
+  }, null, ">");
+
+  // bouncing dot (hits edges correctly)
+  if (dot) {
+    let vx = gsap.utils.random(1.6, 2.6) * (Math.random() > 0.5 ? 1 : -1);
+    let vy = gsap.utils.random(1.6, 2.6) * (Math.random() > 0.5 ? 1 : -1);
+
+    const size = () => ({ w: dot.offsetWidth || 10, h: dot.offsetHeight || 10 });
+
+    const rect0 = box.getBoundingClientRect();
+    const s0 = size();
+    let x = gsap.utils.random(0, Math.max(0, rect0.width  - s0.w));
+    let y = gsap.utils.random(0, Math.max(0, rect0.height - s0.h));
+
+    gsap.set(dot, { x, y, opacity: 0 });
+    tl.to(dot, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.25);
+
+    function tick() {
+      const rect = box.getBoundingClientRect();
+      const s = size();
+
+      x += vx;
+      y += vy;
+
+      if (x <= 0) { x = 0; vx *= -1; }
+      else if (x >= rect.width - s.w) { x = rect.width - s.w; vx *= -1; }
+
+      if (y <= 0) { y = 0; vy *= -1; }
+      else if (y >= rect.height - s.h) { y = rect.height - s.h; vy *= -1; }
+
+      gsap.set(dot, { x, y });
+    }
+
+    gsap.ticker.add(tick);
+  }
+})();
+</script>
+
+<script>
+/* --------- animate the runner inside a box --------- */
+  (() => {
+  const box    = document.querySelector(".service-development-box");
+  const svg    = box?.querySelector(".track-svg");
+  const path   = box?.querySelector(".track-path");
+  const runner = box?.querySelector(".runner");
+
+  if (!box || !svg || !path || !runner) return;
+
+  const pathLength = path.getTotalLength();
+  const state = { t: 0 };
+
+  function placeRunner(progress){
+    const p = path.getPointAtLength(progress * pathLength);
+
+    const svgRect = svg.getBoundingClientRect();
+    const boxRect = box.getBoundingClientRect();
+
+    const rW = runner.offsetWidth  / 2;
+    const rH = runner.offsetHeight / 2;
+
+    const x = svgRect.left - boxRect.left + (p.x / 100) * svgRect.width  - rW;
+    const y = svgRect.top  - boxRect.top  + (p.y / 100) * svgRect.height - rH;
+
+    gsap.set(runner, { x, y });
+  }
+
+  // initial position
+  placeRunner(0);
+
+  // animate forever
+  gsap.to(state, {
+    t: 1,
+    duration: 3.2,        // speed (lower = faster)
+    ease: "none",
+    repeat: -1,
+    onUpdate: () => placeRunner(state.t)
+  });
+
+  // keep correct on resize
+  window.addEventListener("resize", () => placeRunner(state.t), { passive: true });
+})();
+</script>
+<script>
+(function(){
+  // ✅ Register only if it exists (prevents hard crash)
+  if (typeof ScrollTrigger !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  function animateWord(box, opts = {}) {
+    const letters = box.querySelectorAll(".word span");
+    if (!letters.length) return;
+
+    gsap.set(letters, { y: 18, opacity: 0, filter: "blur(6px)" });
+
+    const tl = gsap.timeline({ paused: true });
+    tl.to(letters, {
+      y: 0,
+      opacity: 1,
+      filter: "blur(0px)",
+      duration: opts.duration ?? 0.7,
+      ease: opts.ease ?? "power3.out",
+      stagger: opts.stagger ?? 0.04
+    });
+
+    // ✅ ScrollTrigger version
+    if (typeof ScrollTrigger !== "undefined") {
+      ScrollTrigger.create({
+        trigger: box,
+        start: opts.start ?? "top 75%",
+        once: true,
+        onEnter: () => tl.play(0)
+      });
+    } else {
+      // ✅ fallback: don't leave it hidden
+      tl.play(0);
+      console.warn("ScrollTrigger not loaded — playing word animation immediately.");
+    }
+
+    return tl;
+  }
+
+  // ✅ Only animate DEVELOPMENT here (your design timeline already animates DESIGN)
+  document.querySelectorAll(".service-development-box").forEach(box => {
+    animateWord(box, { start: "top 75%", stagger: 0.035, duration: 0.7 });
+  });
+
+  if (typeof ScrollTrigger !== "undefined") ScrollTrigger.refresh();
+})();
+</script>
+<script>
+/* ✅ GROWTH: shapes grow + subtle pulse + drifting dot
+   (safe to drop below your other scripts) */
+(() => {
+  const box = document.querySelector(".service-growth-box");
+  if (!box || typeof gsap === "undefined") return;
+
+  const shapes  = box.querySelectorAll(".gshape");
+  const letters = box.querySelectorAll(".word span");
+  const dot     = box.querySelector(".growth-dot");
+
+  // intro reset
+  gsap.set(shapes,  { opacity: 0, scale: 0.7, filter: "blur(2px)" });
+  gsap.set(letters, { opacity: 0, y: 16, filter: "blur(6px)" });
+
+  const tl = gsap.timeline({ defaults: { ease: "power3.out" }, paused: true });
+
+  // shapes "grow in"
+  tl.to(shapes, { opacity: 1, duration: 0.6, stagger: 0.08 }, 0);
+  tl.to(shapes, { scale: 1, filter: "blur(0px)", duration: 1.0, stagger: 0.08 }, 0);
+
+  // word
+  tl.to(letters, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7, stagger: 0.06 }, 0.15);
+
+  // dot intro
+  if (dot) tl.fromTo(dot, { opacity: 0 }, { opacity: 1, duration: 0.6 }, 0.25);
+
+  // play on enter (ScrollTrigger if available, else immediate)
+  if (typeof ScrollTrigger !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.create({
+      trigger: box,
+      start: "top 75%",
+      once: true,
+      onEnter: () => tl.play(0)
+    });
+  } else {
+    tl.play(0);
+  }
+
+  // perpetual “growth pulse” (after intro)
+  tl.eventCallback("onComplete", () => {
+    shapes.forEach((el, i) => {
+      gsap.to(el, {
+        scale: 1.06 - i * 0.01,
+        duration: 2.4 + i * 0.25,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+
+      gsap.to(el, {
+        rotate: (i % 2 ? 6 : -6),
+        duration: 4.2 + i * 0.3,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+    });
+
+    if (dot) {
+      // drift dot around inside the box
+      const move = () => {
+        const r = box.getBoundingClientRect();
+        const d = dot.getBoundingClientRect();
+        const maxX = Math.max(0, r.width  - d.width);
+        const maxY = Math.max(0, r.height - d.height);
+
+        gsap.to(dot, {
+          x: gsap.utils.random(0, maxX),
+          y: gsap.utils.random(0, maxY),
+          duration: gsap.utils.random(1.8, 3.0),
+          ease: "sine.inOut",
+          onComplete: move
+        });
+      };
+      gsap.set(dot, { x: 20, y: 20 });
+      move();
+    }
+  });
+})();
+
+
+</script>
+<style>
+.design-section{
+  background:#000;
+  color:#fff;
+  height: auto;
+  display:flex;
+  align-items:flex-start;   /* ✅ was center */
+  justify-content:center;
+  padding: 8rem 4rem;
+  z-index:0;
+}
+
+.design-wrap{
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 6rem;
+}
+.design-left{ min-width: 0; } /* KEY */
+.inline-heading{
+  display: block;
+}
+
+.inline-heading h3{
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  font-weight: 100;
+  margin-bottom: 2rem;
+}
+
+.inline-heading .design-title-color{
+  color: #10ffa3; /* title color */
+  font-weight: 800;
+}
+
+.design-image{
+  width: 100%;
+  height: 420px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.03);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position: relative;
+}
+.design-image span{
+  opacity: 0.65;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+.design-image img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  scale: 1.1;
+}
+/* Accordion */
+.design-accordion{
+  display:flex;
+  flex-direction:column;
+  gap: 1rem;
+  z-index: 9999;
+}
+
+.acc-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  padding: 3rem 0;          /* vertical rhythm */
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+  border-radius: 0;
+}
+.acc-item:first-child {
+  border-top: 1px solid rgba(255,255,255,0.14);
+}
+.acc-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 1rem;
+}
+
+.acc-head h3{
+  margin:0;
+  font-size: 2rem;
+  font-weight: 400;
+  color: #54f3a4;
+  transition: color 0.3s ease;
+}
+.acc-head h3:hover{
+  color: white;
+}
+.acc-plus::before,
+.acc-plus::after {
+  background: #54f3a4;
+  transition: background 0.3s ease, transform 0.25s ease;
+}
+/* Open state */
+.acc-item.is-open .acc-head h3 {
+  color: #ffffff;
+}
+
+.acc-item.is-open .acc-plus::before,
+.acc-item.is-open .acc-plus::after {
+  background: #ffffff;
+}
+/* plus icon */
+.acc-plus{
+  width: 22px;
+  height: 22px;
+  position: relative;
+  flex: 0 0 22px;
+  opacity: 0.9;
+}
+.acc-plus::before,
+.acc-plus::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:50%;
+  width: 18px;
+  height: 2px;
+  background:#fff;
+  transform: translate(-50%,-50%);
+  border-radius: 2px;
+}
+.acc-plus::after{
+  transform: translate(-50%,-50%) rotate(90deg);
+  transition: transform 0.25s ease;
+}
+
+.acc-body{
+  overflow: hidden;
+}
+.acc-body p{
+  margin: 3rem 0 0 0;
+  color:#a6a6a6;
+  line-height: 1.6;
+  font-size: 1.3rem;
+}
+
+/* open state */
+.acc-item.is-open .acc-body{
+  max-height: 240px; /* enough for a couple lines */
+}
+.acc-item.is-open .acc-plus::after{
+  transform: translate(-50%,-50%) rotate(0deg);
+}
+
+/* mobile */
+@media (max-width: 900px){
+  .design-section{ padding: 6rem 1.5rem; }
+  .design-wrap{ grid-template-columns: 1fr; gap: 2.5rem; }
+  .design-image{ height: 320px; }
+}
+</style>
+<script>
+  // Works for ALL accordions on the page
+  document.querySelectorAll(".design-accordion").forEach((accordion) => {
+    const items = accordion.querySelectorAll(".acc-item");
+    let activeItem = null;
+
+    // close all bodies first
+    items.forEach((item) => {
+      const body = item.querySelector(".acc-body");
+      gsap.set(body, { height: 0, opacity: 0, overflow: "hidden" });
+      item.classList.remove("is-open");
+      item.setAttribute("aria-expanded", "false");
+    });
+
+    function openItem(item, { instant = false } = {}) {
+      const body = item.querySelector(".acc-body");
+
+      item.classList.add("is-open");
+      item.setAttribute("aria-expanded", "true");
+
+      gsap.killTweensOf(body);
+
+      gsap.to(body, {
+        height: "auto",
+        opacity: 1,
+        duration: instant ? 0 : 0.6,
+        ease: "power4.out"
+      });
+    }
+
+    function closeItem(item) {
+      const body = item.querySelector(".acc-body");
+
+      item.classList.remove("is-open");
+      item.setAttribute("aria-expanded", "false");
+
+      gsap.killTweensOf(body);
+
+      gsap.to(body, {
+        height: 0,
+        opacity: 0,
+        duration: 0.45,
+        ease: "power4.inOut"
+      });
+    }
+
+    // click behavior: open + close simultaneously (within this accordion)
+    items.forEach((item) => {
+      item.addEventListener("click", () => {
+        if (item === activeItem) {
+          closeItem(item);
+          activeItem = null;
+          return;
+        }
+
+        openItem(item);
+        if (activeItem) closeItem(activeItem);
+
+        activeItem = item;
+      });
+    });
+
+    // first open by default (instant, no animation on load)
+    
+    if (items.length) {
+      activeItem = items[0];
+      openItem(activeItem, { instant: true });
+
+      const body = activeItem.querySelector(".acc-body");
+      const h = body.scrollHeight;
+      gsap.set(body, { height: h, opacity: 1 });
+      requestAnimationFrame(() => gsap.set(body, { height: "auto" }));
+    }
+  });
+</script>
+
+
+
+<!-- =========================
+     FOOTER (FULL)
+     ========================= -->
+<footer class="site-footer">
+  <div class="footer-inner">
+
+    <!-- Top row -->
+    <div class="footer-top">
+      <div class="footer-top-left">
+        <h2 class="footer-cta">
+          <a href="/inquiry.html" class="footer-cta-link">Let’s chat. →</a>
+        </h2>
+        <p class="footer-sub">
+          Branding, websites, and digital design built for growth.
+        </p>
+      </div>
+
+      <div class="footer-top-right">
+        <a href="/" class="footer-logo">
+          <img src="/images/logo4.png" alt="MCVDesign logo">
+        </a>
+      </div>
+    </div>
+
+    <!-- Columns -->
+    <div class="footer-grid">
+
+      <!-- Contact -->
+      <div class="footer-col footer-contact">
+        <h3 class="footer-title">Contact</h3>
+        <a class="footer-link" href="mailto:christian@mcvdesign.com">christian@mcvdesign.com</a>
+        <a class="footer-link" href="tel:+17138224653">+1 (713) 822-4653</a>
+        <p class="footer-text">Houston, TX</p>
+      </div>
+
+      <!-- Pages -->
+      <div class="footer-col footer-pages">
+        <h3 class="footer-title">Pages</h3>
+        <a class="footer-link" href="/index.html">Home</a>
+        <a class="footer-link" href="/services.html">Services</a>
+        <a class="footer-link" href="/work.html">Work</a>
+        <a class="footer-link" href="/inquiry.html">Inquiry</a>
+      </div>
+
+      <!-- Availability -->
+      <div class="footer-col footer-availability">
+        <div class="footer-availability-top">
+          <h3 class="footer-title">Availability</h3>
+          <button type="button"
+                class="footer-status footer-status-trigger"
+                data-open-spot>
+          <span class="status-dot" aria-hidden="true"></span>
+          <span class="status-text"><strong>2 spots available</strong> this month</span>
+        </button>
+        </div>
+
+        <label class="footer-form-label" for="openSpotModal">
+          Lock in a slot for branding, web design, or development.
+          <span class="footer-form-sub">We’ll reply with next steps + a quick timeline.</span>
+        </label>
+
+        <button type="button" class="footer-submit-btn footer-status-trigger" data-open-spot id="openSpotModal">
+          Request a spot
+          <span class="footer-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+              <path d="M7 17L17 7" />
+              <path d="M7 7h10v10" />
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      <!-- Mobile-only full-width divider (hidden on desktop) -->
+      <div class="footer-grid-divider" aria-hidden="true"></div>
+
+    </div><!-- /footer-grid -->
+
+    <!-- Bottom -->
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 MCVDesign. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a class="footer-link small" href="/privacy.html">Privacy</a>
+        <a class="footer-link small" href="/terms.html">Terms</a>
+      </div>
+    </div>
+
+  </div><!-- /footer-inner -->
+</footer>
+
+<!-- =========================
+     Availability Modal
+     Place ONCE near end of body
+     ========================= -->
+<div class="spot-modal" id="spotModal" aria-hidden="true">
+  <div class="spot-modal__backdrop" data-close></div>
+
+  <div class="spot-modal__panel" role="dialog" aria-modal="true" aria-labelledby="spotModalTitle">
+    <button class="spot-modal__close" type="button" aria-label="Close" data-close>✕</button>
+
+    <div class="spot-modal__head">
+      <h3 class="spot-modal__title" id="spotModalTitle">Request a spot</h3>
+      <div class="spot-modal__status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span class="status-text"><strong>2 spots available</strong> this month</span>
+      </div>
+    </div>
+
+    <form
+      class="spot-modal__form"
+      name="spot-request"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      action="/inquiry.html?from=footerSpot"
+    >
+      <!-- required for Netlify forms to work when not using Netlify’s build detection -->
+      <input type="hidden" name="form-name" value="spot-request" />
+
+      <!-- honeypot (spam trap) -->
+      <p style="display:none;">
+        <label>Don’t fill this out: <input name="bot-field" /></label>
+      </p>
+
+      <label class="spot-label" for="spotEmail">Email</label>
+      <input
+        class="spot-input"
+        id="spotEmail"
+        name="email"
+        type="email"
+        placeholder="you@company.com"
+        autocomplete="email"
+        required
+      />
+
+      <label class="spot-label" for="spotService">What are you looking for?</label>
+      <select class="spot-select" id="spotService" name="service" required>
+        <option value="" selected disabled>Select one…</option>
+        <option value="Website">Website</option>
+        <option value="Branding">Branding</option>
+        <option value="Development">Development</option>
+        <option value="Not sure yet">Not sure yet</option>
+      </select>
+
+      <label class="spot-label" for="spotTimeline">Ideal start timeline</label>
+      <select class="spot-select" id="spotTimeline" name="timeline" required>
+        <option value="" selected disabled>Select one…</option>
+        <option value="ASAP">ASAP</option>
+        <option value="2–4 weeks">2–4 weeks</option>
+        <option value="1–2 months">1–2 months</option>
+        <option value="Just exploring">Just exploring</option>
+      </select>
+
+      <!-- optional metadata -->
+      <input type="hidden" name="source" value="footer_availability" />
+      <input type="hidden" name="page" value="/(footer-modal)" />
+
+      <div class="spot-modal__actions">
+        <button class="spot-submit" type="submit">
+          Continue
+          <span class="footer-arrow" aria-hidden="true">
+            
+          </span>
+        </button>
+
+        <button class="spot-cancel" type="button" data-close>Cancel</button>
+      </div>
+
+      <p class="spot-note">No spam — just next steps + a quick timeline.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+(() => {
+  const modal    = document.getElementById("spotModal");
+  const panel    = modal?.querySelector(".spot-modal__panel");
+  const email    = document.getElementById("spotEmail");
+  const closeEls = modal?.querySelectorAll("[data-close]");
+  const backdrop = modal?.querySelector(".spot-modal__backdrop");
+
+  // ✅ allow multiple open triggers (button + status pill + label)
+  const openBtns = document.querySelectorAll("[data-open-spot]");
+
+  // ❗ don't require a specific button id anymore
+  if (!modal || !panel || !openBtns.length) return;
+
+  function openModal(){
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    document.documentElement.style.overflow = "hidden";
+    setTimeout(() => email?.focus(), 0);
+  }
+
+  function closeModal(){
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    document.documentElement.style.overflow = "";
+  }
+
+  // bind open to ALL triggers
+  openBtns.forEach(btn => btn.addEventListener("click", openModal));
+
+  // bind close
+  closeEls?.forEach(el => el.addEventListener("click", closeModal));
+  backdrop?.addEventListener("click", closeModal);
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+  });
+})();
+</script>
+
+<style>
+.wipe-copy{
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 100;
+  line-height: 0.6;
+  letter-spacing: -0.02em;
+  max-width: 46ch;
+  color: #6b6b6b;
+}
+
+.wipe-copy .line{
+  display:block;
+  position: relative;
+  margin-bottom: 0.15rem;     /* tight */
+  padding-bottom: 0.5em;      /* ✅ protects descenders */
+  white-space: pre-wrap;
+}
+
+.wipe-copy .reveal{
+  position:absolute;
+  inset: 0;
+  color:#fff;
+  pointer-events:none;
+
+  /* ✅ true wipe */
+  -webkit-clip-path: inset(0 100% 0 0);
+  clip-path: inset(0 100% 0 0);
+
+  will-change: clip-path, -webkit-clip-path;
+}
+
+.wipe-copy .reveal-inner{
+  display:block;
+  padding-bottom: 0.5em;      /* ✅ match .line */
+  font: inherit;
+  letter-spacing: inherit;
+  white-space: pre-wrap;
+}
+@media (max-width: 768px) {
+  .wipe-copy{
+    font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+    line-height: 0.65;      /* slightly looser so lines don’t collide */
+    max-width: 90vw;        /* prevent cramped wrapping */
+  }
+
+  .wipe-copy .line{
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.55em; /* keeps descenders safe at larger size */
+  }
+}
+</style>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ✅ desktop tuning
+const DESKTOP_END_DISTANCE = 900;
+const DESKTOP_SCRUB        = 1.1;
+
+// ✅ mobile tuning (still scrubbed)
+const MOBILE_SCRUB = 0.95;          // slightly tighter than 0.8
+const MOBILE_END_MODE = "top -10%"; // finishes sooner but same logic
+
+function isMobile() {
+  return window.matchMedia("(max-width: 768px)").matches;
+}
+
+function buildWipeFor(sectionEl) {
+  const p = sectionEl.querySelector(".wipe-copy");
+  if (!p) return;
+
+  // per-section state
+  const state = sectionEl.__wipeState || (sectionEl.__wipeState = { st: null, tl: null });
+
+  // kill only ours
+  if (state.st) { state.st.kill(); state.st = null; }
+  if (state.tl) { state.tl.kill(); state.tl = null; }
+
+  // store original once
+  const raw = (p.__rawText || p.textContent).replace(/\s+/g, " ").trim();
+  if (!raw) return;
+  if (!p.__rawText) p.__rawText = raw;
+
+  // --- 1) temp word spans to measure wrapping ---
+  const words = raw.split(" ");
+  p.innerHTML = "";
+  words.forEach((w, i) => {
+    const span = document.createElement("span");
+    span.className = "w";
+    span.textContent = w;
+    p.appendChild(span);
+    if (i !== words.length - 1) p.appendChild(document.createTextNode(" "));
+  });
+
+  const wordEls = Array.from(p.querySelectorAll(".w"));
+  if (!wordEls.length) return;
+
+  // --- 2) group into lines by offsetTop ---
+  const groups = [];
+  let current = [wordEls[0]];
+  let top = wordEls[0].offsetTop;
+
+  for (let i = 1; i < wordEls.length; i++) {
+    const w = wordEls[i];
+    if (Math.abs(w.offsetTop - top) > 1) {
+      groups.push(current);
+      current = [w];
+      top = w.offsetTop;
+    } else {
+      current.push(w);
+    }
+  }
+  if (current.length) groups.push(current);
+
+  // --- 3) rebuild into line spans + overlay wipe ---
+  p.innerHTML = "";
+  const overlays = groups.map(g => {
+    const text = g.map(el => el.textContent).join(" ").trim();
+
+    const lineEl = document.createElement("span");
+    lineEl.className = "line";
+    lineEl.textContent = text;
+
+    const overlay = document.createElement("span");
+    overlay.className = "reveal";
+
+    const inner = document.createElement("span");
+    inner.className = "reveal-inner";
+    inner.textContent = text;
+
+    overlay.appendChild(inner);
+    lineEl.appendChild(overlay);
+    p.appendChild(lineEl);
+
+    return overlay;
+  });
+
+  // explicit start state
+  gsap.set(overlays, {
+    clipPath: "inset(0 100% 0 0)",
+    WebkitClipPath: "inset(0 100% 0 0)"
+  });
+
+  // timeline (keep linear for scrub)
+  const tl = gsap.timeline({ defaults: { ease: "none" } });
+  overlays.forEach((ov) => {
+    tl.to(ov, {
+      clipPath: "inset(0 0% 0 0)",
+      WebkitClipPath: "inset(0 0% 0 0)",
+      duration: 1
+    });
+  });
+
+  // ✅ ScrollTrigger (scrubbed on both)
+  const mobile = isMobile();
+
+  const st = ScrollTrigger.create({
+    animation: tl,
+    trigger: sectionEl,
+    start: mobile ? "top 85%" : "top 75%",
+    end: mobile ? MOBILE_END_MODE : `+=${DESKTOP_END_DISTANCE}`,
+    scrub: mobile ? MOBILE_SCRUB : DESKTOP_SCRUB,
+
+    // ✅ KEY: don't let iOS refresh math while scrolling for this trigger
+    invalidateOnRefresh: !mobile
+  });
+
+  state.tl = tl;
+  state.st = st;
+}
+
+function buildAllWipes() {
+  document.querySelectorAll(".design-section").forEach(buildWipeFor);
+}
+
+window.addEventListener("load", () => {
+  // ✅ KEY iOS fix: ignore address-bar resize refreshes
+  ScrollTrigger.config({
+    ignoreMobileResize: true,
+    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load" // remove resize from auto-refresh
+  });
+
+  buildAllWipes();
+  ScrollTrigger.refresh();
+});
+
+// ✅ Mobile: do NOT rebuild on resize (address bar fires resize)
+// ✅ Only rebuild on real orientation changes
+window.addEventListener("orientationchange", () => {
+  setTimeout(() => {
+    buildAllWipes();
+    ScrollTrigger.refresh();
+  }, 400);
+});
+
+// ✅ Desktop: rebuild on real resizes (optional)
+let lastW = window.innerWidth;
+window.addEventListener("resize", () => {
+  if (isMobile()) return;                 // ❌ never rebuild on mobile resize
+  if (window.innerWidth === lastW) return;
+  lastW = window.innerWidth;
+
+  clearTimeout(window.__wipeResizeTimer);
+  window.__wipeResizeTimer = setTimeout(() => {
+    buildAllWipes();
+    ScrollTrigger.refresh();
+  }, 200);
+});
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>

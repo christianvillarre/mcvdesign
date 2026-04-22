@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Luxury Minimal Vapor</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:rgba(20,20,20,.96);
+      --muted:rgba(20,20,20,.58);
+      --stroke:rgba(20,20,20,.08);
+      --panel:rgba(255,255,255,.58);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    html,body{
+      width:100%;
+      height:100%;
+    }
+
+    body{
+      min-height:100vh;
+      background:var(--bg);
+      color:var(--text);
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      overflow:hidden;
+    }
+
+    canvas#vapor{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:block;
+      z-index:0;
+      pointer-events:none;
+    }
+
+    .soft-wash{
+      position:fixed;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:
+        radial-gradient(55% 55% at 50% 42%, rgba(255,255,255,0) 0%, rgba(255,255,255,.34) 72%, rgba(255,255,255,.72) 100%),
+        linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08));
+    }
+
+    .grain{
+      position:fixed;
+      inset:-50%;
+      z-index:2;
+      pointer-events:none;
+      opacity:.05;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255, 13, 13, 0.08) 0 0.7px, transparent 1px),
+        radial-gradient(circle at 80% 30%, rgba(239, 9, 9, 0.06) 0 0.7px, transparent 1px),
+        radial-gradient(circle at 40% 80%, rgba(0,0,0,.05) 0 0.7px, transparent 1px);
+      background-size:180px 180px, 220px 220px, 260px 260px;
+      animation: grainShift 18s linear infinite;
+      mix-blend-mode:multiply;
+    }
+
+    @keyframes grainShift{
+      0%   { transform:translate(0,0) }
+      25%  { transform:translate(1.5%, -1%) }
+      50%  { transform:translate(-1%, 1.2%) }
+      75%  { transform:translate(1%, 0.6%) }
+      100% { transform:translate(0,0) }
+    }
+
+    .wrap{
+      position:relative;
+      z-index:3;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:32px;
+    }
+
+    .hero{
+      width:min(980px,100%);
+      padding:clamp(22px,3vw,38px);
+      border:1px solid var(--stroke);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.42));
+      backdrop-filter:blur(12px);
+      box-shadow:
+        0 12px 40px rgba(0,0,0,.04),
+        0 2px 10px rgba(0,0,0,.03),
+        inset 0 1px 0 rgba(255,255,255,.8);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:rgba(20,20,20,.62);
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(20,20,20,.08);
+      background:rgba(255,255,255,.65);
+      margin-bottom:14px;
+    }
+
+    h1{
+      font-size:clamp(34px,5vw,64px);
+      line-height:1.02;
+      letter-spacing:-0.04em;
+      font-weight:600;
+      max-width:10ch;
+      margin-bottom:14px;
+    }
+
+    p{
+      max-width:58ch;
+      font-size:clamp(15px,1.4vw,18px);
+      line-height:1.55;
+      color:var(--muted);
+    }
+
+    .accent{
+      color:rgba(20,20,20,.82);
+    }
+
+    @media (max-width: 720px){
+      .hero{
+        border-radius:22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="vapor"></canvas>
+  <div class="soft-wash"></div>
+  <div class="grain"></div>
+  <!--
+  <main class="wrap">
+    <section class="hero">
+      <div class="pill">Luxury minimal motion</div>
+      <h1>Soft atmosphere, <span class="accent">barely there.</span></h1>
+      <p>
+        An ultra-subtle white-background vapor field with slow movement,
+        soft diffusion, and restrained color for a premium, editorial feel.
+      </p>
+    </section>
+  </main>-->
+
+  <script>
+    const canvas = document.getElementById("vapor");
+    const ctx = canvas.getContext("2d", { alpha: true });
+
+    const buf = document.createElement("canvas");
+    const btx = buf.getContext("2d", { alpha: true });
+
+    const S = {
+      w: 0,
+      h: 0,
+      dpr: Math.max(1, Math.min(2, window.devicePixelRatio || 1)),
+      t: 0,
+
+      // luxury minimal tuning
+      speed: 0.00135,
+      fade: 0.038,
+      density: 0.34,
+      scale: 0.52,
+      drift: 0.42,
+      bloom: 0.14,
+
+      mx: 0,
+      my: 0,
+      px: 0,
+      py: 0
+    };
+
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    function resize(){
+      S.w = Math.floor(window.innerWidth);
+      S.h = Math.floor(window.innerHeight);
+
+      canvas.width = Math.floor(S.w * S.dpr);
+      canvas.height = Math.floor(S.h * S.dpr);
+      canvas.style.width = S.w + "px";
+      canvas.style.height = S.h + "px";
+
+      ctx.setTransform(S.dpr, 0, 0, S.dpr, 0, 0);
+
+      buf.width = Math.floor(S.w * S.scale * S.dpr);
+      buf.height = Math.floor(S.h * S.scale * S.dpr);
+      btx.setTransform(1, 0, 0, 1, 0, 0);
+
+      ctx.clearRect(0, 0, S.w, S.h);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, S.w, S.h);
+
+      btx.clearRect(0, 0, buf.width, buf.height);
+      btx.fillStyle = "rgba(255,255,255,1)";
+      btx.fillRect(0, 0, buf.width, buf.height);
+    }
+
+    window.addEventListener("resize", resize, { passive: true });
+    resize();
+
+    window.addEventListener("pointermove", (e) => {
+      S.mx = (e.clientX / S.w) * 2 - 1;
+      S.my = (e.clientY / S.h) * 2 - 1;
+    }, { passive: true });
+
+    function n2(x, y){
+      return Math.sin(x * 1.37 + Math.cos(y * 1.11)) * Math.cos(y * 1.29 + Math.sin(x * 0.93));
+    }
+
+    function fogBlob(x, y, r, innerColor, midColor, alpha){
+      const g = btx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0.0, innerColor.replace("{a}", (alpha * 1.0).toFixed(4)));
+      g.addColorStop(0.46, midColor.replace("{a}", (alpha * 0.55).toFixed(4)));
+      g.addColorStop(1.0, innerColor.replace("{a}", "0"));
+      btx.fillStyle = g;
+      btx.beginPath();
+      btx.arc(x, y, r, 0, Math.PI * 2);
+      btx.fill();
+    }
+
+    const EMITTERS = Array.from({ length: 6 }, (_, i) => ({
+      seed: Math.random() * 10,
+      phase: i * 1.08,
+      r: 0.10 + Math.random() * 0.18,
+      s: 0.74 + Math.random() * 0.24
+    }));
+
+    function step(){
+      S.t += S.speed;
+
+      S.px += (S.mx - S.px) * 0.012;
+      S.py += (S.my - S.py) * 0.012;
+
+      const W = buf.width;
+      const H = buf.height;
+
+      // fade buffer back toward white
+      btx.globalCompositeOperation = "source-over";
+      btx.fillStyle = `rgba(255,255,255,${S.fade})`;
+      btx.fillRect(0, 0, W, H);
+
+      // faint ambient haze
+      const cx = W * 0.5 + S.px * 10;
+      const cy = H * 0.48 + S.py * 8;
+      const R = Math.hypot(W, H) * 0.42;
+
+      const ambient = btx.createRadialGradient(cx, cy, 0, cx, cy, R);
+      ambient.addColorStop(0.0, `rgba(205, 214, 226, ${0.030 * S.bloom})`);
+      ambient.addColorStop(0.32, `rgba(216, 206, 226, ${0.024 * S.bloom})`);
+      ambient.addColorStop(0.64, `rgba(225, 218, 210, ${0.018 * S.bloom})`);
+      ambient.addColorStop(1.0, `rgba(255,255,255,0)`);
+      btx.fillStyle = ambient;
+      btx.fillRect(0, 0, W, H);
+
+      // white-background luxury look:
+      // use multiply so color gently stains paper instead of glowing
+      btx.globalCompositeOperation = "multiply";
+
+      for (const e of EMITTERS){
+        const tt = S.t + e.seed;
+
+        const ox = Math.cos(tt * 0.58 + e.phase) * W * e.r;
+        const oy = Math.sin(tt * 0.52 + e.phase * 1.12) * H * e.r;
+
+        const wx = n2(tt * 0.85, e.phase * 1.7);
+        const wy = n2(e.phase * 1.6, tt * 0.82);
+
+        const x = W * 0.5 + ox + wx * 12 * S.drift + S.px * 10;
+        const y = H * 0.5 + oy + wy * 10 * S.drift + S.py * 8;
+
+        const breath = 0.5 + 0.5 * Math.sin(tt * 0.9 + e.phase);
+        const baseR = (54 + 46 * breath) * e.s;
+        const r = clamp(baseR, 38, 112);
+
+        const c1 = 0.5 + 0.5 * Math.sin(tt * 0.28 + e.phase);
+        const c2 = 0.5 + 0.5 * Math.cos(tt * 0.22 - e.phase);
+
+        // restrained luxury palette:
+        // warm stone / silver lavender / pale champagne
+        const colA = `rgba(${Math.floor(188 + 14 * c1)}, ${Math.floor(194 + 8 * c2)}, ${Math.floor(206 + 10 * c1)}, {a})`;
+        const colB = `rgba(${Math.floor(206 + 8 * c2)}, ${Math.floor(198 + 10 * c1)}, ${Math.floor(192 + 8 * c2)}, {a})`;
+
+        const alpha = (0.038 + 0.030 * c1) * S.density;
+
+        fogBlob(x, y, r, colA, colB, alpha);
+        fogBlob(x + wx * 8, y - wy * 7, r * 0.64, colB, colA, alpha * 0.75);
+      }
+
+      btx.globalCompositeOperation = "source-over";
+
+      // final canvas render
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(255,255,255,0.10)";
+      ctx.fillRect(0, 0, S.w, S.h);
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.globalAlpha = 1;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+
+      // ultra-soft secondary pass
+      ctx.globalAlpha = 0.16;
+      ctx.drawImage(buf, 0, 0, W, H, 0, 0, S.w, S.h);
+      ctx.globalAlpha = 1;
+    }
+
+    let rafId = null;
+
+    function animate(){
+      step();
+      rafId = requestAnimationFrame(animate);
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      for (let i = 0; i < 18; i++) step();
+    } else {
+      animate();
+    }
+  </script>
+</body>
+</html>
